@@ -1,5 +1,24 @@
 publication_top_name: "Help with Health Costs (HwHC)"
-publication_sub_name: "England April 2019 to March 2024"
+publication_sub_name: "2019/20 to 2023/24"
 publication_date: "20 June 2024"
 responsible_statistician: "Steven Buckley"
 stats_survey_link: "https://online1.snapsurveys.com/Official_Statistics_Feedback"
+publication_table_title: "Help with Health Costs (HwHC) - 2019/20 to 2023/24"
+
+# data table criteria
+rebuild_base_data: FALSE
+extract_date_lis: "20240409"
+
+# time period criteria
+min_trend_ym_lis: "201904"
+max_trend_ym_lis: "202403"
+min_focus_ym_lis: "202304"
+max_focus_ym_lis: "202403"
+
+# base population criteria
+ons_pop_year: "2022"
+lis_min_pop_age: 16
+lis_max_pop_age: 90
+
+# ICB classification
+icb_classification: 2023

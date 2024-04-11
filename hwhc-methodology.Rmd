@@ -1,0 +1,317 @@
+---
+title: "`r config$publication_top_name`"
+pagetitle: Help with Health Costs
+always_allow_html: true
+output:
+  html_document:
+    anchor_sections: no
+    css: www/style.css
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      collapsed: no
+  word_document:
+    toc: yes
+    toc_depth: '3'
+---
+  
+  <script>
+    $(document).ready(function() {
+      $('#header').prepend('<img src=`r knitr::image_uri("www/bsa_logo.svg")` alt=\"NHSBSA logo\" style=\"position:relative; float: right; top: 0; right: 0; padding: 10px; width: 25%;\">');
+  });
+</script>
+  
+  <style type="text/css">
+  
+  body, td {
+    font-size: 16px;
+    font-family: sans-serif;
+  }
+</style>
+  <html lang="en">
+  
+```{r setup, include=FALSE}
+# set code chunk options to disable echo by default
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      message = FALSE)
+```
+
+<main>
+  
+# Background Information and Methodology {.toc-ignore}
+  
+Published `r config$publication_date`
+  
+  
+------------------------------------------------------------------------
+  
+## 1. Background information
+  
+The NHSBSA administer a range of services to help people with the health costs, include help with:
+
+* NHS prescription costs
+* NHS dental costs
+* sight tests, glasses and contact lenses
+* travel to receive NHS treatment
+* NHS wigs and fabric supports
+
+Full details of the schemes available can be found on the [NHS Help with Health Costs webpage](https://www.nhsbsa.nhs.uk/nhs-help-health-costs).
+
+Help with health costs currently issue the following five varieties of certificate which give differing level of help with health costs:
+
+* [NHS Prescription Prepayment certificate     (PPC)](https://www.nhsbsa.nhs.uk/help-nhs-prescription-costs/nhs-prescription-prepayment-certificate-ppc)
+* [NHS Tax credit exemption certificate](https://www.nhsbsa.nhs.uk/exemption-certificates/nhs-tax-credit-exemption-certificates)
+* [Medical exemption certificate](https://www.nhsbsa.nhs.uk/check-if-you-have-nhs-exemption/medical-exemption-certificates)
+* [Maternity exemption certificate](https://www.nhsbsa.nhs.uk/check-if-you-have-nhs-exemption/maternity-exemption-certificates)
+* [NHS Low Income Scheme (LIS)](https://www.nhsbsa.nhs.uk/nhs-low-income-scheme)
+* [NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT     PPC)](https://www.nhsbsa.nhs.uk/help-nhs-prescription-costs/nhs-hormone-replacement-therapy-prescription-prepayment-certificate-hrt-ppc)
+
+These statistics provide estimates of applications received and certificates issued for the financial years 2019/20 to 2023/24. The financial year runs from April 1 to March 31.
+
+#### Users and uses
+
+This publication can have a wide range of uses including informing government or local NHS policy and allowing public scrutiny of national and regional prescribing habits. It could also be used to assist in responding to queries from the general public made under the Freedom of Information (FOI) act and ad-hoc enquiries. 
+
+Data is collected by the NHS Business Services Authority (NHSBSA) for the operational purpose of administering the services to provide access to help with health costs. The data that forms the basis of these statistics is collected as a by-product of this process.
+
+
+## 2. Methodology
+
+### 2.1 Applicant/certificate holder details {.toc-ignore}
+
+#### 2.1.1 Age
+
+Where age is reported this will represent the age of the applicant at the point in time that they submitted the application.
+
+For certificates that may provide support to partners and dependent children, the age will represent the age of the lead applicant only.
+
+In a small number of cases it may not be possible to calculate an age if the applicants date of birth has not been supplied correctly. Additionally, if the captured date of birth would suggest a high likelihood of incorrect data the age is reported as "unknown" rather than reporting against an age band we would not be confident of. The age restrictions applied will differ between services, with details listed in the methodology sections of the document for each specific service area.
+
+#### 2.1.2  Location (Country/ICB)
+The National Statistics Postcode lookup (NSPL) has been used in these statistics to identify the country and ICB in which a person lived by linking to the captured postcode information for the application/certificate. 
+
+The applicant's postcode is typically supplied at the point of application, but records may be updated where an updated address has been supplied. The postcode used for these statistics will represent the latest known postcode when the data is reported.
+
+Due to the methodology used to assign location, some historical data in the summary tables may change between releases due to the following situations:
+
+* if a person moves postcode and updates their details between releases
+* if the NSPL is updated and a postcode is recorded against a different area in the new NSPL edition
+
+#### 2.1.3  Deprivation
+The [English Indices of Deprivation 2019](https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019) have been used in these statistics as a measure of the level of deprivation of the areas in which a person lived. In particular, the headline Index of Multiple Deprivation (IMD) is included. IMD data has been joined to the National Statistics Postcode lookup (NSPL) using lower-layer super output area (LSOA) 2011. This combined dataset has then been joined to other data using the postcode of the applicant. The LSOAs are analysed in groups, or ‘quintiles’ each representing 20% of the areas from the deprivation scores, to the lowest. 
+
+The measure of deprivation reported in these statistics is therefore the IMD quintile of the area in which the applicant is located. Where the applicant's postcode has not been able to be matched to the NSPL, the records are reported as ‘unknown’ IMD quintile.
+
+The applicant's postcode is typically supplied at the point of application, but records may be updated where an updated address has been supplied. The postcode used for these statistics will represent the latest known postcode when the data is reported.
+
+Due to the methodology used to assign IMD quintile, some historical data in the IMD level summary tables may change between releases due to the following situations:
+
+* if a person moves postcode and updates their details between releases to an LSOA in a different IMD quintile
+* if the NSPL is updated and a postcode is recorded against a different area in the new NSPL edition, then the IMD quintile for the new area is used
+
+### 2.2 Service specific data capture methodology {.toc-ignore}
+
+#### 2.2.1 NHS Low Income Scheme
+Data was extracted based on the data available in the NHSBSA Data Warehouse environment as of `r format(as.Date("20240409","%Y%m%d"),"%d %B %Y")`.
+
+
+##### 2.2.1.1 Date restrictions and exclusions applied
+The following restrictions have been applied to all data relating to NHS Low Income Scheme:
+
+* Limited to HC1 applications submitted to NHS Low Income Scheme, excluding any HC5 (refund only) applications
+* Excluding any data relating to UKVI Asylum Seekers
+
+##### 2.2.1.2 Application outcome
+Applications have only been considered as complete where the data flags that and outcome has been issued to the applicant. Applications that are currently in progress or that were abandoned before being resolved will only be included in figures relating to applications received.
+
+Where a HC2/HC3 certificate has been issued this will be captured as the certificate type. All other outcomes will be grouped as "No certificate issued".
+
+Where no HC2/HC3 certificate has been issued, there is no data available relating to the date this decision was supplied to the applicant. Therefore, where these outcomes have been reported, the date used will relate to the date of application. For HC2/HC3 certificates the date will represent the date the certificate was issued to the applicant.
+
+##### 2.2.1.3 Age
+The age reported will represent the age of the applicant at the time of application. Figures are reported in 5 year age bands, with applicants aged 65 and over grouped as 65+.
+
+To limit potential risk of inaccurate data, where the calculated age would be less than 15 or greater than 99, these records have been grouped with other "unknown" ages.
+
+##### 2.2.1.4 Certificate Duration
+The duration of a NHS Low Income Scheme certificate has been calculated based on the start and expiration date, rounded to the nearest month. For ease of reporting figures have been grouped into bands to highlight the most common scenarios.
+
+## 3. Changes to this publication
+
+## 4. Strengths and limitations
+
+### 4.1. Strengths {.toc-ignore}
+
+The main strength of these statistics is the completeness of the dataset and accuracy of information captured during processing activities carried out by the NHSBSA. This dataset covers all applications, and subsequent outcomes, for support with health costs via certificate schemes administered by NHSBSA.
+
+All the data has come from the same administrative source. Using one source of data ensures that the data is complete and all data required for this publication is present.
+
+The data used in this publication is extracted from the same source as all of our [Official Statistics statistical collections](https://www.nhsbsa.nhs.uk/statistical-collections). This allows comparability across other publications. Our [Official Statistics guidance table (ODT: 69KB)](https://www.nhsbsa.nhs.uk/sites/default/files/2022-10/Official_Statistics_guidance_table_v004.odt) shows the comparability criteria between our publications.
+
+### 4.2. Limitations {.toc-ignore}
+
+These statistics are reliant on the quality of data supplied and processed during the application process. 
+
+Certificates issued for the NHS Low Income Scheme and NHS tax credit exemption may also provide coverage to partners and dependent children. However, any demographic analysis will be limited to using the information for the lead applicant or certificate holder.
+
+Due to the lack of a consistent, reliable unique person identifier, figures cannot be published relating to the number of individuals applying to, or receiving support from, any of the help with health cost service areas. Additionally, as an individual could apply for, and receive, multiple certificates in a single time period the figures included in these statistics may include multiple records relating to the same individual.
+
+In addition to the lack of a consistent unique person identifier, information governance restrictions prevent the linking of data across different services and therefore it is not possible to provide any data relating to the number of individuals receiving support across all help with health cost services. It is also possible that an individual could hold multiple certificates from different services at the same point in time.
+
+## 5. Revisions
+
+Any revisions that we make to these statistics will be made in line with our [Revisions and Corrections policy](https://www.nhsbsa.nhs.uk/policies-and-procedures). Any significant errors that are identified within these statistics after their publication that would result in the contradiction of conclusions previously drawn from the data will be notified of prominently on our website and any other platforms that host these statistics, corrected as soon as possible, and communicated clearly to users and stakeholders.
+
+
+## 6. Related statistics, comparability and useful resources
+
+### 6.1 Code of Practice for Statistics {.toc-ignore}
+
+These statistics have been produced in compliance of the Code of Practice for Statistics. You can find more on the code of practice and its pillars, principles and practices from the [UK Statistics Authority website](https://code.statisticsauthority.gov.uk/).
+
+## 7. Quality of the statistics
+
+We aim to provide users of this publication with an evidence-based assessment of its quality and the quality of the data from which it is produced. We do so to demonstrate our commitment to comply with the UK Statistics Authority’s (UKSA) Code of Practice for Statistics, particularly the pillar of Quality and its principles.
+
+**Q1 Suitable data sources** – Statistics should be based on the most appropriate data to meet intended uses. The impact of any data limitations for use should be assessed, minimised, and explained.
+
+**Q2 Sound methods** – Producers of statistics and data should use the best available methods and recognised standards and be open about their decisions.
+
+**Q3 Assured quality** – Producers of statistics and data should explain clearly how they assure themselves that statistics and data are accurate, reliable, coherent, and timely.
+
+This is an assessment of the quality of these statistics against the European standard for quality reporting and its dimensions specific to statistical outputs, particularly:
+  
+*	Relevance
+*	Accuracy and reliability
+*	Timeliness and punctuality
+*	Accessibility
+*	Coherence and comparability
+
+These principles guide us and are complimented by the UKSA’s regulatory standard for the Quality Assurance of Administrative Data (QAAD). You can view our QAAD assessment of prescription data on [our website](https://www.nhsbsa.nhs.uk/statistical-collections).
+
+### 7.1. Relevance {.toc-ignore}
+
+***This dimension covers the degree to which the product meets user need in both coverage and content***
+  
+The HWHC publication summarises the number of certificates issued by NHSBSA to provide support to individuals with their health costs. We believe that this can be used to inform policy decisions at a national and local level, by the public to scrutinise prescribing habits, and by academia and applied health researchers for matters relating to public health. The NHSBSA also routinely receives Freedom of Information requests and parliamentary questions about this subject matter. 
+
+We will be gathering feedback from users of these statistics on an on-going basis to help shape them and ensure that they remain relevant and of use.
+
+
+### 7.2 Accuracy and Reliability {.toc-ignore}
+
+***This dimension covers the statistics proximity between an estimate and the unknown true value***
+  
+#### 7.2.1. Accuracy  {.toc-ignore}
+  
+These statistics are derived from data collected during processing activities carried out by the NHSBSA to issue certificates to provide help with health costs. 
+
+The figures used are collected as an essential part of the process of supply certificates to individuals.
+
+T.B.C
+
+#### 7.2.2. Reliability {.toc-ignore}
+
+T.B.C
+
+
+### 7.3. Timeliness and punctuality {.toc-ignore}
+
+***Timeliness refers to the time gap between publication and the reference period. Punctuality refers to the gap between planned and actual publication dates***
+  
+The publication date is determined by the availability of the data, dependent on the completion of processing activities.
+
+A decision was made to allow a window of a couple of months following the end of the financial year to accommodate applications submitted by third parties (e.g. pharmacy PPC sales) and to allow consideration of certificates which may be back-dated to provide coverage prior to the date of application.
+
+
+### 7.4. Accessibility and clarity {.toc-ignore}
+
+***Accessibility is the ease with which users can access the data, also reflecting the format in which the data are available and the availability of supporting information. Clarity refers to the quality and sufficiency of the metadata, illustrations, and accompanying advice***
+  
+The statistical summary narrative for this publication is presented as an HTML webpage, with supporting documentation also released in HTML format. Summary data and additional analysis is presented in tables in Excel files.
+
+The R code used to produce the newest release of the HWHC publication is also available from the [NHSBSA GitHub](https://github.com/nhsbsa-data-analytics).
+
+***Clarity***
+  
+A glossary of terms is included in this document.
+
+
+### 7.5. Coherence and comparability {.toc-ignore}
+
+***Coherence is the degree to which data have been derived from different sources or methods but refer to the same topic or similar. Comparability is the degree to which data can be compared over time and domain***
+  
+The HWHC publication is the only statistics available on the certificates issued by NHSBSA to provide support with health costs. The statistics are all derived from the same administrative data source with the same methodology applied to all data points.
+
+Comparability with other publications produced by the NHSBSA can be determined using the [Official Statistics guidance table](https://www.nhsbsa.nhs.uk/statistical-collections), which is maintained with the release of each new publication. This table shows how all of NHSBSA’s publications compare across a range of measures to help users identify the best publication for their needs or understand where differences in figures may occur.
+
+#### 7.5.1. Comparisons over time {.toc-ignore}
+
+In order to allow for comparisons to be made over time these statistics cover the whole period for which data is available, from financial year 2019/20 onwards.
+
+Changes to the figures over time should be interpreted in the wider context of the national landscape. Uptake of these support services administered by NHSBSA may be impacted by a number of external forces including the different support schemes available and changes to the health and financial status of individuals.
+
+
+***Trade-offs between output quality components
+This dimension describes the extent to which different aspects of quality are balanced against each other***
+
+The main trade-off in this publication is the balance between timeliness and data quality. Sufficient time is allowed from the data being made available to allow for the information to be produced and quality assured.
+
+***Assessment of user needs and perceptions
+This dimension covers the processes for finding out about users and uses and their views on the statistical products***
+
+Alongside the release of these statistics the NHSBSA will also be releasing a continuous feedback survey, allowing users to quickly tell us their thoughts on the content and utility of these statistics. This feedback, along with feedback gathered from other routes such as direct contact, will be used to shape the content and style of future HWHC publications and other statistical products from the NHSBSA.
+
+***Performance, cost and respondent burden
+This dimension describes the effectiveness, efficiency and economy of the statistical output***
+
+There is no respondent burden for HWHC data, as all data are extracted from existing NHSBSA information and transactional systems. 
+This initial release has been developed with a reproducible analytical pipeline (RAP) in mind and RAP principles applied where possible. This development has been done in R and the code used will be made publicly available at the [NHSBSA GitHub](https://github.com/nhsbsa-data-analytics) in due course. Further development is planned to the RAP used for this publication to automate as many tasks as possible. 
+
+***Confidentiality, transparency and security
+The procedures and policy used to ensure sound confidentiality, security and transparent practices***
+
+Trustworthy statistics and the data behind them are an important part of well-informed decision making, and are vital to support improvement across the wider health and social care system. It is accepted, however, that where statistics provide information on small numbers of individuals, the NHS Business Services Authority have a duty under data protection law to avoid directly or indirectly revealing any personal details. In addition, NHSBSA staff members are required to adhere to relevant NHS data confidentiality guidelines.
+
+The NHSBSA has robust confidentiality and security policies that were adhered to during the production of these statistics. More information on these policies and how we follow them can be found in our [Confidentiality and Access Statement](https://www.nhsbsa.nhs.uk/sites/default/files/2021-05/Confidentiality_and_Access_Statement_v002.pdf).
+
+A risk assessment around potential disclosure of personal identifiable information through these statistics was carried out during their production. In line with the NHSBSA’s Statistical Disclosure Control Policy, information where a count of individuals less than five can be inferred, has been redacted.
+
+***Quality assurance of administrative data***
+
+In addition to the assessment, we have followed the Quality Assurance of Administrative Data (QAAD) toolkit, as described by the Office for Statistics Regulation (OSR). Using the toolkit, we established the level of assurance we are seeking (or “benchmark”) for each source. The assurance levels are set as basic, enhanced, or comprehensive depending on the risk of quality concerns for that source, based on various factors.
+
+We have made a judgement about the suitability of the administrative data for use in producing this publication, this is designed to be pragmatic and proportionate. [The QAAD assessment for prescription data can be found on the NHSBSA website](https://www.nhsbsa.nhs.uk/statistical-collections).
+
+
+
+## 8. Glossary of terms used in these statistics
+
+
+
+
+## 9. Feedback and contact us
+
+Feedback is important to us; we welcome any questions and comments relating to these statistics. 
+
+You can complete a [short survey about this publication](https://online1.snapsurveys.com/Official_Statistics_Feedback) to help us improve the Official Statistics that we produce. All responses will remain anonymous, and individuals will not be identifiable in any report that we produce.
+
+You can view our [privacy policy](https://www.nhsbsa.nhs.uk/our-policies/privacy) on our website to see how your data is used and stored.
+
+You can contact us by:
+  
+**Email:** statistics@nhsbsa.nhs.uk
+
+**You can also write to us at:**
+  
+NHSBSA - Statistics  
+NHS Business Services Authority  
+Stella House  
+Goldcrest Way  
+Newburn Riverside  
+Newcastle upon Tyne  
+NE15 8NY
+
+</main>
+  

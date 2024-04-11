@@ -6,39 +6,55 @@ Version 1.0
 
 AMENDMENTS:
 	2024-03-25  : Steven Buckley    : Initial script created
+    2024-03-28  : Steven Buckley    : Amended code to handle outcomes other than a HC2/HC3 being issued
+    2024-04-09  : Steven Buckley    : Added custom fields for CERTIFICATE_DURATION, AGE_BAND and IMD_QUINTILE
 
 
 DESCRIPTION:
     Identify a basic dataset holding key information related to NHS Low Income Scheme (LIS) applications and certificates.
-    
+
     The NHSBSA Data Warehouse holds multiple records per application/certificate.
         The latest record will be identified by DW_ACTIVE_IND = 1
         To identify static data as of a point in time this can be done using a combination of DW_DATE_CREATED and DW_DATE_UPDATED
             Needs refinement as in rare occasions a certificate may multiple records for a single date
-    
+
+    To identify where applications have been completed and a response supplied we can use:
+        LATEST_APPLICATION_STATUS_CODE in ('PRINT', 'REPRI')
+
+    During assessment if the applicant would be required to contribute more than the typical maximum cost of treatment they will not get a HC3,
+    instead they will get a letter stating that they are over the threshold for support (NB: they can request a HC3 issued with these limits but 
+    this is rare).
+
 
 DEPENDENCIES:
 	AML.CRS_APPLICATION_FACT    :   "Fact" table containing records during certificate lifecycle
                                     Each application/certificate could have multiple records
                                     Includes key dates and certificate outcome/status
                                     
+    DIM.AGE                     :   Reference table providing age band classification lookups
+    
     GRALI.ONS_NSPL_MAY_23       :   Reference table for National Statistics Postcode Lookup (NSPL)
                                     Contains mapping data from postcode to key geographics and deprivation profile data
                                     Based on NSPL for May 2023
+    
 */
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------SCRIPT START----------------------------------------------------------------------------------------------------------------------
 
 
-drop table LIS_FACT purge;
 create table LIS_FACT compress for query high as
-select      caf.CASE_REF,            
+with 
+base as
+(
+select      standard_hash(caf.CASE_REF, 'SHA256')                                       as ID,
+            caf.CASE_REF,
             --update CERTIFICATE_TYPE_CODE label for cases where no certificate was issued
             case
                 when    caf.CERTIFICATE_TYPE_CODE = '-1'
-                then    'NO_CERT_ISSUED'
+                then    'No certificate issued'
                 else    caf.CERTIFICATE_TYPE_CODE
-            end                                                                                         as CERTIFICATE_TYPE,
+            end                                                                         as CERTIFICATE_TYPE,
             caf.LETTER_TYPE_CODE,
             caf.HC2_FLAG,
             caf.HC3_FLAG,
@@ -47,60 +63,166 @@ select      caf.CASE_REF,
             case
                 when    caf.LATEST_APPLICATION_STATUS_CODE in ('PRINT', 'REPRI')
                     and caf.CERTIFICATE_TYPE_CODE in ('HC2','HC3')
+                    and caf.CERTIFICATE_ISSUE_DT_ID != 19000101
                 then    1
                 else    0
-            end                                                                                         as CERTIFICATE_ISSUED_FLAG,
+            end                                                                         as CERTIFICATE_ISSUED_FLAG,
             --flag where the application has been resolved and response issued to customer
             case
                 when    caf.LATEST_APPLICATION_STATUS_CODE in ('PRINT', 'REPRI')
                 then    1
                 else    0
-            end                                                                                         as APPLICATION_COMPLETE_FLAG,
+            end                                                                         as APPLICATION_COMPLETE_FLAG,
         --flag HC3 certificates with no px/dental support due to exceeding contribution limits
             case
                 when    caf.CERTIFICATE_TYPE_CODE = 'HC3'
                     and caf.DENTAL_CONTRIBUTION_AMT >= 384
                 then    1
                 else    0
-            end                                                                                         as ABOVE_HC3_SUPPORT_THRESHOLD_FLAG,
+            end                                                                         as ABOVE_HC3_SUPPORT_THRESHOLD_FLAG,
             --applicant/holder information
-            caf.APPLICANT_AGE                                                                           as CERTIFICATE_HOLDER_AGE,
+            caf.APPLICANT_AGE                                                           as CERTIFICATE_HOLDER_AGE,
+            age.BAND_5YEARS,
+            age.BAND_10YEARS,
             caf.CLIENT_GROUP_ID,
             ccgd.CLIENT_GROUP_DESC,
-            caf.POSTCODE,
-            pcd.LSOA11                                                                                  as LSOA,
+            pcd.LSOA11                                                                  as LSOA,
             pcd.ICB,
-            pcd.ICB23CDH,
-            pcd.ICB23NM, 
+            pcd.ICB23CDH                                                                as ICB_CODE,
+            pcd.ICB23NM                                                                 as ICB_NAME, 
             pcd.IMD_DECILE,
             case
                 when pcd.CTRY = 'E92000001' then 'England'
                 when pcd.CTRY is null       then 'Unknown'
                                             else 'Other'
-            end                                                                                         as COUNTRY,            
+            end                                                                         as COUNTRY,            
             --key dates: application
-            to_date(caf.APPLICATION_START_DT_ID, 'YYYYMMDD')                                            as APPLICATION_DATE,
-            substr(caf.APPLICATION_START_DT_ID,1,6)                                                     as APPLICATION_YM,
-            extract(YEAR from add_months(to_date(caf.APPLICATION_START_DT_ID,'YYYYMMDD'), -3))||'/'||
-                extract(YEAR from add_months(to_date(caf.APPLICATION_START_DT_ID,'YYYYMMDD'), 9))       as APPLICATION_FY,
+            APPLICATION_START_DT_ID,
+            to_date(caf.APPLICATION_START_DT_ID, 'YYYYMMDD')                            as APPLICATION_DATE,
+            substr(caf.APPLICATION_START_DT_ID,1,6)                                     as APPLICATION_YM,
             --key dates: issue
-            to_date(caf.CERTIFICATE_ISSUE_DT_ID, 'YYYYMMDD')                                            as ISSUE_DATE,
-            substr(caf.CERTIFICATE_ISSUE_DT_ID,1,6)                                                     as ISSUE_YM,
-            extract(YEAR from add_months(to_date(caf.CERTIFICATE_ISSUE_DT_ID,'YYYYMMDD'), -3))||'/'||    
-                extract(YEAR from add_months(to_date(caf.CERTIFICATE_ISSUE_DT_ID,'YYYYMMDD'), 9))       as ISSUE_FY,
+            to_date(caf.CERTIFICATE_ISSUE_DT_ID, 'YYYYMMDD')                            as ISSUE_DATE,
+            substr(caf.CERTIFICATE_ISSUE_DT_ID,1,6)                                     as ISSUE_YM,
             --key dates: active
-            to_date(caf.VALID_FROM_DT_ID, 'YYYYMMDD')                                                   as CERTIFICATE_START_DATE,
-            to_date(caf.VALID_TO_DT_ID, 'YYYYMMDD')                                                     as CERTIFICATE_EXPIRY_DATE            
+            to_date(caf.VALID_FROM_DT_ID, 'YYYYMMDD')                                   as CERTIFICATE_START_DATE,
+            substr(caf.VALID_FROM_DT_ID, 1,6)                                           as CERTIFICATE_START_YM,
+            to_date(caf.VALID_TO_DT_ID, 'YYYYMMDD')                                     as CERTIFICATE_EXPIRY_DATE,
+            substr(caf.VALID_TO_DT_ID, 1,6)                                             as CERTIFICATE_EXPIRY_YM
 from        AML.CRS_APPLICATION_FACT    caf
 inner join  DIM.CRS_CLIENT_GROUP_DIM    ccgd    on  caf.CLIENT_GROUP_ID =   ccgd.CLIENT_GROUP_ID
 left join   GRALI.ONS_NSPL_MAY_23       pcd     on  regexp_replace(upper(caf.POSTCODE),'[^A-Z0-9]','') = regexp_replace(upper(pcd.PCD),'[^A-Z0-9]','')
+left join   DIM.AGE_DIM                 age     on  caf.APPLICANT_AGE   =   age.AGE
 where       1=1
-    --limit to single record per certificate based on a specific date
-    and     caf.DW_ACTIVE_IND = 1
+    --limit to records as of a set date supplied at runtime
+    and     caf.DW_DATE_CREATED <= to_date(&&p_extract_date,'YYYYMMDD')
+    and     nvl(caf.DW_DATE_UPDATED,to_date(99991231,'YYYYMMDD')) > to_date(&&p_extract_date,'YYYYMMDD')
     --exclude the UKVI Asylum Seekers that should not be included in reporting
     and     caf.CLIENT_GROUP_ID != 7
     --limit to HC1 applications excluding HC5 (refund only) applications
     and     caf.APPLICATION_TYPE_ID in (1,3,4)
+)
+
+select      ID,
+            CASE_REF,
+            --Recode CERTIFICATE_TYPE to only show HC2/HC3 if a H2/HC3 was issued
+            --this will handle cases where the data shows HC3 for HBD11s where no certificate was actually issued
+            CERTIFICATE_TYPE                                                                    as CERTIFICATE_TYPE_DW,
+            case
+                when CERTIFICATE_ISSUED_FLAG = 1
+                then CERTIFICATE_TYPE
+                else 'No certificate issued'
+            end                                                                                 as CERTIFICATE_TYPE,
+            LETTER_TYPE_CODE,
+            HC2_FLAG,
+            HC3_FLAG,
+            CERTIFICATE_ISSUED_FLAG,
+            case
+                when CERTIFICATE_ISSUED_FLAG = 1
+                then round(months_between(CERTIFICATE_EXPIRY_DATE, CERTIFICATE_START_DATE),0)
+                else null
+            end                                                                                 as CERTIFICATE_DURATION_MONTHS,
+            case
+                when CERTIFICATE_ISSUED_FLAG != 1   then null
+                when round(months_between(CERTIFICATE_EXPIRY_DATE, CERTIFICATE_START_DATE),0) < 6   then '0 to 5 months'
+                when round(months_between(CERTIFICATE_EXPIRY_DATE, CERTIFICATE_START_DATE),0) = 6   then '06 months'
+                when round(months_between(CERTIFICATE_EXPIRY_DATE, CERTIFICATE_START_DATE),0) < 12  then '07 to 11 months'
+                when round(months_between(CERTIFICATE_EXPIRY_DATE, CERTIFICATE_START_DATE),0) = 12  then '12 months'
+                when round(months_between(CERTIFICATE_EXPIRY_DATE, CERTIFICATE_START_DATE),0) > 12  then '13 months +'
+                else null
+            end                                                                                 as CERTIFICATE_DURATION,
+            APPLICATION_COMPLETE_FLAG,
+            ABOVE_HC3_SUPPORT_THRESHOLD_FLAG,
+            CERTIFICATE_HOLDER_AGE,
+            BAND_5YEARS,
+            BAND_10YEARS,
+            case
+                when CERTIFICATE_HOLDER_AGE < 15    then 'Unknown'
+                when CERTIFICATE_HOLDER_AGE > 99    then 'Unknown'
+                when CERTIFICATE_HOLDER_AGE >= 65   then '65+'
+                                                    else BAND_5YEARS
+            end                                                                                 as AGE_BAND,
+            CLIENT_GROUP_ID,
+            CLIENT_GROUP_DESC,
+            LSOA,
+            --remove ONS code for non-England areas
+            case when substr(ICB,1,1) = 'E' then ICB else null end                              as ICB,
+            ICB_CODE,
+            ICB_NAME,
+            IMD_DECILE,
+            case
+                when IMD_DECILE in (1,2)    then 1
+                when IMD_DECILE in (3,4)    then 2
+                when IMD_DECILE in (5,6)    then 3
+                when IMD_DECILE in (7,8)    then 4
+                when IMD_DECILE in (9,10)   then 5
+                                            else null
+            end                                                                                 as IMD_QUINTILE,
+            COUNTRY,
+            --key dates: application
+            APPLICATION_DATE,
+            APPLICATION_YM,
+            extract(YEAR from add_months(APPLICATION_DATE, -3))||'/'||
+                extract(YEAR from add_months(APPLICATION_DATE, 9))                              as APPLICATION_FY,
+            --key dates: issue
+            --where a certificate was not issued use the application date as no issue date is captured where a HC2/HC3 is not issued
+            case
+                when CERTIFICATE_ISSUED_FLAG = 1    then ISSUE_DATE
+                when APPLICATION_COMPLETE_FLAG = 1  then APPLICATION_DATE
+                                                    else NULL
+            end                                                                                 as ISSUE_DATE,
+            case
+                when CERTIFICATE_ISSUED_FLAG = 1    then ISSUE_YM
+                when APPLICATION_COMPLETE_FLAG = 1  then APPLICATION_YM
+                                                    else NULL
+            end                                                                                 as ISSUE_YM,
+            case 
+                when CERTIFICATE_ISSUED_FLAG = 1
+                then extract(YEAR from add_months(ISSUE_DATE, -3))||'/'||    
+                        extract(YEAR from add_months(ISSUE_DATE, 9))
+                when APPLICATION_COMPLETE_FLAG = 1
+                then extract(YEAR from add_months(APPLICATION_DATE, -3))||'/'||    
+                        extract(YEAR from add_months(APPLICATION_DATE, 9))
+                else NULL                                               
+            end                                                                                 as ISSUE_FY,
+            --key dates: active
+            --where a certificate was not issued make sure dates are null as no certificate to be active
+            case
+                when CERTIFICATE_ISSUED_FLAG = 1    then CERTIFICATE_START_DATE
+                                                    else NULL
+            end                                                                                 as CERTIFICATE_START_DATE,
+            case
+                when CERTIFICATE_ISSUED_FLAG = 1    then CERTIFICATE_START_YM
+                                                    else NULL
+            end                                                                                 as CERTIFICATE_START_YM,
+            case
+                when CERTIFICATE_ISSUED_FLAG = 1    then CERTIFICATE_EXPIRY_DATE
+                                                    else NULL
+            end                                                                                 as CERTIFICATE_EXPIRY_DATE,
+            case
+                when CERTIFICATE_ISSUED_FLAG = 1    then CERTIFICATE_EXPIRY_YM
+                                                    else NULL
+            end                                                                                 as CERTIFICATE_EXPIRY_YM
+from        base
 ;
 ---------------------SCRIPT END-----------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -1,14 +1,15 @@
-#' create_base_lis_dataset
+#' create_dataset_from_sql
 #'
-#' Create the base dataset table for NHS Low Income Scheme data
-#' Table will be used based on the following SQL script: ./sql/LIS_FACT.sql
+#' Create a database table based on code in a SQL script
+#' Path to SQL script will be passed as a parameter
 #' Existing versions of the table will be dropped, or renamed if a backup is required
-#' Parameters supplied to function will define the time period for which data will be produced
 #'
-#' @param dw_extract_date date to specify the extract data to collect data as of
-#' @param archive_existing_table Boolean variable to identify if existing versions of the table should be archived (current data suffix appended)
+#' @param db_connection active database connection
+#' @param path_to_sql_file path to stored SQL script
+#' @param db_table_name table name for created table (existing versions will be dropped)
+#' @param ls_variables (default null) list containing details of variables to replace in code, should contain two fields var and val
 #'
-create_base_dataset_from_sql <- function(db_connection, path_to_sql_file, db_table_name, dw_extract_date) {
+create_dataset_from_sql <- function(db_connection, path_to_sql_file, db_table_name, dw_extract_date) {
   
   # read SQl file from path
   sql_script <- readr::read_lines(path_to_sql_file)  |>  
@@ -27,9 +28,14 @@ create_base_dataset_from_sql <- function(db_connection, path_to_sql_file, db_tab
     # remove extra whitespace
     gsub(pattern = " +", replacement = " ")
   
-  # replace extract date parameter in script
-  sql_script <- sql_script |>
-    gsub(pattern = "&&p_extract_date", replacement = dw_extract_date)
+  # replace variables based on supplied details
+  num_var = length(ls_variables)
+  if(num_var > 0){
+    for(v in 1:num_var){
+      sql_script <- sql_script |>
+        gsub(pattern = paste0("&&",ls_variables$var[v]), replacement = ls_variables$val[v])
+    }
+  }
   
   # remove existing version of the table
   if(

@@ -124,11 +124,14 @@ con <- nhsbsaR::con_nhsbsa(
 # create the base dataset for NHS Low Income Scheme
 # data at individual case level (ID) for all applications/certificates
 if(config$rebuild_base_data == TRUE){
-  create_base_dataset_from_sql(
+  create_dataset_from_sql(
     db_connection = con,
     path_to_sql_file = "./SQL/LIS_FACT.sql",
     db_table_name = "LIS_FACT",
-    dw_extract_date = config$extract_date_lis
+    ls_variables = list(
+      var = c("dw_extract_date"),
+      val = c(config$extract_date_lis)
+    )
   )
 }
 

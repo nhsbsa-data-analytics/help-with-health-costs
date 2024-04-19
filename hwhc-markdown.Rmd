@@ -73,9 +73,9 @@ The NHSBSA administer a range of services to help people with the health costs, 
 * travel to receive NHS treatment
 * NHS wigs and fabric supports
 
-Full details of the schemes available can be found on the [NHS Help with Health Costs webpage](https://www.nhsbsa.nhs.uk/nhs-help-health-costs).
+Full details of these schemes are available on the [NHS Help with Health Costs webpage](https://www.nhsbsa.nhs.uk/nhs-help-health-costs).
 
-Help with health costs currently issue the following five varieties of certificate which give differing level of help with health costs, as detailed in the individual sections below.
+Six different certificate schemes are available, with different levels of help with health costs:
 
 * [NHS Prescription Prepayment certificate     (PPC)](https://www.nhsbsa.nhs.uk/help-nhs-prescription-costs/nhs-prescription-prepayment-certificate-ppc)
 * [NHS Tax credit exemption certificate](https://www.nhsbsa.nhs.uk/exemption-certificates/nhs-tax-credit-exemption-certificates)
@@ -84,7 +84,7 @@ Help with health costs currently issue the following five varieties of certifica
 * [NHS Low Income Scheme (LIS)](https://www.nhsbsa.nhs.uk/nhs-low-income-scheme)
 * [NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT     PPC)](https://www.nhsbsa.nhs.uk/help-nhs-prescription-costs/nhs-hormone-replacement-therapy-prescription-prepayment-certificate-hrt-ppc)
 
-These statistics provide estimates of applications received and certificates issued for the financial years 2019/20 to 2023/24. The financial year runs from April 1 to March 31.
+These statistics provide estimates of volumes related to these certificate schemes. Data covers the financial years 2019/2020 to 2023/24, where the financial year runs from April 1 to March 31.
 
 
 
@@ -94,9 +94,9 @@ These statistics provide estimates of applications received and certificates iss
 
 ### 2.1 NHS Low Income Scheme
 
-`r infoBox_border("",text = "The NHS Low Income Scheme (LIS) provides income related help to applicants who are not already entitled to help with health costs via a means tested benefit or other existing exemption. The assessment process is similar to that of means tested benefit but also takes into account council tax and housing costs.
+`r infoBox_border("",text = "The NHS Low Income Scheme (LIS) provides income related help. Support is available for people who do not receive help with health costs via an existing exemption. This is a means tested benefit, but also considers council tax and housing costs.
 
-Low Income Scheme exemption provides help with:
+NHS Low Income Scheme exemption provides help with:
 
 * NHS prescriptions
 * NHS dental treatment
@@ -104,14 +104,14 @@ Low Income Scheme exemption provides help with:
 * travel to receive NHS treatment
 * NHS wigs and fabric supports
 
-The amount of support available will be determined based on a combination of weekly income, necessary outgoings, plus any savings or investments. Any support granted to an applicant will also cover the applicant's partner and dependent children under 20 years old."
+The amount of support provided is based on weekly income, necessary outgoings, plus any savings or investments. Issued certificates will also cover the applicant's partner and dependent children under 20 years old."
 , width = "100%")`
 
 #### Figure X: Estimated number of applications received 2019/20 to 2023/24 {.toc-ignore}
 
 ::: {.row style="display: flex; padding-bottom: 15px;"}
 ::: col-md-6
-`r infoBox_no_border("", text = "<b> There were 374 thousand applications received in 2023/24</b>", width = "100%")`
+`r infoBox_no_border("", text = "<b> There were 374,000 applications received in 2023/24</b>", width = "100%")`
 :::
 
 ::: col-md-6
@@ -125,18 +125,19 @@ ch_lis_fy_app
 
 `r get_download_button(title = "Download chart data", data = dl_lis_fy_app, filename = "hwhc_figure_x")`
 
-Applications to the NHS Low Income Scheme can either be submitted via the [online application](https://apply-for-help-with-nhs-costs.nhsbsa.nhs.uk/apply-online) or by completing a paper HC1 form. 
+Applicants will either complete a paper HC1 form or apply via the [online application for LIS](https://apply-for-help-with-nhs-costs.nhsbsa.nhs.uk/apply-online).
 
-The number of applications will include cases where the application process was started but not completed. Existing certificates through the NHS Low Income Scheme cannot be renewed so applications will include both new applicants and existing certificate holders reapplying.
+Applications will include new applicants and existing certificate holders reapplying. The number of applications will also include incomplete applications.
 
-Applications to the NHS Low Income Scheme decreased slightly in 2023/24, with 374 thousand applications compared to 388 thousand applications in 2022/23. The number of applications is notably higher than between 20219/20 and 2021/22.
+Applications to the NHS Low Income Scheme decreased slightly in 2023/24, with 374,000 applications compared to 388,000 applications in 2022/23. The number of applications is notably higher than between 20219/20 and 2021/22.
 
+In 2023/24, applications to the NHS Low Income Scheme decreased compared to the previous year. There were 374,000 applications in 2023/24, compared to 388,000 thousand applications in 2022/23. But the number of applications is still higher in 2023/24 than between 20219/20 and 2021/22.
 
 #### Figure X: Estimated number of outcome decisions by support type 2019/20 to 2023/24 {.toc-ignore}
 
 ::: {.row style="display: flex; padding-bottom: 15px;"}
 ::: col-md-6
-`r infoBox_no_border("", text = "<b>261 thousand decisions were issued in 2023/24 with almost two-thirds of these providing full help with health costs</b>", width = "100%")`
+`r infoBox_no_border("", text = "<b>almost two-thirds of the 261,000 decisions issued in 2023/24 provided full help with health costs</b>", width = "100%")`
 :::
 
 ::: col-md-6
@@ -150,24 +151,24 @@ ch_lis_fy_issue
 
 `r get_download_button(title = "Download chart data", data = dl_lis_fy_issue, filename = "hwhc_figure_x")`
 
-Two levels of support are available under the NHS Low Income Scheme based on the outcome of the application assessment:
+Two levels of support are available from the NHS Low Income Scheme. Depending on the outcome of the assessment, applicants could receive:
 
-* an [HC2 certificate](https://www.nhsbsa.nhs.uk/nhs-low-income-scheme/hc2-certificates-full-help-health-costs) will provide for full help with health costs, including free NHS prescriptions.
-* an [HC3 certificate](https://www.nhsbsa.nhs.uk/nhs-low-income-scheme/hc3-certificates-limited-help-health-costs) for limited help with health costs, which shows how much you have to pay towards your health costs.
+* an [HC2 certificate](https://www.nhsbsa.nhs.uk/nhs-low-income-scheme/hc2-certificates-full-help-health-costs) for full help with health costs, including free NHS prescriptions.
+* an [HC3 certificate](https://www.nhsbsa.nhs.uk/nhs-low-income-scheme/hc3-certificates-limited-help-health-costs) for limited help with health costs. A HC3 certificate will show how much the holder has to pay towards health costs.
 
-In some scenarios the outcome of the application assessment will not result in a HC2 or HC3 being issued. No certificate will be issued where an applicant is already on an existing means tested benefit that includes health cost exemption or where the income or capital of the applicant disqualifies from them help under the scheme.
+In some cases the outcome of the application assessment will not result in a HC2 or HC3 certificate. This includes people with existing means tested benefits that include health cost exemption. Also, applicants may not receive a certificate based on the financial assessment outcome. 
 
-There were a total of 261 thousand decisions issued in 2023/24 with 161 thousand HC2 certificates issued and 58 thousand HC3 certificates issued. Compared to 2022/23 there has been a slight decrease in the number of certificates issued.
+There were 261,000 decisions issued in 2023/24. This included 161,000 HC2 certificates and 58,000 HC3 certificates. Compared to 2022/23 there has been a slight decrease in the number of certificates issued.
 
 #### Figure X: Estimated number of active NHS Low Income Scheme certificates 2019/20 to 2023/24 {.toc-ignore}
 
 ::: {.row style="display: flex; padding-bottom: 15px;"}
 ::: col-md-6
-`r infoBox_no_border("", text = "<b>There were 492 thousand active NHS Low Income Scheme certificates in 2023/24</b>", width = "100%")`
+`r infoBox_no_border("", text = "<b>There were 492,000 active NHS Low Income Scheme certificates in 2023/24</b>", width = "100%")`
 :::
 
 ::: col-md-6
-`r infoBox_no_border("", text = "<b>Despite fewer certificates being issued in 2023/24, there were more active certificates than 2022/23</b>", width = "100%")`
+`r infoBox_no_border("", text = "<b>There were more active certificates in 2023/24 than 2022/23. This is despite a drop in the number of certificates issued.</b>", width = "100%")`
 :::
 :::
 
@@ -177,11 +178,11 @@ ch_lis_fy_act
 
 `r get_download_button(title = "Download chart data", data = dl_lis_fy_act, filename = "hwhc_figure_x")`
 
-Active certificates is a measure of certificates valid in the specified financial year and is higher than certificates issued because they include all certificates valid in the specified time period, with some NHS Low Income Scheme certificates valid for up to 5 years. When considering these figures it must be noted that if a certificate holder reapplies following the expiration of a certificate, they could have two (or more) active certificates in a single financial year.
+Active certificates measures the number of certificates valid in the specified financial year. Some NHS Low Income Scheme certificates can be valid up to 5 years. Therefore, the number of active certificates are higher than the certificates issued. When certificates expire a certificate holder could reapply. They may then end up with two (or more) active certificates for a single financial year.
 
-Trends in active certificates are generally in line with certificates issued. In 2023/24 there were 355 thousand HC2 certificates active and 137 thousand active HC3 certificates.
+Trends in active certificates are generally in line with certificates issued. In 2023/24 there were 355,000 HC2 certificates active and 137,000 active HC3 certificates.
 
-#### Figure X: Estimated number of issued NHS Low Income Scheme certificates 2023/24 split by certificate type and duration {.toc-ignore}
+#### Figure X: Estimated number of issued NHS Low Income Scheme certificates 2023/24, split by certificate type and duration {.toc-ignore}
 
 ::: {.row style="display: flex; padding-bottom: 15px;"}
 ::: col-md-6
@@ -199,15 +200,17 @@ ch_lis_duration
 
 `r get_download_button(title = "Download chart data", data = dl_lis_duration, filename = "hwhc_figure_x")`
 
-The duration of NHS Low Income Scheme certificates can vary from a little as a day (for those who have applied just before a change of circumstances, such as students who are about to graduate) to a maximum length of 5 years.
+The duration of NHS Low Income Scheme certificates can vary from a little as a day to a maximum length of 5 years. 
 
-Although the duration of the certificate is determined by the circumstances of the applicant, there are some common scenarios:
+The circumstances of the applicant will determine the duration of the certificate. This will reflect the chances of circumstances changing, with some common scenarios:
 
-* pensioners receiving full help will typically be issued a 5 year certificate
-* students and applicants in receipt of non-means tested benefit will typically be issued a 12 month certificate
-* applicants earning a wage and qualifying for support will typically be issued a 6 month certificate
+* Pensioners receiving full help may receive a 5 year certificate.
+* Non final-year students may receive a 12 month certificate.
+* Applicants in receipt of non-means tested benefit may receive a 12 month certificate.
+* Applicants earning a wage may receive a 6 month certificate.
+* Students nearing the end of their course may receive a short term certificate.
 
-Almost 48 thousand HC3 certificates were issued in 2023/24 that were valid for a period of 12 months, representing over 83% of all HC3 certificates issued in 2023/24. There was more variation in the length of HC2 certificates with 43 thousand certificates being valid for 6 months and 92 thousand HC2 certificates being valid for 12 months.
+Almost 48,000 HC3 certificates, issued in 2023/24, were valid for a period of 12 months. This represents over 83% of all HC3 certificates issued in 2023/24. HC2 certificates show more variation in length the HC3 certificates. In 2023/24 43,000 HC2 certificates were valid for 6 months and 92,000 were valid for 12 months.
 
 
 #### Figure X: Estimated number of issued NHS Low Income Scheme certificates 2023/24 split by certificate type and applicant age band {.toc-ignore}
@@ -228,19 +231,21 @@ ch_lis_age
 
 `r get_download_button(title = "Download chart data", data = dl_lis_age, filename = "hwhc_figure_x")`
 
-NHS Low Income Scheme certificates can provide coverage for the applicant, a partner and any dependent children, however age information is only captured for the lead applicant. When considering age breakdowns it should be noted that pensioners are more likely to be issued a long term certificate and therefore less likely to be issued certificates each year.
+NHS Low Income Scheme certificates cover the applicant, partners and any dependent children. Age information is only captured for the lead applicant though. 
 
-Certificates are issued more frequently to those in the younger and older age groups. Almost 52 thousand certificates were issued to people aged 65 and over in 2023/24, with a further 45 thousand issue to applicants 20-24 and 29 thousand issued to applicants aged 19 and under.
+Pensioners are more likely than other age groups to receive a long term certificate. This will impact the age distribution of certificates issued in a year.
 
-#### Figure X: Estimated number of issued NHS Low Income Scheme certificates 2023/24 split by certificate type and IMD quintile {.toc-ignore}
+The younger and older age groups receive more certificates than other ages. Almost 52,000 certificates went to people aged 65 and over in 2023/24. A further 45,000 went to applicants 20-24 and 29,000 to applicants aged 19 and under.
+
+#### Figure X: Estimated number of issued NHS Low Income Scheme certificates 2023/24, split by certificate type and IMD quintile {.toc-ignore}
 
 ::: {.row style="display: flex; padding-bottom: 15px;"}
 ::: col-md-6
-`r infoBox_no_border("", text = "<b>In 2023/24 60 thousand certificates were issued to people in the most deprived areas</b>", width = "100%")`
+`r infoBox_no_border("", text = "<b>In 2023/24 60,000 certificates went to people in the most deprived areas</b>", width = "100%")`
 :::
 
 ::: col-md-6
-`r infoBox_no_border("", text = "<b>In 2023/24 almost as many HC2 certificates were issued to the second quintile than the most deprived areas</b>", width = "100%")`
+`r infoBox_no_border("", text = "<b>In 2023/24, the second quintile received almost as many HC2 certificates as the most deprived quintile</b>", width = "100%")`
 :::
 :::
 
@@ -250,9 +255,11 @@ ch_lis_imd
 
 `r get_download_button(title = "Download chart data", data = dl_lis_imd, filename = "hwhc_figure_x")`
 
-The English Indices of Deprivation have been used to provide a measure of deprivation, based on the applicant's registered address. More information on this measure can be found in [section 3.3](#about_imd) of this summary.
+The English Indices of Deprivation provide a measure of deprivation. In this report deprivation reflects the applicant's registered address. [Section 3.3 of this summary](#about_imd) contains more information on this measure.
 
-NHS Low Income Scheme certificates are more frequently issued in the more deprived areas, with volumes in the most deprived areas being more than three times than the least deprived areas. Despite NHS Low Income Scheme being a means-tested benefit, in 2023/24 there were over 13 thousand HC2 certificates and over 5 thousand HC3 certificates issued to applicants from the least deprived areas of the country.
+Certificates were issued in the most deprived areas more than three times more often than the least deprived areas. 
+
+Despite being means-tested, certificates are still issued to applicants from less deprived areas. In 2023/24, over 13,000 HC2 certificates and over 5,000 HC3 certificates went to the least deprived areas.
 
 #### Figure X: Estimated number of issued NHS Low Income Scheme certificates per 10,000 population by ICB 2023/24 {.toc-ignore}
 
@@ -266,14 +273,13 @@ NHS Low Income Scheme certificates are more frequently issued in the more depriv
 highcharter::hw_grid(map_lis_icb, ch_lis_icb, ncol = 2)
 ```
 
-
 `r get_download_button(title = "Download chart data", data = dl_lis_icb, filename = "hwhc_figure_x")`
 
-The figures in Figure XX have been calculated by joining the [Office for National Statistics (ONS) Mid-2022 Population Estimates for ICBs in England](https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/clinicalcommissioninggroupmidyearpopulationestimates) to our data to obtain the estimated population of each ICB.
+Population estimates use figures published by [Office for National Statistics for ICB population](https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/clinicalcommissioninggroupmidyearpopulationestimates). These figures are mid-year estimates with 2022 population estimates used for this report.
 
-In 2023/24 North West London ICB had the highest estimated number of NHS Low Income Scheme certificates issued per 10,000 population, with an estimated 79 certificates issued per 10,000 population.
+North West London ICB had the highest estimated number of certificates issued per 10,000 population. In 2023/24, an estimated 79 certificates were issued per 10,000 population in this ICB.
 
-Surrey Heartlands ICB was the ICB with the lowest estimated number of NHS Low Income Scheme certificates issued per 10,000 population in 2023/24. This ICB had an estimated 25 certificates per 10,000 population.
+Surrey Heartlands ICB had the lowest estimated number of certificates issued per 10,000 population in 2023/24. This ICB had an estimated 25 certificates per 10,000 population.
 
 ------------------------------------------------------------------------
 

@@ -56,9 +56,9 @@ The NHSBSA administer a range of services to help people with the health costs, 
 * travel to receive NHS treatment
 * NHS wigs and fabric supports
 
-Full details of the schemes available can be found on the [NHS Help with Health Costs webpage](https://www.nhsbsa.nhs.uk/nhs-help-health-costs).
+Full details of these schemes are available on the [NHS Help with Health Costs webpage](https://www.nhsbsa.nhs.uk/nhs-help-health-costs).
 
-Help with health costs currently issue the following five varieties of certificate which give differing level of help with health costs:
+Six different certificate schemes are available, with different levels of help with health costs:
 
 * [NHS Prescription Prepayment certificate     (PPC)](https://www.nhsbsa.nhs.uk/help-nhs-prescription-costs/nhs-prescription-prepayment-certificate-ppc)
 * [NHS Tax credit exemption certificate](https://www.nhsbsa.nhs.uk/exemption-certificates/nhs-tax-credit-exemption-certificates)
@@ -67,13 +67,18 @@ Help with health costs currently issue the following five varieties of certifica
 * [NHS Low Income Scheme (LIS)](https://www.nhsbsa.nhs.uk/nhs-low-income-scheme)
 * [NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT     PPC)](https://www.nhsbsa.nhs.uk/help-nhs-prescription-costs/nhs-hormone-replacement-therapy-prescription-prepayment-certificate-hrt-ppc)
 
-These statistics provide estimates of applications received and certificates issued for the financial years 2019/20 to 2023/24. The financial year runs from April 1 to March 31.
+These statistics provide estimates of volumes related to these certificate schemes. Data covers the financial years 2019/2020 to 2023/24, where the financial year runs from April 1 to March 31.
 
 #### Users and uses
 
-This publication can have a wide range of uses including informing government or local NHS policy and allowing public scrutiny of national and regional prescribing habits. It could also be used to assist in responding to queries from the general public made under the Freedom of Information (FOI) act and ad-hoc enquiries. 
+This publication can have a wide range of uses, including:
 
-Data is collected by the NHS Business Services Authority (NHSBSA) for the operational purpose of administering the services to provide access to help with health costs. The data that forms the basis of these statistics is collected as a by-product of this process.
+* informing government or local NHS policy
+* allowing public scrutiny of national and regional prescribing habits
+* responding to queries made under the Freedom of Information (FOI) act
+* supporting resolution of ad-hoc enquiries
+
+The NHS Business Services Authority (NHSBSA) administer services providing help with health costs. The data that forms the basis of these statistics is collected as a by-product of this process.
 
 
 ## 2. Methodology
@@ -82,60 +87,61 @@ Data is collected by the NHS Business Services Authority (NHSBSA) for the operat
 
 #### 2.1.1 Age
 
-Where age is reported this will represent the age of the applicant at the point in time that they submitted the application.
+Reported ages represent the age of the applicant when they submitted the application.
 
-For certificates that may provide support to partners and dependent children, the age will represent the age of the lead applicant only.
+Some certificates may also provide support for partners and dependent children. In these cases, the age will represent the age of the lead applicant only.
 
-In a small number of cases it may not be possible to calculate an age if the applicants date of birth has not been supplied correctly. Additionally, if the captured date of birth would suggest a high likelihood of incorrect data the age is reported as "unknown" rather than reporting against an age band we would not be confident of. The age restrictions applied will differ between services, with details listed in the methodology sections of the document for each specific service area.
+It may not be possible to calculate an age if the applicant's date of birth was not supplied or was incorrect. If the captured date of birth looks incorrect, the age will classified as "unknown". Age restrictions will differ between services, as defined in the relevant "methodology" sections.
 
 #### 2.1.2  Location (Country/ICB)
-The National Statistics Postcode lookup (NSPL) has been used in these statistics to identify the country and ICB in which a person lived by linking to the captured postcode information for the application/certificate. 
+These statistics use the National Statistics Postcode lookup (NSPL) to identify ICB and country for each individual. This uses the captured postcode information supplied for the application/certificate.
 
-The applicant's postcode is typically supplied at the point of application, but records may be updated where an updated address has been supplied. The postcode used for these statistics will represent the latest known postcode when the data is reported.
+Postcodes are usually provided during application process. Some applicant's may then update postcode details when addresses change. The postcode used for these statistics will represent the latest known postcode information.
 
-Due to the methodology used to assign location, some historical data in the summary tables may change between releases due to the following situations:
+Due to the method used to assign location, some data may change between releases. Historic location data may change: 
 
 * if a person moves postcode and updates their details between releases
-* if the NSPL is updated and a postcode is recorded against a different area in the new NSPL edition
+* if the NSPL reclassifies a postcode against a different area in the new NSPL edition
 
 #### 2.1.3  Deprivation
-The [English Indices of Deprivation 2019](https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019) have been used in these statistics as a measure of the level of deprivation of the areas in which a person lived. In particular, the headline Index of Multiple Deprivation (IMD) is included. IMD data has been joined to the National Statistics Postcode lookup (NSPL) using lower-layer super output area (LSOA) 2011. This combined dataset has then been joined to other data using the postcode of the applicant. The LSOAs are analysed in groups, or ‘quintiles’ each representing 20% of the areas from the deprivation scores, to the lowest. 
+Deprivation reporting uses the [English Indices of Deprivation 2019](https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019). In particular, the headline Index of Multiple Deprivation (IMD). IMD data combines with the National Statistics Postcode Lookup (NSPL) using lower-layer super output area (LSOA) 2011. This identifies the general deprivation for an applicant's postcode. 
 
-The measure of deprivation reported in these statistics is therefore the IMD quintile of the area in which the applicant is located. Where the applicant's postcode has not been able to be matched to the NSPL, the records are reported as ‘unknown’ IMD quintile.
+The measure of deprivation reported in these statistics is the IMD quintile. Each quintile represents 20% of the population, based on groups of LSOA. If an applicant's postcode does not map to the NSPL the data will be reported as 'unknown' IMD quintile.
 
-The applicant's postcode is typically supplied at the point of application, but records may be updated where an updated address has been supplied. The postcode used for these statistics will represent the latest known postcode when the data is reported.
+Postcodes are usually provided during application process. Some applicant's may then update postcode details when addresses change. The postcode used for these statistics will represent the latest known postcode information.
 
-Due to the methodology used to assign IMD quintile, some historical data in the IMD level summary tables may change between releases due to the following situations:
+Due to the method used to assign IMD quintile, some data may change between releases. Historic location data may change: 
 
-* if a person moves postcode and updates their details between releases to an LSOA in a different IMD quintile
-* if the NSPL is updated and a postcode is recorded against a different area in the new NSPL edition, then the IMD quintile for the new area is used
+* if a person moves postcode and updates their details between releases to a LSOA in a different IMD quintile
+* if the NSPL reclassifies a postcode against a different quintile in the new NSPL edition
 
 ### 2.2 Service specific data capture methodology {.toc-ignore}
 
 #### 2.2.1 NHS Low Income Scheme
-Data was extracted based on the data available in the NHSBSA Data Warehouse environment as of `r format(as.Date("20240409","%Y%m%d"),"%d %B %Y")`.
+Reporting reflects data available in the NHSBSA Data Warehouse environment as of `r format(as.Date("20240409","%Y%m%d"),"%d %B %Y")`.
 
 
 ##### 2.2.1.1 Date restrictions and exclusions applied
-The following restrictions have been applied to all data relating to NHS Low Income Scheme:
+The following restrictions apply to all reporting relating to NHS Low Income Scheme:
 
-* Limited to HC1 applications submitted to NHS Low Income Scheme, excluding any HC5 (refund only) applications
-* Excluding any data relating to UKVI Asylum Seekers
+* Limited to HC1 applications submitted to NHS Low Income Scheme.
+* Excluding any HC5 (refund only) applications.
+* Excluding any data relating to UKVI Asylum Seekers.
 
 ##### 2.2.1.2 Application outcome
-Applications have only been considered as complete where the data flags that and outcome has been issued to the applicant. Applications that are currently in progress or that were abandoned before being resolved will only be included in figures relating to applications received.
+Applications are only considered as complete if the data shows an outcome has been issued to the applicant. Applications that are currently in progress are not included. Applications abandoned before completion are only included in figures relating to applications received.
 
-Where a HC2/HC3 certificate has been issued this will be captured as the certificate type. All other outcomes will be grouped as "No certificate issued".
+The certificate type for issued certificates will be HC2 or HC3. The term "no certificate issued" is used for all other outcomes.
 
-Where no HC2/HC3 certificate has been issued, there is no data available relating to the date this decision was supplied to the applicant. Therefore, where these outcomes have been reported, the date used will relate to the date of application. For HC2/HC3 certificates the date will represent the date the certificate was issued to the applicant.
+Where no HC2 or HC3 certificate was issued, there is no data available relating to the date this decision was supplied to the applicant. Where these outcomes have been reported, the date used will relate to the date of application. For HC2 or HC3 certificates the date will represent the date the certificate was issued to the applicant.
 
 ##### 2.2.1.3 Age
 The age reported will represent the age of the applicant at the time of application. Figures are reported in 5 year age bands, with applicants aged 65 and over grouped as 65+.
 
-To limit potential risk of inaccurate data, where the calculated age would be less than 15 or greater than 99, these records have been grouped with other "unknown" ages.
+To limit risk of inaccurate reporting, a classification of "unknown" represents data with confidence issues. FOR NHS Low Income Scheme data this includes where the calculated age would be less than 15 or greater than 99.
 
 ##### 2.2.1.4 Certificate Duration
-The duration of a NHS Low Income Scheme certificate has been calculated based on the start and expiration date, rounded to the nearest month. For ease of reporting figures have been grouped into bands to highlight the most common scenarios.
+Duration is the number of months between the start and expiry date for a certificate. To simplify reporting, age bands represent the most common scenarios.
 
 ## 3. Changes to this publication
 

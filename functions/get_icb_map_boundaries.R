@@ -8,7 +8,7 @@ get_icb_map_boundaries <- function(icb_year){
 # Parameter tests ---------------------------------------------------------
   
   # parameter test: icb_year  
-  if(!(year %in% c(2023))){
+  if(!(icb_year %in% c(2023))){
     stop("Invalid parameter (icb_year) supplied to get_icb_map_boundaries: must be year between 2023 and 2023", call. = FALSE)
   }
   

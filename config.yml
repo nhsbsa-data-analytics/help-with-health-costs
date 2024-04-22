@@ -6,15 +6,35 @@ stats_survey_link: "https://online1.snapsurveys.com/Official_Statistics_Feedback
 publication_table_title: "Help with Health Costs (HwHC) - 2019/20 to 2023/24"
 
 # data table criteria
-rebuild_base_data: TRUE
+rebuild_base_data: FALSE
 extract_date_lis: "20240409"
 extract_date_hes: "20240409"
 
 # time period criteria
-min_trend_ym_lis: "201904"
+min_trend_ym_lis: "201804"
 max_trend_ym_lis: "202403"
 min_focus_ym_lis: "202304"
 max_focus_ym_lis: "202403"
+
+min_trend_ym_mat: "201804"
+max_trend_ym_mat: "202403"
+min_focus_ym_mat: "202304"
+max_focus_ym_mat: "202403"
+
+min_trend_ym_med: "201804"
+max_trend_ym_med: "202403"
+min_focus_ym_med: "202304"
+max_focus_ym_med: "202403"
+
+min_trend_ym_ppc: "201804"
+max_trend_ym_ppc: "202403"
+min_focus_ym_ppc: "202304"
+max_focus_ym_ppc: "202403"
+
+min_trend_ym_tax: "201804"
+max_trend_ym_tax: "202403"
+min_focus_ym_tax: "202304"
+max_focus_ym_tax: "202403"
 
 # base population criteria
 ons_pop_year: "2022"

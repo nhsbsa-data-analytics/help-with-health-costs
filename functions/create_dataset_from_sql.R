@@ -9,7 +9,7 @@
 #' @param db_table_name table name for created table (existing versions will be dropped)
 #' @param ls_variables (default null) list containing details of variables to replace in code, should contain two fields var and val
 #'
-create_dataset_from_sql <- function(db_connection, path_to_sql_file, db_table_name, dw_extract_date) {
+create_dataset_from_sql <- function(db_connection, path_to_sql_file, db_table_name, ls_variables = NULL) {
   
   # read SQl file from path
   sql_script <- readr::read_lines(path_to_sql_file)  |>  

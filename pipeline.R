@@ -129,7 +129,7 @@ if(config$rebuild_base_data == TRUE){
     path_to_sql_file = "./SQL/LIS_FACT.sql",
     db_table_name = "LIS_FACT",
     ls_variables = list(
-      var = c("dw_extract_date"),
+      var = c("p_extract_date"),
       val = c(config$extract_date_lis)
     )
   )
@@ -143,7 +143,7 @@ if(config$rebuild_base_data == TRUE){
     path_to_sql_file = "./SQL/HES_FACT.sql",
     db_table_name = "HES_FACT",
     ls_variables = list(
-      var = c("dw_extract_date"),
+      var = c("p_extract_date"),
       val = c(config$extract_date_hes)
     )
   )
@@ -735,6 +735,154 @@ sd_lis_icb <- df_lis_icb |>
     `Certificates issued per 10,000 population` = OVR_PER_10000_POP
   )
 
+
+# 3.2 Aggregation and analysis: Maternity Exemption (MATEX) ---------------
+
+
+# 3.2.1 MATEX Applications ------------------------------------------------
+# Applications will include any application to the scheme regardless of current status or outcome
+
+# Chart:
+ch_mat_fy_app <- get_hes_application_data(con, 'HES_FACT', 'MAT', config$min_trend_ym_mat, config$max_trend_ym_mat, c('APPLICATION_FY')) |>
+  dplyr::arrange(APPLICATION_FY) |> 
+  dplyr::mutate(APPLICATIONS_SF = signif(APPLICATIONS,3)) |> 
+  nhsbsaVis::basic_chart_hc(
+    x = APPLICATION_FY,
+    y = APPLICATIONS_SF,
+    type = "line",
+    xLab = "Financial Year",
+    yLab = "Number of applications received",
+    seriesName = "Applications received",
+    title = "",
+    dlOn = FALSE
+  ) |> 
+  highcharter::hc_tooltip(
+    enabled = T,
+    shared = T,
+    sort = T
+  )
+
+# Chart Data Download:
+dl_mat_fy_app <- get_hes_application_data(con, 'HES_FACT', 'MAT', config$min_trend_ym_mat, config$max_trend_ym_mat, c('APPLICATION_FY')) |>
+  dplyr::arrange(APPLICATION_FY) |> 
+  dplyr::select(
+    `Financial Year` = APPLICATION_FY,
+    `Number of applications for maternity exemption certificates` = APPLICATIONS
+  )
+
+# Support Data:
+sd_mat_fy_app <- get_hes_application_data(con, 'HES_FACT', 'MAT', config$min_trend_ym_mat, config$max_trend_ym_mat, c('APPLICATION_FY')) |>
+  dplyr::arrange(APPLICATION_FY) |>
+  dplyr::select(
+    `Financial Year` = APPLICATION_FY,
+    `Number of applications` = APPLICATIONS
+  )
+
+
+
+# 3.3 Aggregation and analysis: Maternity Exemption (MEDEX) ---------------
+
+
+# 3.3.1 MEDEX Applications ------------------------------------------------
+# Applications will include any application to the scheme regardless of current status or outcome
+
+# Chart:
+ch_med_fy_app <- get_hes_application_data(con, 'HES_FACT', 'MED', config$min_trend_ym_med, config$max_trend_ym_med, c('APPLICATION_FY')) |>
+  dplyr::arrange(APPLICATION_FY) |> 
+  dplyr::mutate(APPLICATIONS_SF = signif(APPLICATIONS,3)) |> 
+  nhsbsaVis::basic_chart_hc(
+    x = APPLICATION_FY,
+    y = APPLICATIONS_SF,
+    type = "line",
+    xLab = "Financial Year",
+    yLab = "Number of applications received",
+    seriesName = "Applications received",
+    title = "",
+    dlOn = FALSE
+  ) |> 
+  highcharter::hc_tooltip(
+    enabled = T,
+    shared = T,
+    sort = T
+  )
+
+# Chart Data Download:
+dl_med_fy_app <- get_hes_application_data(con, 'HES_FACT', 'MED', config$min_trend_ym_med, config$max_trend_ym_med, c('APPLICATION_FY')) |>
+  dplyr::arrange(APPLICATION_FY) |> 
+  dplyr::select(
+    `Financial Year` = APPLICATION_FY,
+    `Number of applications for maternity exemption certificates` = APPLICATIONS
+  )
+
+# Support Data:
+sd_med_fy_app <- get_hes_application_data(con, 'HES_FACT', 'MED', config$min_trend_ym_med, config$max_trend_ym_med, c('APPLICATION_FY')) |>
+  dplyr::arrange(APPLICATION_FY) |> 
+  dplyr::select(
+    `Financial Year` = APPLICATION_FY,
+    `Number of applications` = APPLICATIONS
+  )
+
+
+# 3.4 Aggregation and analysis: Maternity Exemption (PPC) ---------------
+
+
+# 3.4.1 PPC Applications ------------------------------------------------
+# Applications will include any application to the scheme regardless of current status or outcome
+
+# Chart:
+ch_ppc_fy_app <- get_hes_application_data(con, 'HES_FACT', 'PPC', config$min_trend_ym_ppc, config$max_trend_ym_ppc, c('CERTIFICATE_SUBTYPE', 'APPLICATION_FY')) |>
+  dplyr::filter(CERTIFICATE_SUBTYPE %in% c('3-month','12-month')) |> 
+  dplyr::arrange(APPLICATION_FY, CERTIFICATE_SUBTYPE) |> 
+  dplyr::mutate(APPLICATIONS_SF = signif(APPLICATIONS,3)) |> 
+  nhsbsaVis::group_chart_hc(
+    x = APPLICATION_FY,
+    y = APPLICATIONS_SF,
+    type = "line",
+    group = "CERTIFICATE_SUBTYPE",
+    xLab = "Financial Year",
+    yLab = "Number of applications received",
+    title = "",
+    dlOn = FALSE
+  ) |> 
+  highcharter::hc_tooltip(
+    enabled = T,
+    shared = T,
+    sort = T
+  ) |> 
+  highcharter::hc_yAxis(labels = list(formatter = htmlwidgets::JS( 
+    "function() {
+        return (this.value/1000000)+'m'; /* all labels to absolute values */
+    }")))
+
+# Chart Data Download:
+dl_ppc_fy_app <- get_hes_application_data(con, 'HES_FACT', 'PPC', config$min_trend_ym_ppc, config$max_trend_ym_ppc, c('CERTIFICATE_TYPE','CERTIFICATE_SUBTYPE', 'APPLICATION_FY')) |>
+  dplyr::arrange(APPLICATION_FY, CERTIFICATE_SUBTYPE) |>
+  dplyr::select(
+    `Financial Year` = APPLICATION_FY,
+    `Certificate Type` = CERTIFICATE_TYPE,
+    `Certificate Duration` = CERTIFICATE_SUBTYPE,
+    `Number of applications for maternity exemption certificates` = APPLICATIONS
+  )
+
+# Support Data:
+sd_ppc_fy_app <- get_hes_application_data(con, 'HES_FACT', 'PPC', config$min_trend_ym_ppc, config$max_trend_ym_ppc, c('CERTIFICATE_TYPE','CERTIFICATE_SUBTYPE', 'APPLICATION_FY')) |>
+  dplyr::arrange(APPLICATION_FY, CERTIFICATE_SUBTYPE) |>
+  dplyr::select(
+    `Financial Year` = APPLICATION_FY,
+    `Certificate Type` = CERTIFICATE_TYPE,
+    `Certificate Duration` = CERTIFICATE_SUBTYPE,
+    `Number of applications` = APPLICATIONS
+  )
+
+
+# 3.2-------------------------------------------------
+# Data:
+# Chart Data:
+# Chart:
+# Chart Data Download:
+# Support Data:
+
+
 # 3.x-------------------------------------------------
 # Data:
 # Chart Data:
@@ -767,7 +915,10 @@ sheetNames <- c(
   "LIS_Certificate_Duration",
   "LIS_Age_Breakdown",
   "LIS_Deprivation_Breakdown",
-  "LIS_ICB_Breakdown"
+  "LIS_ICB_Breakdown",
+  "MAT_Applications",
+  "MED_Applications",
+  "PPC_Applications"
 )
 
 wb <- accessibleTables::create_wb(sheetNames)
@@ -825,6 +976,9 @@ accessibleTables::create_metadata(wb,
 
 # 4.2 Applications --------------------------------------------------------
 
+
+# 4.2.1 Applications: Low Income Scheme -----------------------------------
+
 # create the sheet
 accessibleTables::write_sheet(
   wb,
@@ -834,7 +988,8 @@ accessibleTables::write_sheet(
     " - Number of applications to NHS Low Income Scheme split by financial year and country"
   ),
   c(
-    "n/a."
+    "A country classification of 'Other' will represent applications with a postcode for a country other than England.",
+    "A country classification of 'Unknown' will represent applications where the postcode could not be assigned to any country."
   ),
   sd_lis_fy_app,
   30
@@ -854,6 +1009,112 @@ accessibleTables::format_data(
   "LIS_Applications",
   c(
     "C"
+  ),
+  "right",
+  "0"
+)
+
+
+# 4.2.2 Applications: MATEX ---------------------------------------------
+
+# create the sheet
+accessibleTables::write_sheet(
+  wb,
+  "MAT_Applications",
+  paste0(
+    config$publication_table_title,
+    " - Number of applications for maternity exemption certificates split by financial year."
+  ),
+  c(
+    "n/a."
+  ),
+  sd_mat_fy_app,
+  30
+)
+
+# apply formatting
+# left align columns
+accessibleTables::format_data(wb,
+                              "MAT_Applications",
+                              "A",
+                              "left",
+                              "")
+
+# right align columns
+accessibleTables::format_data(
+  wb,
+  "MAT_Applications",
+  "B",
+  "right",
+  "0"
+)
+
+# 4.2.3 Applications: MEDEX ---------------------------------------------
+
+# create the sheet
+accessibleTables::write_sheet(
+  wb,
+  "MED_Applications",
+  paste0(
+    config$publication_table_title,
+    " - Number of applications for medical exemption certificates split by financial year."
+  ),
+  c(
+    "n/a."
+  ),
+  sd_med_fy_app,
+  30
+)
+
+# apply formatting
+# left align columns A to B
+accessibleTables::format_data(wb,
+                              "MED_Applications",
+                              "A",
+                              "left",
+                              "")
+
+# right align columns
+accessibleTables::format_data(
+  wb,
+  "MED_Applications",
+  "B",
+  "right",
+  "0"
+)
+
+
+# 4.2.4 Applications: PPC ---------------------------------------------
+
+# create the sheet
+accessibleTables::write_sheet(
+  wb,
+  "PPC_Applications",
+  paste0(
+    config$publication_table_title,
+    " - Number of applications for prescription prepayment certificates split by financial year and certificate duration"
+  ),
+  c(
+    "A certificate duration of 'unknown' has been used where the certificate duration cannot be identified as 3 or 12 months from the available application details."
+  ),
+  sd_ppc_fy_app,
+  30
+)
+
+# apply formatting
+# left align columns A to B
+accessibleTables::format_data(wb,
+                              "PPC_Applications",
+                              c("A", "B", "C"),
+                              "left",
+                              "")
+
+# right align columns
+accessibleTables::format_data(
+  wb,
+  "PPC_Applications",
+  c(
+    "D"
   ),
   "right",
   "0"
@@ -1118,7 +1379,9 @@ accessibleTables::makeCoverSheet(
     "Table 4: LIS Certificate Duration",
     "Table 5: LIS Age Breakdown",
     "Table 6: LIS Deprivation Breakdown",
-    "Table 7: LIS ICB Breakdown"
+    "Table 7: LIS ICB Breakdown",
+    "Table 8: Maternity exemption certificate - Applications",
+    "Table 9: Medical exemption certificate - Applications"
   ),
   c("Metadata", sheetNames)
 )

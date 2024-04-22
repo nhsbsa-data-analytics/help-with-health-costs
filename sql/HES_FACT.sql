@@ -42,11 +42,15 @@ DEPENDENCIES:
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------SCRIPT START----------------------------------------------------------------------------------------------------------------------
 
-
-
 create table HES_FACT compress for query high as
 select      standard_hash(hcd.CERTIFICATE_NUMBER, 'SHA256')                                                 as ID,
             hcd.CERTIFICATE_TYPE,
+            case
+                when hcd.CERTIFICATE_TYPE != 'PPC'  then 'na'
+                when CERTIFICATE_DURATION = 3       then '3-month'
+                when CERTIFICATE_DURATION = 12      then '12-month'
+                                                    else 'unknown'
+            end                                                                                             as CERTIFICATE_SUBTYPE,
             hcd.CERTIFICATE_DURATION,
             hapf.CERTIFICATE_ISSUED_FLAG,
             hapf.CERTIFICATE_STATUS,

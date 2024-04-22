@@ -6,8 +6,9 @@ stats_survey_link: "https://online1.snapsurveys.com/Official_Statistics_Feedback
 publication_table_title: "Help with Health Costs (HwHC) - 2019/20 to 2023/24"
 
 # data table criteria
-rebuild_base_data: FALSE
+rebuild_base_data: TRUE
 extract_date_lis: "20240409"
+extract_date_hes: "20240409"
 
 # time period criteria
 min_trend_ym_lis: "201904"

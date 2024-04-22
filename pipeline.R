@@ -135,6 +135,20 @@ if(config$rebuild_base_data == TRUE){
   )
 }
 
+# create the base dataset for HES areas (PPC, MATEX, MEDEX and Tax Credit)
+# data at individual case level (ID) for all applications/certificates
+if(config$rebuild_base_data == TRUE){
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/HES_FACT.sql",
+    db_table_name = "HES_FACT",
+    ls_variables = list(
+      var = c("dw_extract_date"),
+      val = c(config$extract_date_hes)
+    )
+  )
+}
+
 # create dbplyr connection to table 
 db_lis <- dplyr::tbl(
   con, 

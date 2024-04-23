@@ -773,8 +773,10 @@ dl_mat_fy_app <- get_hes_application_data(con, 'HES_FACT', 'MAT', config$min_tre
 # Support Data:
 sd_mat_fy_app <- get_hes_application_data(con, 'HES_FACT', 'MAT', config$min_trend_ym_mat, config$max_trend_ym_mat, c('APPLICATION_FY')) |>
   dplyr::arrange(APPLICATION_FY) |>
+  dplyr::mutate(COUNTRY = "n/a") |> 
   dplyr::select(
     `Financial Year` = APPLICATION_FY,
+    `Country` = COUNTRY,
     `Number of applications` = APPLICATIONS
   )
 
@@ -817,8 +819,10 @@ dl_med_fy_app <- get_hes_application_data(con, 'HES_FACT', 'MED', config$min_tre
 # Support Data:
 sd_med_fy_app <- get_hes_application_data(con, 'HES_FACT', 'MED', config$min_trend_ym_med, config$max_trend_ym_med, c('APPLICATION_FY')) |>
   dplyr::arrange(APPLICATION_FY) |> 
+  dplyr::mutate(COUNTRY = "n/a") |> 
   dplyr::select(
     `Financial Year` = APPLICATION_FY,
+    `Country` = COUNTRY,
     `Number of applications` = APPLICATIONS
   )
 
@@ -867,8 +871,10 @@ dl_ppc_fy_app <- get_hes_application_data(con, 'HES_FACT', 'PPC', config$min_tre
 # Support Data:
 sd_ppc_fy_app <- get_hes_application_data(con, 'HES_FACT', 'PPC', config$min_trend_ym_ppc, config$max_trend_ym_ppc, c('CERTIFICATE_TYPE','CERTIFICATE_SUBTYPE', 'APPLICATION_FY')) |>
   dplyr::arrange(APPLICATION_FY, CERTIFICATE_SUBTYPE) |>
+  dplyr::mutate(COUNTRY = "n/a") |> 
   dplyr::select(
     `Financial Year` = APPLICATION_FY,
+    `Country` = COUNTRY,
     `Certificate Type` = CERTIFICATE_TYPE,
     `Certificate Duration` = CERTIFICATE_SUBTYPE,
     `Number of applications` = APPLICATIONS
@@ -1011,7 +1017,7 @@ accessibleTables::format_data(
     "C"
   ),
   "right",
-  "0"
+  "#,###"
 )
 
 
@@ -1026,7 +1032,7 @@ accessibleTables::write_sheet(
     " - Number of applications for maternity exemption certificates split by financial year."
   ),
   c(
-    "n/a."
+    "Maternity exemption certificates are only available for people living in England."
   ),
   sd_mat_fy_app,
   30
@@ -1036,7 +1042,7 @@ accessibleTables::write_sheet(
 # left align columns
 accessibleTables::format_data(wb,
                               "MAT_Applications",
-                              "A",
+                              c("A","B"),
                               "left",
                               "")
 
@@ -1044,9 +1050,9 @@ accessibleTables::format_data(wb,
 accessibleTables::format_data(
   wb,
   "MAT_Applications",
-  "B",
+  "C",
   "right",
-  "0"
+  "#,###"
 )
 
 # 4.2.3 Applications: MEDEX ---------------------------------------------
@@ -1060,7 +1066,7 @@ accessibleTables::write_sheet(
     " - Number of applications for medical exemption certificates split by financial year."
   ),
   c(
-    "n/a."
+    "Medical exemption certificates are only available for people living in England."
   ),
   sd_med_fy_app,
   30
@@ -1070,7 +1076,7 @@ accessibleTables::write_sheet(
 # left align columns A to B
 accessibleTables::format_data(wb,
                               "MED_Applications",
-                              "A",
+                              c("A","B"),
                               "left",
                               "")
 
@@ -1078,9 +1084,9 @@ accessibleTables::format_data(wb,
 accessibleTables::format_data(
   wb,
   "MED_Applications",
-  "B",
+  "C",
   "right",
-  "0"
+  "#,###"
 )
 
 
@@ -1095,6 +1101,7 @@ accessibleTables::write_sheet(
     " - Number of applications for prescription prepayment certificates split by financial year and certificate duration"
   ),
   c(
+    "Prescription prepayment certificates are only available for people living in England.",
     "A certificate duration of 'unknown' has been used where the certificate duration cannot be identified as 3 or 12 months from the available application details."
   ),
   sd_ppc_fy_app,
@@ -1105,7 +1112,7 @@ accessibleTables::write_sheet(
 # left align columns A to B
 accessibleTables::format_data(wb,
                               "PPC_Applications",
-                              c("A", "B", "C"),
+                              c("A", "B", "C","D"),
                               "left",
                               "")
 
@@ -1114,10 +1121,10 @@ accessibleTables::format_data(
   wb,
   "PPC_Applications",
   c(
-    "D"
+    "E"
   ),
   "right",
-  "0"
+  "#,###"
 )
 
 
@@ -1158,7 +1165,7 @@ accessibleTables::format_data(
     "F"
   ),
   "right",
-  "0"
+  "#,###"
 )
 
 
@@ -1197,7 +1204,7 @@ accessibleTables::format_data(
     "E"
   ),
   "right",
-  "0"
+  "#,###"
 )
 
 # 4.5 Duration --------------------------------------------------------------
@@ -1235,7 +1242,7 @@ accessibleTables::format_data(
     "F"
   ),
   "right",
-  "0"
+  "#,###"
 )
 
 # 4.6 Age --------------------------------------------------------------
@@ -1274,7 +1281,7 @@ accessibleTables::format_data(
     "F"
   ),
   "right",
-  "0"
+  "#,###"
 )
 
 # 4.7 Deprivation --------------------------------------------------------------
@@ -1315,7 +1322,7 @@ accessibleTables::format_data(
     "F"
   ),
   "right",
-  "0"
+  "#,###"
 )
 
 # 4.8 ICB --------------------------------------------------------------
@@ -1359,7 +1366,7 @@ accessibleTables::format_data(
     "J"
   ),
   "right",
-  "0"
+  "#,###"
 )
 
 # 4.X Cover Sheet ---------------------------------------------------------
@@ -1381,7 +1388,8 @@ accessibleTables::makeCoverSheet(
     "Table 6: LIS Deprivation Breakdown",
     "Table 7: LIS ICB Breakdown",
     "Table 8: Maternity exemption certificate - Applications",
-    "Table 9: Medical exemption certificate - Applications"
+    "Table 9: Medical exemption certificate - Applications",
+    "Table 10: PPC - Applications"
   ),
   c("Metadata", sheetNames)
 )

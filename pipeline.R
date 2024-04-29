@@ -780,9 +780,110 @@ sd_mat_fy_app <- get_hes_application_data(con, 'HES_FACT', 'MAT', config$min_tre
     `Number of applications` = APPLICATIONS
   )
 
+# 3.2.2 Issued MATEX Certificates ------------------------------------------------
+# Issued certificates will only include cases where a certificate was issued to the customer
+
+# Chart:
+ch_mat_fy_issue <- get_hes_issue_data(con, 'HES_FACT', 'MAT', config$min_trend_ym_mat, config$max_trend_ym_mat, c('ISSUE_FY')) |>
+  dplyr::arrange(ISSUE_FY) |> 
+  dplyr::mutate(ISSUED_CERTS_SF = signif(ISSUED_CERTS,3)) |> 
+  nhsbsaVis::basic_chart_hc(
+    x = ISSUE_FY,
+    y = ISSUED_CERTS_SF,
+    type = "line",
+    xLab = "Financial Year",
+    yLab = "Number of certificates issued",
+    seriesName = "Certificates issued",
+    title = "",
+    dlOn = FALSE
+  ) |> 
+  highcharter::hc_tooltip(
+    enabled = T,
+    shared = T,
+    sort = T
+  )
+
+# Chart Data Download:
+dl_mat_fy_issue <- get_hes_issue_data(con, 'HES_FACT', 'MAT', config$min_trend_ym_mat, config$max_trend_ym_mat, c('ISSUE_FY')) |>
+  dplyr::arrange(ISSUE_FY) |> 
+  dplyr::select(
+    `Financial Year` = ISSUE_FY,
+    `Number of maternity exemption certificates issued` = ISSUED_CERTS
+  )
+
+# Support Data:
+sd_mat_fy_issue <- get_hes_issue_data(con, 'HES_FACT', 'MAT', config$min_trend_ym_mat, config$max_trend_ym_mat, c('ISSUE_FY')) |>
+  dplyr::arrange(ISSUE_FY) |>
+  dplyr::mutate(COUNTRY = "n/a") |> 
+  dplyr::select(
+    `Financial Year` = ISSUE_FY,
+    `Country` = COUNTRY,
+    `Total certificates issued` = ISSUED_CERTS
+  )
+
+# 3.2.4 Duration of MATEX Certificates ------------------------------------------------
+# Looking at certificates issued in the latest FY
+# Split by time between due date and certificate issue
+
+# Chart:
+ch_mat_duration <- get_matex_duration_data(con, 'HES_FACT', config$min_focus_ym_mat, config$max_focus_ym_mat) |>
+  nhsbsaVis::basic_chart_hc(
+    x = MONTHS_BETWEEN_DUE_DATE_AND_ISSUE,
+    y = ROLLING_PROPORTION,
+    type = "line",
+    xLab = "Number of months between due date and certificate issue date",
+    yLab = "Proportion of certificates issued (%)",
+    seriesName = "Proportion of certificates issued (%)",
+    title = "",
+    dlOn = FALSE
+  ) |> 
+  highcharter::hc_tooltip(
+    enabled = T,
+    shared = T,
+    sort = T
+  ) |> 
+  highcharter::hc_yAxis(max = 100) |> 
+  highcharter::hc_xAxis(plotLines = list(
+    list(
+      label = list(
+        text = "Expected due date",
+        verticalAlign = "bottom",
+        textAlign = "left",
+        rotation = 270,
+        x = -5,
+        y = -5
+      ),
+      color = "#000000",
+      width = 2,
+      value = 0
+    )
+  ))
+
+# Chart Data Download:
+dl_mat_duration <- get_matex_duration_data(con, 'HES_FACT', config$min_focus_ym_mat, config$max_focus_ym_mat) |>
+  dplyr::select(
+    `Financial Year` = ISSUE_FY,
+    `Number of months between due date and certificate issue date` = MONTHS_BETWEEN_DUE_DATE_AND_ISSUE,
+    `Number of certificates issued` = ISSUED_CERTS,
+    `Number of certificates issued (cumulative)` = ROLLING_ISSUED_CERTS,
+    `Proportion of certificates issued (cumulative %)` = ROLLING_PROPORTION
+  )
+
+# Support Data:
+sd_mat_duration <- get_matex_duration_data(con, 'HES_FACT', config$min_focus_ym_mat, config$max_focus_ym_mat) |>
+  dplyr::mutate(COUNTRY = "n/a") |> 
+  dplyr::select(
+    `Financial Year` = ISSUE_FY,
+    `Country` = COUNTRY,
+    `Number of months between due date and certificate issue date` = MONTHS_BETWEEN_DUE_DATE_AND_ISSUE,
+    `Number of certificates issued` = ISSUED_CERTS,
+    `Number of certificates issued (cumulative)` = ROLLING_ISSUED_CERTS,
+    `Proportion of certificates issued (cumulative %)` = ROLLING_PROPORTION
+  )
 
 
-# 3.3 Aggregation and analysis: Maternity Exemption (MEDEX) ---------------
+
+# 3.3 Aggregation and analysis: Medical Exemption (MEDEX) ---------------
 
 
 # 3.3.1 MEDEX Applications ------------------------------------------------
@@ -826,8 +927,49 @@ sd_med_fy_app <- get_hes_application_data(con, 'HES_FACT', 'MED', config$min_tre
     `Number of applications` = APPLICATIONS
   )
 
+# 3.3.2 Issued MEDEX Certificates ------------------------------------------------
+# Issued certificates will only include cases where a certificate was issued to the customer
 
-# 3.4 Aggregation and analysis: Maternity Exemption (PPC) ---------------
+# Chart:
+ch_med_fy_issue <- get_hes_issue_data(con, 'HES_FACT', 'MED', config$min_trend_ym_med, config$max_trend_ym_med, c('ISSUE_FY')) |>
+  dplyr::arrange(ISSUE_FY) |> 
+  dplyr::mutate(ISSUED_CERTS_SF = signif(ISSUED_CERTS,3)) |> 
+  nhsbsaVis::basic_chart_hc(
+    x = ISSUE_FY,
+    y = ISSUED_CERTS_SF,
+    type = "line",
+    xLab = "Financial Year",
+    yLab = "Number of certificates issued",
+    seriesName = "Certificates issued",
+    title = "",
+    dlOn = FALSE
+  ) |> 
+  highcharter::hc_tooltip(
+    enabled = T,
+    shared = T,
+    sort = T
+  )
+
+# Chart Data Download:
+dl_med_fy_issue <- get_hes_issue_data(con, 'HES_FACT', 'MED', config$min_trend_ym_med, config$max_trend_ym_med, c('ISSUE_FY')) |>
+  dplyr::arrange(ISSUE_FY) |> 
+  dplyr::select(
+    `Financial Year` = ISSUE_FY,
+    `Number of medical exemption certificates issued` = ISSUED_CERTS
+  )
+
+# Support Data:
+sd_med_fy_issue <- get_hes_issue_data(con, 'HES_FACT', 'MED', config$min_trend_ym_med, config$max_trend_ym_med, c('ISSUE_FY')) |>
+  dplyr::arrange(ISSUE_FY) |>
+  dplyr::mutate(COUNTRY = "n/a") |> 
+  dplyr::select(
+    `Financial Year` = ISSUE_FY,
+    `Country` = COUNTRY,
+    `Total certificates issued` = ISSUED_CERTS
+  )
+
+
+# 3.4 Aggregation and analysis: Prescription Prepayment Certificate (PPC) ---------------
 
 
 # 3.4.1 PPC Applications ------------------------------------------------
@@ -865,7 +1007,7 @@ dl_ppc_fy_app <- get_hes_application_data(con, 'HES_FACT', 'PPC', config$min_tre
     `Financial Year` = APPLICATION_FY,
     `Certificate Type` = CERTIFICATE_TYPE,
     `Certificate Duration` = CERTIFICATE_SUBTYPE,
-    `Number of applications for maternity exemption certificates` = APPLICATIONS
+    `Number of applications` = APPLICATIONS
   )
 
 # Support Data:
@@ -880,6 +1022,102 @@ sd_ppc_fy_app <- get_hes_application_data(con, 'HES_FACT', 'PPC', config$min_tre
     `Number of applications` = APPLICATIONS
   )
 
+# 3.4.2 Issued PPC Certificates ------------------------------------------------
+# Applications will include any application to the scheme regardless of current status or outcome
+
+# Chart:
+ch_ppc_fy_issue <- get_hes_issue_data(con, 'HES_FACT', 'PPC', config$min_trend_ym_ppc, config$max_trend_ym_ppc, c('CERTIFICATE_SUBTYPE', 'ISSUE_FY')) |>
+  dplyr::filter(CERTIFICATE_SUBTYPE %in% c('3-month','12-month')) |> 
+  dplyr::arrange(ISSUE_FY, CERTIFICATE_SUBTYPE) |> 
+  dplyr::mutate(ISSUED_CERTS_SF = signif(ISSUED_CERTS,3)) |> 
+  nhsbsaVis::group_chart_hc(
+    x = ISSUE_FY,
+    y = ISSUED_CERTS_SF,
+    type = "line",
+    group = "CERTIFICATE_SUBTYPE",
+    xLab = "Financial Year",
+    yLab = "Number of certificates issued",
+    title = "",
+    dlOn = FALSE
+  ) |> 
+  highcharter::hc_tooltip(
+    enabled = T,
+    shared = T,
+    sort = T
+  ) |> 
+  highcharter::hc_yAxis(labels = list(formatter = htmlwidgets::JS( 
+    "function() {
+        return (this.value/1000000)+'m'; /* all labels to absolute values */
+    }")))
+
+# Chart Data Download:
+dl_ppc_fy_issue <- get_hes_issue_data(con, 'HES_FACT', 'PPC', config$min_trend_ym_ppc, config$max_trend_ym_ppc, c('CERTIFICATE_TYPE','CERTIFICATE_SUBTYPE', 'ISSUE_FY')) |>
+  dplyr::arrange(ISSUE_FY, CERTIFICATE_SUBTYPE) |>
+  dplyr::select(
+    `Financial Year` = ISSUE_FY,
+    `Certificate Type` = CERTIFICATE_TYPE,
+    `Certificate Duration` = CERTIFICATE_SUBTYPE,
+    `Number of certificates issued` = ISSUED_CERTS
+  )
+
+# Support Data:
+sd_ppc_fy_issue <- get_hes_issue_data(con, 'HES_FACT', 'PPC', config$min_trend_ym_ppc, config$max_trend_ym_ppc, c('CERTIFICATE_TYPE','CERTIFICATE_SUBTYPE', 'ISSUE_FY')) |>
+  dplyr::arrange(ISSUE_FY, CERTIFICATE_SUBTYPE) |>
+  dplyr::mutate(COUNTRY = "n/a") |> 
+  dplyr::select(
+    `Financial Year` = ISSUE_FY,
+    `Country` = COUNTRY,
+    `Certificate Type` = CERTIFICATE_TYPE,
+    `Certificate Duration` = CERTIFICATE_SUBTYPE,
+    `Total certificates issued` = ISSUED_CERTS
+  )
+
+
+# 3.5 Aggregation and analysis: Tax Credit (TAX) ---------------
+
+# 3.5.1 Issued TAX Certificates ------------------------------------------------
+# Issued certificates will only include cases where a certificate was issued to the customer
+
+# Chart:
+ch_tax_fy_issue <- get_hes_issue_data(con, 'HES_FACT', 'TAX', config$min_trend_ym_tax, config$max_trend_ym_tax, c('ISSUE_FY')) |>
+  dplyr::arrange(ISSUE_FY) |> 
+  dplyr::mutate(ISSUED_CERTS_SF = signif(ISSUED_CERTS,3)) |> 
+  nhsbsaVis::basic_chart_hc(
+    x = ISSUE_FY,
+    y = ISSUED_CERTS_SF,
+    type = "line",
+    xLab = "Financial Year",
+    yLab = "Number of certificates issued",
+    seriesName = "Certificates issued",
+    title = "",
+    dlOn = FALSE
+  ) |> 
+  highcharter::hc_tooltip(
+    enabled = T,
+    shared = T,
+    sort = T
+  ) |> 
+  highcharter::hc_yAxis(labels = list(formatter = htmlwidgets::JS( 
+    "function() {
+        return (this.value/1000000)+'m'; /* all labels to absolute values */
+    }")))
+
+# Chart Data Download:
+dl_tax_fy_issue <- get_hes_issue_data(con, 'HES_FACT', 'TAX', config$min_trend_ym_tax, config$max_trend_ym_tax, c('ISSUE_FY')) |>
+  dplyr::arrange(ISSUE_FY) |> 
+  dplyr::select(
+    `Financial Year` = ISSUE_FY,
+    `Number of Tax Credit Exemption Certificates issued` = ISSUED_CERTS
+  )
+
+# Support Data:
+sd_tax_fy_issue <- get_hes_issue_data(con, 'HES_FACT', 'TAX', config$min_trend_ym_tax, config$max_trend_ym_tax, c('COUNTRY','ISSUE_FY')) |>
+  dplyr::arrange(ISSUE_FY, COUNTRY) |>
+  dplyr::select(
+    `Financial Year` = ISSUE_FY,
+    `Country` = COUNTRY,
+    `Total certificates issued` = ISSUED_CERTS
+  )
 
 # 3.2-------------------------------------------------
 # Data:
@@ -923,8 +1161,12 @@ sheetNames <- c(
   "LIS_Deprivation_Breakdown",
   "LIS_ICB_Breakdown",
   "MAT_Applications",
+  "MAT_Outcomes",
+  "MAT_Certificate_Duration",
   "MED_Applications",
-  "PPC_Applications"
+  "MED_Outcomes",
+  "PPC_Applications",
+  "PPC_Outcomes"
 )
 
 wb <- accessibleTables::create_wb(sheetNames)
@@ -1130,6 +1372,8 @@ accessibleTables::format_data(
 
 # 4.3 Issued/Outcome ------------------------------------------------------
 
+# 4.3.1 Issued: Low Income Scheme -----------------------------------------
+
 # create the sheet
 accessibleTables::write_sheet(
   wb,
@@ -1168,6 +1412,115 @@ accessibleTables::format_data(
   "#,###"
 )
 
+# 4.3.2 Issued: MATEX -----------------------------------------------------
+
+# create the sheet
+accessibleTables::write_sheet(
+  wb,
+  "MAT_Outcomes",
+  paste0(
+    config$publication_table_title,
+    " - Number of maternity exemption certificates issued, split by financial year and country"
+  ),
+  c(
+    "Results limited to cases where the application has been fully processed, and a certificate issued to the applicant."
+  ),
+  sd_mat_fy_issue,
+  30
+)
+
+# apply formatting
+# left align columns A to B
+accessibleTables::format_data(wb,
+                              "MAT_Outcomes",
+                              c("A", "B"),
+                              "left",
+                              "")
+
+# right align columns
+accessibleTables::format_data(
+  wb,
+  "MAT_Outcomes",
+  c(
+    "C"
+  ),
+  "right",
+  "#,###"
+)
+
+# 4.3.2 Issued: MEDEX -----------------------------------------------------
+
+# create the sheet
+accessibleTables::write_sheet(
+  wb,
+  "MED_Outcomes",
+  paste0(
+    config$publication_table_title,
+    " - Number of medical exemption certificates issued, split by financial year and country"
+  ),
+  c(
+    "Results limited to cases where the application has been fully processed, and a certificate issued to the applicant."
+  ),
+  sd_med_fy_issue,
+  30
+)
+
+# apply formatting
+# left align columns A to B
+accessibleTables::format_data(wb,
+                              "MED_Outcomes",
+                              c("A", "B"),
+                              "left",
+                              "")
+
+# right align columns
+accessibleTables::format_data(
+  wb,
+  "MED_Outcomes",
+  c(
+    "C"
+  ),
+  "right",
+  "#,###"
+)
+
+# 4.2.4 Issued: PPC ---------------------------------------------
+
+# create the sheet
+accessibleTables::write_sheet(
+  wb,
+  "PPC_Outcomes",
+  paste0(
+    config$publication_table_title,
+    " - Number of prescription prepayment certificates issued, split by financial year and certificate duration"
+  ),
+  c(
+    "Prescription prepayment certificates are only available for people living in England.",
+    "A certificate duration of 'unknown' has been used where the certificate duration cannot be identified as 3 or 12 months from the available application details.",
+    "Includes the number of certificates that were issued to customers, regardless if the certificate was ever cancelled or revoked."
+  ),
+  sd_ppc_fy_issue,
+  30
+)
+
+# apply formatting
+# left align columns A to B
+accessibleTables::format_data(wb,
+                              "PPC_Outcomes",
+                              c("A", "B", "C","D"),
+                              "left",
+                              "")
+
+# right align columns
+accessibleTables::format_data(
+  wb,
+  "PPC_Outcomes",
+  c(
+    "E"
+  ),
+  "right",
+  "#,###"
+)
 
 # 4.4 Active --------------------------------------------------------------
 
@@ -1209,6 +1562,8 @@ accessibleTables::format_data(
 
 # 4.5 Duration --------------------------------------------------------------
 
+# 4.5.1 Duration: LIS -----------------------------------------------------
+
 # create the sheet
 accessibleTables::write_sheet(
   wb,
@@ -1244,6 +1599,59 @@ accessibleTables::format_data(
   "right",
   "#,###"
 )
+
+# 4.5.2 Duration: MAT -----------------------------------------------------
+
+# create the sheet
+accessibleTables::write_sheet(
+  wb,
+  "MAT_Certificate_Duration",
+  paste0(
+    config$publication_table_title,
+    " - proportion of maternity exemption certificates issued relative to expected due date, split by financial year and country"
+  ),
+  c(
+    "Results limited to cases where the application has been fully processed, and a certificate issued to the applicant.",
+    "Number of months based on difference between due date and date of certificate issue, rounded to the nearest number of months.",
+    "Due date will be supplied during application and therefore may not exactly match delivery date.",
+    "Number of months reported as 'NA' where captured due date would produce a value outside of the expected range." 
+  ),
+  sd_mat_duration,
+  30
+)
+
+# apply formatting
+# left align columns A to B
+accessibleTables::format_data(wb,
+                              "MAT_Certificate_Duration",
+                              c("A", "B"),
+                              "left",
+                              "")
+
+# right align columns
+accessibleTables::format_data(
+  wb,
+  "MAT_Certificate_Duration",
+  c(
+    "C",
+    "D",
+    "E"
+  ),
+  "right",
+  "#,###"
+)
+
+# right align columns
+accessibleTables::format_data(
+  wb,
+  "MAT_Certificate_Duration",
+  c(
+    "F"
+  ),
+  "right",
+  "#,###.0"
+)
+
 
 # 4.6 Age --------------------------------------------------------------
 
@@ -1388,8 +1796,11 @@ accessibleTables::makeCoverSheet(
     "Table 6: LIS Deprivation Breakdown",
     "Table 7: LIS ICB Breakdown",
     "Table 8: Maternity exemption certificate - Applications",
-    "Table 9: Medical exemption certificate - Applications",
-    "Table 10: PPC - Applications"
+    "Table 9: Maternity exemption certificate - Issued certificates",
+    "Table 10: Maternity exemption certificate - Certificate duration",
+    "Table 10: Medical exemption certificate - Applications",
+    "Table 11: Medical exemption certificate - Issued certificates",
+    "Table 12: PPC - Applications"
   ),
   c("Metadata", sheetNames)
 )

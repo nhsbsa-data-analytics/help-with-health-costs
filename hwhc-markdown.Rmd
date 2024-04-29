@@ -314,6 +314,53 @@ Applications for maternity exemption certificates dipped in 2020/2021 but has in
 
 In 2023/24 there were 555,000 applications received, up from 499,000 in 2022/23.
 
+Applications are submitted via a healthcare professional, who confirms eligibility. Therefore, only a small proportion of applications would not end with a certificate being issued. Certificates may not be issued if essential details cannot be confirmed by the applicant or other issues cannot be resolved. Due to the time taken to resolve an application, some certificates may be issued in a later time period to when the application was submitted.
+
+#### Figure X: Estimated number of certificates issued 2018/19 to 2023/24 {.toc-ignore}
+
+::: {.row style="display: flex; padding-bottom: 15px;"}
+::: col-md-6
+`r infoBox_no_border("", text = "<b> There were 551,000 certificates issued in 2023/24</b>", width = "100%")`
+:::
+
+::: col-md-6
+`r infoBox_no_border("", text = "<b>Issued certificates increased 12% from 2022/23</b>", width = "100%")`
+:::
+:::
+
+```{r ch_mat_fy_issue}
+ch_mat_fy_issue
+```
+
+`r get_download_button(title = "Download chart data", data = dl_mat_fy_issue, filename = "hwhc_figure_x")`
+
+The number of issued maternity exemption certificates dipped in 2020/2021 but has increased in each of the following years. In 2023/24, the increase in certificates issued of 12% is the largest in recent years.
+
+In 2023/24 there were 551,000 maternity exemption certificates issued, up from 494,000 in 2022/23.
+
+#### Figure X: Estimated proportion of certificates issued relative to expected due date (2023/24) {.toc-ignore}
+
+::: {.row style="display: flex; padding-bottom: 15px;"}
+::: col-md-6
+`r infoBox_no_border("", text = "<b> Over 60% of certificates were issued by 7 months before the expected due date</b>", width = "100%")`
+:::
+
+::: col-md-6
+`r infoBox_no_border("", text = "<b>Only 5% of certificates were issued after the expected due date.</b>", width = "100%")`
+:::
+:::
+
+```{r ch_mat_duration}
+ch_mat_duration
+```
+
+`r get_download_button(title = "Download chart data", data = dl_mat_duration, filename = "hwhc_figure_x")`
+
+Maternity exemption certificates can be issued from the date the pregnancy is confirmed up to one month after the birth. Applications are submitted by a healthcare professional on the applicants behalf. Any delays in this process will impact the length of support available with some women not receiving a certificate until later in the pregnancy or until after the birth.
+
+Over 60% of certificates issued in 2023/24 had been issued 7 months prior to the expected delivery date. In almost 95% of cases, the certificate had been issued by the expected due date.
+
+Although only a small proportion of certificates were issued after the due date, this still represents an estimated 29,500 certificates where the mother did not have the maternity exemption certificate until after giving birth.
 
 ------------------------------------------------------------------------
 
@@ -362,7 +409,32 @@ Applications for medical exemption certificates dipped in 2020/21 and 2021/22 bu
 
 In 2023/24 there were 495,000 applications received, up from 478,000 in 2022/23.
 
+Applications are authorised by a healthcare professional, who confirms eligibility. Therefore, only a small proportion of applications would not end with a certificate being issued. Certificates may not be issued if essential details cannot be confirmed by the applicant or other issues cannot be resolved. Due to the time taken to resolve an application, some certificates may be issued in a later time period to when the application was submitted.
+
+#### Figure X: Estimated number of certificates issued 2018/20 to 2023/24 {.toc-ignore}
+
+::: {.row style="display: flex; padding-bottom: 15px;"}
+::: col-md-6
+`r infoBox_no_border("", text = "<b> There were 475,000 certificates issued in 2023/24</b>", width = "100%")`
+:::
+
+::: col-md-6
+`r infoBox_no_border("", text = "<b>Certificates issued dropped during 2020/21 and 2021/22 but have since increased</b>", width = "100%")`
+:::
+:::
+
+```{r ch_med_fy_issue}
+ch_med_fy_issue
+```
+
+`r get_download_button(title = "Download chart data", data = dl_med_fy_issue, filename = "hwhc_figure_x")`
+
+The number of issued medical exemption certificates dipped in 2020/2021 but has since increased to the highest level in recent years.
+
+In 2023/24 there were 475,000 medical exemption certificates issued, up from 453,000 in 2022/23.
+
 ------------------------------------------------------------------------
+
 ### 2.4 NHS Prescription Prepayment Certificate (PPC)
 
 `r infoBox_border("",text = "A PPC can help provide savings for people who pay for NHS Prescriptions. The certificate covers all a patient's NHS prescription charges for a set price. Patients will save money if they need 4 or more items in 3 months or 12 or more items in 12 months.
@@ -390,9 +462,33 @@ ch_ppc_fy_app
 
 `r get_download_button(title = "Download chart data", data = dl_ppc_fy_app, filename = "hwhc_figure_x")`
 
-Applications for PPC have shown a steady year-on-year increase. In 2023/24 there were 3,150,000 applications received, up from 3,030,000 in 2022/23 which is a 4% increase.
+Applications for 12-month PPCs have shown a consistent year-on-year increase. In 2023/24 there were 2,160,000 applications received, up from 2,060,000 in 2022/23 which is a 5% increase. The number of applications for 12-month certificates is more than double the number of applications for 3-month certificates. 
 
-The number of applications for 12-month certificates is more than double the number of applications for 3-month certificates. The year-on-year increase for 12-month certificates is also higher.
+The year-on-year increase for 3-month certificate applications is not as high, and applications dropped in 2020/21. In 2023/24 there were 992,000 applications for 3-month certificates, up 2% from the 973,000 applications received in 2022/23.
+
+Not all applications will result in a certificate being issued. Certificates will not be issued if there are issues with the initial payment for the certificate and in some cases the applicant may drop out for other reasons.
+
+#### Figure X: Estimated number of certificates issued 2018/19 to 2023/24, split by PPC duration {.toc-ignore}
+
+::: {.row style="display: flex; padding-bottom: 15px;"}
+::: col-md-6
+`r infoBox_no_border("", text = "<b> There were 3,000,000 certificates issued in 2023/24</b>", width = "100%")`
+:::
+
+::: col-md-6
+`r infoBox_no_border("", text = "<b>The number of PPC certificates issued has increased each and every year</b>", width = "100%")`
+:::
+:::
+
+```{r ch_ppc_fy_issue}
+ch_ppc_fy_issue
+```
+
+`r get_download_button(title = "Download chart data", data = dl_ppc_fy_issue, filename = "hwhc_figure_x")`
+
+The number of 12-month PPC certificates issued has shown a consistent year-on-year increase. In 2023/24 there were 2,060,000 certificates issued, up from 1,980,000 in 2022/23 which is a 4% increase. The number of 12-month certificates issued is more than double the number of 3-month certificates issued. 
+
+The year-on-year increase for 3-month certificates issued is not as high, and the number of certificates issued dropped in 2020/21. In 2023/24 there were 936,000 certificates issued, up 1% from the 923,000 certificates issued in 2022/23.
 
 ------------------------------------------------------------------------
 
@@ -411,10 +507,30 @@ There is no application process as HM Revenue and Customs will identify who is e
 
 * Child Tax Credit
 * Working Tax Credit and Child Tax Credit paid together
-* Working Tax Credit including a disability or severe disability element
+* Working Tax Credit including a disability or severe disability element
 
 Certificates are valid for 7 months, and issued every 6 months in April and September."
 , width = "100%")`
+
+#### Figure X: Estimated number of certificates issued 2018/20 to 2023/24 {.toc-ignore}
+
+::: {.row style="display: flex; padding-bottom: 15px;"}
+::: col-md-6
+`r infoBox_no_border("", text = "<b> There were 1,150,000 certificates issued in 2023/24</b>", width = "100%")`
+:::
+
+::: col-md-6
+`r infoBox_no_border("", text = "<b>Certificates issued have been consistently dropping each year</b>", width = "100%")`
+:::
+:::
+
+```{r ch_tax_fy_issue}
+ch_tax_fy_issue
+```
+
+`r get_download_button(title = "Download chart data", data = dl_tax_fy_issue, filename = "hwhc_figure_x")`
+
+The number of issued Tax Credit Exemption Certificates has been dropping year on year from 3,740,000 in 2018/19 to 1,150,000 in 2023/24. This strong decline may be linked to the Universal Credit rollout as people are migrated to new benefit schemes. The number of certificates issued each year has declined by between 22% and 26% since 2019/2020.
 
 ------------------------------------------------------------------------
 

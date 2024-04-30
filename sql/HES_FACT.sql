@@ -60,6 +60,18 @@ select      standard_hash(hcd.CERTIFICATE_NUMBER, 'SHA256')                     
             hcd.CERTIFICATE_HOLDER_AGE,
             age.BAND_5YEARS,
             age.BAND_10YEARS,
+            --calculate custom age band
+            case
+                -- for MATEX, MEDEX and PPC exclude any ages outside of expected range 15-59 (likely errors)
+                --for MATEX anything above 45 group as 45+
+                when hcd.CERTIFICATE_TYPE is null                                                           then 'N/A'
+                when hcd.CERTIFICATE_TYPE in ('MAT','MED','PPC','TAX') and hcd.CERTIFICATE_HOLDER_AGE <= 14 then 'N/A'
+                when hcd.CERTIFICATE_TYPE in ('MAT','MED','PPC') and hcd.CERTIFICATE_HOLDER_AGE >= 60       then 'N/A'
+                when hcd.CERTIFICATE_TYPE in ('TAX') and hcd.CERTIFICATE_HOLDER_AGE > 90                    then 'N/A'
+                when hcd.CERTIFICATE_TYPE = 'MAT' and hcd.CERTIFICATE_HOLDER_AGE >= 45                      then '45+'
+                when hcd.CERTIFICATE_TYPE = 'TAX' and hcd.CERTIFICATE_HOLDER_AGE >= 65                      then '65+'
+                                                                                                        else age.BAND_5YEARS
+            end                                                                                                                                 as CUSTOM_AGE_BAND,
             pcd.LSOA11                                                                                                                          as LSOA,
             --remove ONS code for non-England areas
             case when substr(pcd.ICB,1,1) = 'E' then ICB else null end                                                                          as ICB,

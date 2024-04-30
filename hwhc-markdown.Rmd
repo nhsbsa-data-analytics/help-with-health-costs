@@ -338,6 +338,30 @@ The number of issued maternity exemption certificates dipped in 2020/2021 but ha
 
 In 2023/24 there were 551,000 maternity exemption certificates issued, up from 494,000 in 2022/23.
 
+Maternity exemption certificates are valid from when a pregnancy is confirmed up to one year following birth. Therefore, some certificates may be valid across multiple financial years.
+
+#### Figure X: Estimated number of active maternity exemption certificates 2019/20 to 2023/24 {.toc-ignore}
+
+::: {.row style="display: flex; padding-bottom: 15px;"}
+::: col-md-6
+`r infoBox_no_border("", text = "<b> There were 1,260,000 maternity exemption certificates active in 2023/24</b>", width = "100%")`
+:::
+
+::: col-md-6
+`r infoBox_no_border("", text = "<b>The number of active certificates each financial year is gradually increasing</b>", width = "100%")`
+:::
+:::
+
+```{r ch_mat_fy_active}
+ch_mat_fy_active
+```
+
+`r get_download_button(title = "Download chart data", data = dl_mat_fy_active, filename = "hwhc_figure_x")`
+
+There have been over 1,100,000 maternity certificates active in each of the past five financial years. The 1,260,000 certificates active in 2023/24 is a 4% increase on the 1,210,000 certificates active in 2022/23.
+
+Some certificates may be active in multiple financial years, and the number of years a certificate will cover depends on how early on during pregnancy the certificate is issued.
+
 #### Figure X: Estimated proportion of certificates issued relative to expected due date (2023/24) {.toc-ignore}
 
 ::: {.row style="display: flex; padding-bottom: 15px;"}
@@ -361,6 +385,24 @@ Maternity exemption certificates can be issued from the date the pregnancy is co
 Over 60% of certificates issued in 2023/24 had been issued 7 months prior to the expected delivery date. In almost 95% of cases, the certificate had been issued by the expected due date.
 
 Although only a small proportion of certificates were issued after the due date, this still represents an estimated 29,500 certificates where the mother did not have the maternity exemption certificate until after giving birth.
+
+#### Figure X: Estimated number of maternity exemption certificates issued, split by age band of recipient (2023/24) {.toc-ignore}
+
+::: {.row style="display: flex; padding-bottom: 15px;"}
+::: col-md-12
+`r infoBox_no_border("", text = "<b>Numbers peak in the 30-34 age band, with 198,000 certificates issued to this age group</b>", width = "100%")`
+:::
+:::
+
+```{r ch_mat_age_issue, figures-side, fig.show="hold", out.width="50%"}
+highcharter::hw_grid(ch_mat_age_issue, ch_births_age, ncol = 2)
+```
+
+`r get_download_button(title = "Download chart data", data = dl_mat_age_issue, filename = "hwhc_figure_x")`
+
+The distribution of maternity exemption certificates by age peaks at 30-34, with 198,000 certificates issued to this age group in 2023/24. 
+
+There is no available data that accurately shows the number of women eligible for maternity exemptions in a specific time period. However, the age distribution is very similar to live birth statistics published by Office for National Statistics.
 
 ------------------------------------------------------------------------
 
@@ -433,6 +475,50 @@ The number of issued medical exemption certificates dipped in 2020/2021 but has 
 
 In 2023/24 there were 475,000 medical exemption certificates issued, up from 453,000 in 2022/23.
 
+Medical exemption certificates are usually valid for a period of 5 years. The number of active certificates in any year will be notably higher than the number of certificates issued that year.
+
+#### Figure X: Estimated number of active medical exemption certificates 2019/20 to 2023/24 {.toc-ignore}
+
+::: {.row style="display: flex; padding-bottom: 15px;"}
+::: col-md-6
+`r infoBox_no_border("", text = "<b> There were 2,530,000 active medical exemption certificates in 2023/24</b>", width = "100%")`
+:::
+
+::: col-md-6
+`r infoBox_no_border("", text = "<b>Numbers are relatively stable with around 2,500,000 active certificates each year</b>", width = "100%")`
+:::
+:::
+
+```{r ch_med_fy_active}
+ch_med_fy_active
+```
+
+`r get_download_button(title = "Download chart data", data = dl_med_fy_active, filename = "hwhc_figure_x")`
+
+Over the past five years there have been around 2,500,000 medical exemption certificates active each year. The 2,530,000 active certificates in 2023/24 is a 2% decrease from the 2,580,000. Although the number of certificates issued has increased over the past couple of years, the drop in certificates issued from 2020/21 will be reflected in the number of active certificates for the next couple of years.
+
+#### Figure X: Estimated number of certificates issued, split by age of recipient (2023/24) {.toc-ignore}
+
+::: {.row style="display: flex; padding-bottom: 15px;"}
+::: col-md-6
+`r infoBox_no_border("", text = "<b>The number of certificates issued rises as the age of recipient rises</b>", width = "100%")`
+:::
+
+::: col-md-6
+`r infoBox_no_border("", text = "<b>134,000 certificates were issued to people aged 55-59 in 2023/24</b>", width = "100%")`
+:::
+:::
+
+```{r ch_med_age_issue}
+ch_med_age_issue
+```
+
+`r get_download_button(title = "Download chart data", data = dl_med_age_issue, filename = "hwhc_figure_x")`
+
+There is a strong relationship between age and medical exemption certificates. The number of certificates issued steadily rises in line with age, which may be expected due to long-term conditions and multi-morbidity being more prevalent in older people. In 2023/24 the number of issued certificates ranged from 8,950 in the 15-19 age group, to 134,000 in the 55-59 age group.
+
+As a medical exemption certificate only entitles the holder to free NHS prescriptions, it is not required after the age of 60, when NHS prescriptions are automatically free.
+
 ------------------------------------------------------------------------
 
 ### 2.4 NHS Prescription Prepayment Certificate (PPC)
@@ -490,6 +576,38 @@ The number of 12-month PPC certificates issued has shown a consistent year-on-ye
 
 The year-on-year increase for 3-month certificates issued is not as high, and the number of certificates issued dropped in 2020/21. In 2023/24 there were 936,000 certificates issued, up 1% from the 923,000 certificates issued in 2022/23.
 
+#### ILLUSTRATIVE ONLY: Active PPC certificates {.toc-ignore}
+
+```{r ch_ppc_fy_active}
+ch_ppc_fy_active
+```
+
+#### Figure X: Estimated number of PPCs issued by age of recipient (2023/24), split by PPC duration {.toc-ignore}
+
+::: {.row style="display: flex; padding-bottom: 15px;"}
+::: col-md-6
+`r infoBox_no_border("", text = "<b>The number of certificates issued rises as the age of the recipient rises</b>", width = "100%")`
+:::
+
+::: col-md-6
+`r infoBox_no_border("", text = "<b>In 2023/24, there were 782,000 certificates issued to people aged 55-59</b>", width = "100%")`
+:::
+:::
+
+```{r ch_ppc_age_issue}
+ch_ppc_age_issue
+```
+
+`r get_download_button(title = "Download chart data", data = dl_ppc_age_issue, filename = "hwhc_figure_x")`
+
+There is a strong relationship between age PPC certificates issued. 
+
+In 2023/24, the number of 12-month certificates issued ranged from 19,900 for people 15-19 to 527,000 for people aged 55-59. There is a similar pattern for 3-month certificates but numbers are lower, ranging from 13,500 in the 15-19 age group to 255,000 for people aged 55-59.
+
+As a PPC only provides support for NHS prescription charges, it is not required after the age of 60, when NHS prescriptions are automatically free. For applicants who choose to auto-renew their certificate, the certificate will not be renewed for people turning 60 within 9 months of their existing certificate expiring.
+
+The 12-month certificate is more popular across all age bands. However, the ratio of 3-month to 12-month certificates generally increases in line with age. In the 15-19 age group the number of 12-month PPCs is only 1.5 times the number of 3-month PPCs. In the 50-54 age group this rate rises to 2.8.
+
 ------------------------------------------------------------------------
 
 ### 2.5 NHS tax credit exemption certificates
@@ -531,6 +649,34 @@ ch_tax_fy_issue
 `r get_download_button(title = "Download chart data", data = dl_tax_fy_issue, filename = "hwhc_figure_x")`
 
 The number of issued Tax Credit Exemption Certificates has been dropping year on year from 3,740,000 in 2018/19 to 1,150,000 in 2023/24. This strong decline may be linked to the Universal Credit rollout as people are migrated to new benefit schemes. The number of certificates issued each year has declined by between 22% and 26% since 2019/2020.
+
+#### ILLUSTRATIVE ONLY: Active Tax certificates {.toc-ignore}
+
+```{r ch_tax_fy_active}
+ch_tax_fy_active
+```
+
+#### Figure X: Estimated number of Tax Credit Exemption Certificates issued (2023/24), split by age band {.toc-ignore}
+
+::: {.row style="display: flex; padding-bottom: 15px;"}
+::: col-md-6
+`r infoBox_no_border("", text = "<b>The number of certificates issued peaks at age 40-44</b>", width = "100%")`
+:::
+
+::: col-md-6
+`r infoBox_no_border("", text = "<b>XXX</b>", width = "100%")`
+:::
+:::
+
+```{r ch_tax_age_issue}
+ch_tax_age_issue
+```
+
+`r get_download_button(title = "Download chart data", data = dl_tax_age_issue, filename = "hwhc_figure_x")`
+
+The number of Tax Credit Exemption Certificates issued in 2023/24 peaked at ages 40-44 with 268,000 certificates issued. 
+
+Although numbers are relatively small, some certificates are issued to people aged 60 and over as Tax Credit Exemption Certificate also provides support with some health costs which do not have an age exemption.
 
 ------------------------------------------------------------------------
 

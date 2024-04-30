@@ -821,6 +821,52 @@ sd_mat_fy_issue <- get_hes_issue_data(con, 'HES_FACT', 'MAT', config$min_trend_y
     `Total certificates issued` = ISSUED_CERTS
   )
 
+# 3.2.3 Active MATEX Certificates ------------------------------------------------
+# Active certificates will only include cases where a certificate was issued to the customer
+# Certificates will be included if active for one or more days in the financial year and could be assigned to multiple years
+
+# Chart:
+ch_mat_fy_active <- get_hes_active_data(con, 'HES_FACT', 'MAT', config$min_trend_active_ym_mat, config$max_trend_ym_mat, c('FINANCIAL_YEAR')) |>
+  dplyr::arrange(FINANCIAL_YEAR) |> 
+  dplyr::mutate(ACTIVE_CERTS_SF = signif(ACTIVE_CERTS,3)) |> 
+  nhsbsaVis::basic_chart_hc(
+    x = FINANCIAL_YEAR,
+    y = ACTIVE_CERTS_SF,
+    type = "line",
+    xLab = "Financial Year",
+    yLab = "Number of active certificates",
+    seriesName = "Active Certificates",
+    title = "",
+    dlOn = FALSE
+  ) |> 
+  highcharter::hc_tooltip(
+    enabled = T,
+    shared = T,
+    sort = T
+  ) |> 
+  highcharter::hc_yAxis(labels = list(formatter = htmlwidgets::JS( 
+    "function() {
+        return (this.value/1000000)+'m'; /* all labels to absolute values */
+    }")))
+
+# Chart Data Download:
+dl_mat_fy_active <- get_hes_active_data(con, 'HES_FACT', 'MAT', config$min_trend_active_ym_mat, config$max_trend_ym_mat, c('FINANCIAL_YEAR')) |>
+  dplyr::arrange(FINANCIAL_YEAR) |> 
+  dplyr::select(
+    `Financial Year` = FINANCIAL_YEAR,
+    `Number of active maternity exemption certificates` = ACTIVE_CERTS
+  )
+
+# Support Data:
+sd_mat_fy_active <- get_hes_active_data(con, 'HES_FACT', 'MAT', config$min_trend_active_ym_mat, config$max_trend_ym_mat, c('FINANCIAL_YEAR')) |>
+  dplyr::arrange(FINANCIAL_YEAR) |>
+  dplyr::mutate(COUNTRY = "n/a") |> 
+  dplyr::select(
+    `Financial Year` = FINANCIAL_YEAR,
+    `Country` = COUNTRY,
+    `Total active certificates` = ACTIVE_CERTS
+  )
+
 # 3.2.4 Duration of MATEX Certificates ------------------------------------------------
 # Looking at certificates issued in the latest FY
 # Split by time between due date and certificate issue
@@ -879,6 +925,70 @@ sd_mat_duration <- get_matex_duration_data(con, 'HES_FACT', config$min_focus_ym_
     `Number of certificates issued` = ISSUED_CERTS,
     `Number of certificates issued (cumulative)` = ROLLING_ISSUED_CERTS,
     `Proportion of certificates issued (cumulative %)` = ROLLING_PROPORTION
+  )
+
+# 3.2.5 MATEX Certificates by age ------------------------------------------------
+# Issued certificates will only include cases where a certificate was issued to the customer
+# Some processing has been performed to group by set age bands and reclassify potential errors 
+
+# Chart:
+ch_mat_age_issue <- get_hes_issue_data(con, 'HES_FACT', 'MAT', config$min_focus_ym_med, config$max_focus_ym_med, c('CUSTOM_AGE_BAND')) |>
+  dplyr::arrange(CUSTOM_AGE_BAND) |> 
+  dplyr::filter(!is.na(CUSTOM_AGE_BAND)) |> 
+  dplyr::mutate(ISSUED_CERTS_SF = signif(ISSUED_CERTS,3)) |> 
+  nhsbsaVis::basic_chart_hc(
+    x = CUSTOM_AGE_BAND,
+    y = ISSUED_CERTS_SF,
+    type = "column",
+    xLab = "Age band",
+    yLab = "Number of certificates issued",
+    seriesName = "Certificates issued",
+    title = "Number of maternity exemption certificates issued (2023/24)",
+    dlOn = FALSE
+  ) |> 
+  highcharter::hc_tooltip(
+    enabled = T,
+    shared = T,
+    sort = T
+  )
+
+ch_births_age <- get_ons_live_birth_data(con, "ONS_BIRTHS_GEOGRAPHY_AGEBAND", "COUNTRY", 2021) |>
+  dplyr::arrange(AGE_BAND) |> 
+  dplyr::mutate(LIVE_BIRTHS_SF = signif(LIVE_BIRTHS,3)) |> 
+  nhsbsaVis::basic_chart_hc(
+    x = AGE_BAND,
+    y = LIVE_BIRTHS_SF,
+    type = "column",
+    xLab = "Age band",
+    yLab = "Number of live births",
+    seriesName = "Live births",
+    title = "Number of live births 2021",
+    dlOn = FALSE
+  ) |> 
+  highcharter::hc_tooltip(
+    enabled = T,
+    shared = T,
+    sort = T
+  )
+
+# Chart Data Download:
+dl_mat_age_issue <- get_hes_issue_data(con, 'HES_FACT', 'MAT', config$min_trend_ym_mat, config$max_trend_ym_mat, c('ISSUE_FY','CUSTOM_AGE_BAND')) |>
+  dplyr::arrange(ISSUE_FY,CUSTOM_AGE_BAND) |> 
+  dplyr::select(
+    `Financial Year` = ISSUE_FY,
+    `Age Band` = CUSTOM_AGE_BAND,
+    `Number of maternity exemption certificates issued` = ISSUED_CERTS
+  )
+
+# Support Data:
+sd_mat_age_issue <- get_hes_issue_data(con, 'HES_FACT', 'MAT', config$min_trend_ym_mat, config$max_trend_ym_mat, c('ISSUE_FY','CUSTOM_AGE_BAND')) |>
+  dplyr::arrange(ISSUE_FY, CUSTOM_AGE_BAND) |>
+  dplyr::mutate(COUNTRY = "n/a") |> 
+  dplyr::select(
+    `Financial Year` = ISSUE_FY,
+    `Country` = COUNTRY,
+    `Age Band` = CUSTOM_AGE_BAND,
+    `Total certificates issued` = ISSUED_CERTS
   )
 
 
@@ -968,6 +1078,96 @@ sd_med_fy_issue <- get_hes_issue_data(con, 'HES_FACT', 'MED', config$min_trend_y
     `Total certificates issued` = ISSUED_CERTS
   )
 
+# 3.3.3 Active MEDEX Certificates ------------------------------------------------
+# Active certificates will only include cases where a certificate was issued to the customer
+# Certificates will be included if active for one or more days in the financial year and could be assigned to multiple years
+
+# Chart:
+ch_med_fy_active <- get_hes_active_data(con, 'HES_FACT', 'MED', config$min_trend_active_ym_med, config$max_trend_ym_med, c('FINANCIAL_YEAR')) |>
+  dplyr::arrange(FINANCIAL_YEAR) |> 
+  dplyr::mutate(ACTIVE_CERTS_SF = signif(ACTIVE_CERTS,3)) |> 
+  nhsbsaVis::basic_chart_hc(
+    x = FINANCIAL_YEAR,
+    y = ACTIVE_CERTS_SF,
+    type = "line",
+    xLab = "Financial Year",
+    yLab = "Number of certificates issued",
+    seriesName = "Certificates issued",
+    title = "",
+    dlOn = FALSE
+  ) |> 
+  highcharter::hc_tooltip(
+    enabled = T,
+    shared = T,
+    sort = T
+  ) |> 
+  highcharter::hc_yAxis(labels = list(formatter = htmlwidgets::JS( 
+    "function() {
+        return (this.value/1000000)+'m'; /* all labels to absolute values */
+    }")))
+
+# Chart Data Download:
+dl_med_fy_active <- get_hes_active_data(con, 'HES_FACT', 'MED', config$min_trend_active_ym_med, config$max_trend_ym_med, c('FINANCIAL_YEAR')) |>
+  dplyr::arrange(FINANCIAL_YEAR) |> 
+  dplyr::select(
+    `Financial Year` = FINANCIAL_YEAR,
+    `Number of active medical exemption certificates` = ACTIVE_CERTS
+  )
+
+# Support Data:
+sd_med_fy_active <- get_hes_active_data(con, 'HES_FACT', 'MED', config$min_trend_active_ym_med, config$max_trend_ym_med, c('FINANCIAL_YEAR')) |>
+  dplyr::arrange(FINANCIAL_YEAR) |>
+  dplyr::mutate(COUNTRY = "n/a") |> 
+  dplyr::select(
+    `Financial Year` = FINANCIAL_YEAR,
+    `Country` = COUNTRY,
+    `Total active certificates` = ACTIVE_CERTS
+  )
+
+# 3.3.4 MEDEX Certificates by age------------------------------------------------
+# Issued certificates will only include cases where a certificate was issued to the customer
+# Some processing has been performed to group by set age bands and reclassify potential errors
+
+# Chart:
+ch_med_age_issue <- get_hes_issue_data(con, 'HES_FACT', 'MED', config$min_focus_ym_med, config$max_focus_ym_med, c('CUSTOM_AGE_BAND')) |>
+  dplyr::arrange(CUSTOM_AGE_BAND) |> 
+  dplyr::filter(!is.na(CUSTOM_AGE_BAND)) |> 
+  dplyr::mutate(ISSUED_CERTS_SF = signif(ISSUED_CERTS,3)) |> 
+  nhsbsaVis::basic_chart_hc(
+    x = CUSTOM_AGE_BAND,
+    y = ISSUED_CERTS_SF,
+    type = "column",
+    xLab = "Age Band",
+    yLab = "Number of certificates issued",
+    seriesName = "Certificates issued",
+    title = "",
+    dlOn = FALSE
+  ) |> 
+  highcharter::hc_tooltip(
+    enabled = T,
+    shared = T,
+    sort = T
+  )
+
+# Chart Data Download:
+dl_med_age_issue <- get_hes_issue_data(con, 'HES_FACT', 'MED', config$min_focus_ym_med, config$max_focus_ym_med, c('ISSUE_FY','CUSTOM_AGE_BAND')) |>
+  dplyr::arrange(ISSUE_FY, CUSTOM_AGE_BAND) |> 
+  dplyr::select(
+    `Financial Year` = ISSUE_FY,
+    `Age Band` = CUSTOM_AGE_BAND,
+    `Number of medical exemption certificates issued` = ISSUED_CERTS
+  )
+
+# Support Data:
+sd_med_age_issue <- get_hes_issue_data(con, 'HES_FACT', 'MED', config$min_focus_ym_med, config$max_focus_ym_med, c('ISSUE_FY','CUSTOM_AGE_BAND')) |>
+  dplyr::arrange(ISSUE_FY, CUSTOM_AGE_BAND) |>
+  dplyr::mutate(COUNTRY = "n/a") |> 
+  dplyr::select(
+    `Financial Year` = ISSUE_FY,
+    `Country` = COUNTRY,
+    `Age Band` = CUSTOM_AGE_BAND,
+    `Total certificates issued` = ISSUED_CERTS
+  )
 
 # 3.4 Aggregation and analysis: Prescription Prepayment Certificate (PPC) ---------------
 
@@ -1072,6 +1272,80 @@ sd_ppc_fy_issue <- get_hes_issue_data(con, 'HES_FACT', 'PPC', config$min_trend_y
     `Total certificates issued` = ISSUED_CERTS
   )
 
+##STBUC: CODE TO BE REMOVED (ILLUSTRATIVE ONLY)
+ch_ppc_fy_active <- get_hes_active_data(con, 'HES_FACT', 'PPC', config$min_trend_ym_ppc, config$max_trend_ym_ppc, c('CERTIFICATE_SUBTYPE', 'FINANCIAL_YEAR')) |>
+  dplyr::filter(CERTIFICATE_SUBTYPE %in% c('3-month','12-month')) |> 
+  dplyr::arrange(FINANCIAL_YEAR, CERTIFICATE_SUBTYPE) |> 
+  dplyr::mutate(ACTIVE_CERTS_SF = signif(ACTIVE_CERTS,3)) |> 
+  nhsbsaVis::group_chart_hc(
+    x = FINANCIAL_YEAR,
+    y = ACTIVE_CERTS_SF,
+    type = "line",
+    group = "CERTIFICATE_SUBTYPE",
+    xLab = "Financial Year",
+    yLab = "Number of active certificates",
+    title = "",
+    dlOn = FALSE
+  ) |> 
+  highcharter::hc_tooltip(
+    enabled = T,
+    shared = T,
+    sort = T
+  ) |> 
+  highcharter::hc_yAxis(labels = list(formatter = htmlwidgets::JS( 
+    "function() {
+        return (this.value/1000000)+'m'; /* all labels to absolute values */
+    }")))
+
+# 3.4.3 PPC Certificates by age------------------------------------------------
+# Limited to certificates issued to the customer
+# Some processing applied to base dataset to reclassify ages that are outside of expected ranges as these may be errors
+
+# Chart:
+ch_ppc_age_issue <- get_hes_issue_data(con, 'HES_FACT', 'PPC', config$min_focus_ym_ppc, config$max_focus_ym_ppc, c('CERTIFICATE_SUBTYPE', 'CUSTOM_AGE_BAND')) |>
+  dplyr::filter(CERTIFICATE_SUBTYPE %in% c('3-month','12-month')) |> 
+  dplyr::arrange(CERTIFICATE_SUBTYPE,CUSTOM_AGE_BAND) |> 
+  dplyr::filter(!is.na(CUSTOM_AGE_BAND)) |> 
+  dplyr::mutate(ISSUED_CERTS_SF = signif(ISSUED_CERTS,3)) |> 
+  nhsbsaVis::group_chart_hc(
+    x = CUSTOM_AGE_BAND,
+    y = ISSUED_CERTS_SF,
+    type = "column",
+    group = "CERTIFICATE_SUBTYPE",
+    xLab = "Age Band",
+    yLab = "Number of certificates issued",
+    title = "",
+    dlOn = FALSE
+  ) |> 
+  highcharter::hc_tooltip(
+    enabled = T,
+    shared = T,
+    sort = T
+  )
+
+# Chart Data Download:
+dl_ppc_age_issue <- get_hes_issue_data(con, 'HES_FACT', 'PPC', config$min_focus_ym_ppc, config$max_focus_ym_ppc, c('CERTIFICATE_TYPE','CERTIFICATE_SUBTYPE', 'ISSUE_FY', 'CUSTOM_AGE_BAND')) |>
+  dplyr::arrange(ISSUE_FY, CERTIFICATE_SUBTYPE, CUSTOM_AGE_BAND) |>
+  dplyr::select(
+    `Financial Year` = ISSUE_FY,
+    `Certificate Type` = CERTIFICATE_TYPE,
+    `Certificate Duration` = CERTIFICATE_SUBTYPE,
+    `Age Band` = CUSTOM_AGE_BAND,
+    `Number of certificates issued` = ISSUED_CERTS
+  )
+
+# Support Data:
+sd_ppc_age_issue <- get_hes_issue_data(con, 'HES_FACT', 'PPC', config$min_focus_ym_ppc, config$max_focus_ym_ppc, c('CERTIFICATE_TYPE','CERTIFICATE_SUBTYPE', 'ISSUE_FY', 'CUSTOM_AGE_BAND')) |>
+  dplyr::arrange(ISSUE_FY, CERTIFICATE_SUBTYPE, CUSTOM_AGE_BAND) |>
+  dplyr::mutate(COUNTRY = "n/a") |> 
+  dplyr::select(
+    `Financial Year` = ISSUE_FY,
+    `Country` = COUNTRY,
+    `Certificate Type` = CERTIFICATE_TYPE,
+    `Certificate Duration` = CERTIFICATE_SUBTYPE,
+    `Age Band` = CUSTOM_AGE_BAND,
+    `Total certificates issued` = ISSUED_CERTS
+  )
 
 # 3.5 Aggregation and analysis: Tax Credit (TAX) ---------------
 
@@ -1119,6 +1393,75 @@ sd_tax_fy_issue <- get_hes_issue_data(con, 'HES_FACT', 'TAX', config$min_trend_y
     `Total certificates issued` = ISSUED_CERTS
   )
 
+##STBUC: CODE TO BE REMOVED (ILLUSTRATIVE ONLY)
+ch_tax_fy_active <- get_hes_active_data(con, 'HES_FACT', 'TAX', '201904', config$max_trend_ym_tax, c('FINANCIAL_YEAR')) |>
+  dplyr::arrange(FINANCIAL_YEAR) |> 
+  dplyr::mutate(ACTIVE_CERTS_SF = signif(ACTIVE_CERTS,3)) |> 
+  nhsbsaVis::basic_chart_hc(
+    x = FINANCIAL_YEAR,
+    y = ACTIVE_CERTS_SF,
+    type = "line",
+    xLab = "Financial Year",
+    yLab = "Number of active certificates",
+    title = "",
+    dlOn = FALSE
+  ) |> 
+  highcharter::hc_tooltip(
+    enabled = T,
+    shared = T,
+    sort = T
+  ) |> 
+  highcharter::hc_yAxis(labels = list(formatter = htmlwidgets::JS( 
+    "function() {
+        return (this.value/1000000)+'m'; /* all labels to absolute values */
+    }")))
+
+# 3.5.2 TAX Certificates by age------------------------------------------------
+# Issued certificates will only include cases where a certificate was issued to the customer
+
+# Chart:
+ch_tax_age_issue <- get_hes_issue_data(con, 'HES_FACT', 'TAX', config$min_focus_ym_tax, config$max_focus_ym_tax, c('CUSTOM_AGE_BAND')) |>
+  dplyr::arrange(CUSTOM_AGE_BAND) |> 
+  dplyr::mutate(ISSUED_CERTS_SF = signif(ISSUED_CERTS,3)) |> 
+  nhsbsaVis::basic_chart_hc(
+    x = CUSTOM_AGE_BAND,
+    y = ISSUED_CERTS_SF,
+    type = "column",
+    xLab = "Age Band",
+    yLab = "Number of certificates issued",
+    seriesName = "Certificates issued",
+    title = "",
+    dlOn = FALSE
+  ) |> 
+  highcharter::hc_tooltip(
+    enabled = T,
+    shared = T,
+    sort = T
+  ) |> 
+  highcharter::hc_yAxis(labels = list(formatter = htmlwidgets::JS( 
+    "function() {
+        return (this.value/1000000)+'m'; /* all labels to absolute values */
+    }")))
+
+# Chart Data Download:
+dl_tax_age_issue <- get_hes_issue_data(con, 'HES_FACT', 'TAX', config$min_focus_ym_tax, config$max_focus_ym_tax, c('ISSUE_FY', 'CUSTOM_AGE_BAND')) |>
+  dplyr::arrange(ISSUE_FY, CUSTOM_AGE_BAND) |> 
+  dplyr::select(
+    `Financial Year` = ISSUE_FY,
+    `Age Band` = CUSTOM_AGE_BAND,
+    `Number of Tax Credit Exemption Certificates issued` = ISSUED_CERTS
+  )
+
+# Support Data:
+sd_tax_age_issue <- get_hes_issue_data(con, 'HES_FACT', 'TAX', config$min_focus_ym_tax, config$max_focus_ym_tax, c('COUNTRY','ISSUE_FY', 'CUSTOM_AGE_BAND')) |>
+  dplyr::arrange(ISSUE_FY, COUNTRY, CUSTOM_AGE_BAND) |>
+  dplyr::select(
+    `Financial Year` = ISSUE_FY,
+    `Country` = COUNTRY,
+    `Age Band` = CUSTOM_AGE_BAND,
+    `Total certificates issued` = ISSUED_CERTS
+  )
+
 # 3.2-------------------------------------------------
 # Data:
 # Chart Data:
@@ -1162,11 +1505,14 @@ sheetNames <- c(
   "LIS_ICB_Breakdown",
   "MAT_Applications",
   "MAT_Outcomes",
+  "MAT_Active_Certificates",
   "MAT_Certificate_Duration",
   "MED_Applications",
   "MED_Outcomes",
+  "MED_Active_Certificates",
   "PPC_Applications",
-  "PPC_Outcomes"
+  "PPC_Outcomes",
+  "TAX_Outcomes"
 )
 
 wb <- accessibleTables::create_wb(sheetNames)
@@ -1423,7 +1769,8 @@ accessibleTables::write_sheet(
     " - Number of maternity exemption certificates issued, split by financial year and country"
   ),
   c(
-    "Results limited to cases where the application has been fully processed, and a certificate issued to the applicant."
+    "Results limited to cases where the application has been fully processed, and a certificate issued to the applicant.",
+    "Maternity exemption certificates are only available for people living in England."
   ),
   sd_mat_fy_issue,
   30
@@ -1459,7 +1806,8 @@ accessibleTables::write_sheet(
     " - Number of medical exemption certificates issued, split by financial year and country"
   ),
   c(
-    "Results limited to cases where the application has been fully processed, and a certificate issued to the applicant."
+    "Results limited to cases where the application has been fully processed, and a certificate issued to the applicant.",
+    "Medical exemption certificates are only available for people living in England."
   ),
   sd_med_fy_issue,
   30
@@ -1522,7 +1870,46 @@ accessibleTables::format_data(
   "#,###"
 )
 
+# 4.2.5 Issued: Tax Credit ---------------------------------------------
+
+# create the sheet
+accessibleTables::write_sheet(
+  wb,
+  "TAX_Outcomes",
+  paste0(
+    config$publication_table_title,
+    " - Number of Tax Credit Exemption Certificates issued, split by financial year and country"
+  ),
+  c(
+    "Certificates issued to residents of Scotland, Wales and Northern Ireland have been reported as 'Other'.",
+    "Country is reported as 'Unknown' if the postcode for the certificate holder cannot be mapped to the National Statistics Postcode Lookup (NSPL)."
+  ),
+  sd_tax_fy_issue,
+  30
+)
+
+# apply formatting
+# left align columns A to B
+accessibleTables::format_data(wb,
+                              "TAX_Outcomes",
+                              c("A", "B"),
+                              "left",
+                              "")
+
+# right align columns
+accessibleTables::format_data(
+  wb,
+  "TAX_Outcomes",
+  c(
+    "C"
+  ),
+  "right",
+  "#,###"
+)
+
 # 4.4 Active --------------------------------------------------------------
+
+# 4.4.1 Active: LIS -------------------------------------------------------
 
 # create the sheet
 accessibleTables::write_sheet(
@@ -1555,6 +1942,80 @@ accessibleTables::format_data(
     "C",
     "D",
     "E"
+  ),
+  "right",
+  "#,###"
+)
+
+# 4.4.2 Active: MAT -------------------------------------------------------
+
+# create the sheet
+accessibleTables::write_sheet(
+  wb,
+  "MAT_Active_Certificates",
+  paste0(
+    config$publication_table_title,
+    " - Number of active maternity exemption certificates split by financial year"
+  ),
+  c(
+    "Certificates can be valid during pregnancy and upto one year following birth. Therefore some certificates may be represented in figures for multiple years.",
+    "Maternity exemption certificates are only available for people living in England."
+  ),
+  sd_mat_fy_active,
+  30
+)
+
+# apply formatting
+# left align columns A to B
+accessibleTables::format_data(wb,
+                              "MAT_Active_Certificates",
+                              c("A", "B"),
+                              "left",
+                              "")
+
+# right align columns
+accessibleTables::format_data(
+  wb,
+  "MAT_Active_Certificates",
+  c(
+    "C"
+  ),
+  "right",
+  "#,###"
+)
+
+# 4.4.3 Active: MED -------------------------------------------------------
+
+# create the sheet
+accessibleTables::write_sheet(
+  wb,
+  "MED_Active_Certificates",
+  paste0(
+    config$publication_table_title,
+    " - Number of active medical exemption certificates split by financial year"
+  ),
+  c(
+    "Certificates are usually valid for five years and therefore certificates may be represented in figures for multiple years.",
+    "Medical exemption certificates are only available for people living in England."
+  ),
+  sd_med_fy_active,
+  30
+)
+
+# apply formatting
+# left align columns A to B
+accessibleTables::format_data(wb,
+                              "MED_Active_Certificates",
+                              c("A", "B"),
+                              "left",
+                              "")
+
+# right align columns
+accessibleTables::format_data(
+  wb,
+  "MED_Active_Certificates",
+  c(
+    "C"
   ),
   "right",
   "#,###"
@@ -1654,6 +2115,8 @@ accessibleTables::format_data(
 
 
 # 4.6 Age --------------------------------------------------------------
+
+# 4.6.1 Age: LIS ----------------------------------------------------------
 
 # create the sheet
 accessibleTables::write_sheet(

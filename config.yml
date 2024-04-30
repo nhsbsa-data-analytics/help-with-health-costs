@@ -17,11 +17,13 @@ min_focus_ym_lis: "202304"
 max_focus_ym_lis: "202403"
 
 min_trend_ym_mat: "201804"
+min_trend_active_ym_mat: "201904" # need to check impact of deleted records to choose period
 max_trend_ym_mat: "202403"
 min_focus_ym_mat: "202304"
 max_focus_ym_mat: "202403"
 
 min_trend_ym_med: "201804"
+min_trend_active_ym_med: "201904" # need to check impact of deleted records to choose period
 max_trend_ym_med: "202403"
 min_focus_ym_med: "202304"
 max_focus_ym_med: "202403"

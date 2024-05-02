@@ -42,6 +42,20 @@ max_focus_ym_tax: "202403"
 ons_pop_year: "2022"
 lis_min_pop_age: 16
 lis_max_pop_age: 90
+mat_min_pop_age: 15
+mat_max_pop_age: 45
+med_min_pop_age: 16
+med_max_pop_age: 59
+ppc_min_pop_age: 16
+ppc_max_pop_age: 59
+tax_min_pop_age: 16
+tax_max_pop_age: 90
+ons_pop_rate_denominator: 10000
+
+# ONS live birth criteria
+ons_births_year: "2021"
+ons_birth_geo_table: "ONS_BIRTHS_GEOGRAPHY_AGEBAND"
+ons_birth_imd_table: "ONS_BIRTHS_IMD"
 
 # ICB classification
 icb_classification: 2023

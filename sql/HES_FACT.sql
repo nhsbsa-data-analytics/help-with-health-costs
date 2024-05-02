@@ -44,12 +44,19 @@ DEPENDENCIES:
 
 create table HES_FACT compress for query high as
 select      standard_hash(hcd.CERTIFICATE_NUMBER, 'SHA256')                                                                                     as ID,
+            hcd.CERTIFICATE_TYPE                                                                                                                as SERVICE_AREA,
             hcd.CERTIFICATE_TYPE,
             case
-                when hcd.CERTIFICATE_TYPE != 'PPC'  then 'na'
+                when hcd.CERTIFICATE_TYPE = 'MAT' then 'Maternity exemption certificate'
+                when hcd.CERTIFICATE_TYPE = 'MED' then 'Medical exemption certificate'
+                when hcd.CERTIFICATE_TYPE = 'PPC' then 'NHS Prescription Prepayment Certificate'
+                when hcd.CERTIFICATE_TYPE = 'TAX' then 'NHS tax credit exemption certificate'
+            end                                                                                                                                 as SERVICE_AREA_NAME,
+            case
+                when hcd.CERTIFICATE_TYPE != 'PPC'  then 'N/A'
                 when CERTIFICATE_DURATION = 3       then '3-month'
                 when CERTIFICATE_DURATION = 12      then '12-month'
-                                                    else 'unknown'
+                                                    else 'N/A'
             end                                                                                                                                 as CERTIFICATE_SUBTYPE,
             hcd.CERTIFICATE_DURATION,
             hapf.CERTIFICATE_ISSUED_FLAG,
@@ -70,13 +77,13 @@ select      standard_hash(hcd.CERTIFICATE_NUMBER, 'SHA256')                     
                 when hcd.CERTIFICATE_TYPE in ('TAX') and hcd.CERTIFICATE_HOLDER_AGE > 90                    then 'N/A'
                 when hcd.CERTIFICATE_TYPE = 'MAT' and hcd.CERTIFICATE_HOLDER_AGE >= 45                      then '45+'
                 when hcd.CERTIFICATE_TYPE = 'TAX' and hcd.CERTIFICATE_HOLDER_AGE >= 65                      then '65+'
-                                                                                                        else age.BAND_5YEARS
+                                                                                                            else age.BAND_5YEARS
             end                                                                                                                                 as CUSTOM_AGE_BAND,
             pcd.LSOA11                                                                                                                          as LSOA,
             --remove ONS code for non-England areas
-            case when substr(pcd.ICB,1,1) = 'E' then ICB else null end                                                                          as ICB,
-            pcd.ICB23CDH,
-            pcd.ICB23NM, 
+            case when substr(pcd.ICB,1,1) = 'E' then ICB else 'N/A' end                                                                         as ICB,
+            nvl(pcd.ICB23CDH,'N/A')                                                                                                             as ICB_CODE,
+            nvl(pcd.ICB23NM,'N/A')                                                                                                              as ICB_NAME, 
             pcd.IMD_DECILE,
             case
                 when pcd.IMD_DECILE in (1,2)    then 1

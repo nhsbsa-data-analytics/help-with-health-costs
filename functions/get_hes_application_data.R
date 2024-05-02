@@ -6,7 +6,7 @@
 #'
 #' @param db_connection active database connection
 #' @param db_table_name database table containing application level data
-#' @param service_area service area to collate data for, which must be one of: MAT, MED, PPC, TAX
+#' @param service_area service area to collate data for, which must be one of: MAT, MED, PPC, TAX, LIS
 #' @param min_ym first month for analysis (format YYYYMM)
 #' @param max_ym last month for analysis (format YYYYMM)
 #' @param group_list list of fields to group results by
@@ -23,8 +23,8 @@ get_hes_application_data <- function(db_connection, db_table_name, service_area,
    
   # Test Parameter: service_area
   # abort if invalid service_area has been supplied
-  if(!toupper(service_area) %in% c('MAT', 'MED', 'PPC', 'TAX')){
-    stop("Invalid parameter (service_area) supplied to get_hes_application_data. Must be one of: MAT, MED, PPC, TAX", call. = FALSE)
+  if(!toupper(service_area) %in% c('MAT', 'MED', 'PPC', 'TAX', 'LIS')){
+    stop("Invalid parameter (service_area) supplied to get_hes_application_data. Must be one of: MAT, MED, PPC, TAX, LIS", call. = FALSE)
   } 
   
   # Test Parameter: min_ym
@@ -57,13 +57,13 @@ get_hes_application_data <- function(db_connection, db_table_name, service_area,
   ) |> 
     # filter to service area and time periods
     dplyr::filter(
-      CERTIFICATE_TYPE == toupper(service_area),
+      SERVICE_AREA == toupper(service_area),
       APPLICATION_YM >= min_ym,
       APPLICATION_YM <= max_ym
     ) |>
-    # summarise, splitting by month/fy and country of applicant
+    # summarise, splitting by supplied field list
     dplyr::group_by(across(all_of(group_list))) |> 
-    dplyr::summarise(APPLICATIONS = n(), .groups = "keep") |> 
+    dplyr::summarise(APPLICATIONS = n(), .groups = "keep") |>
     dplyr::collect()
   
   # return output

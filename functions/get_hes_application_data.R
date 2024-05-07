@@ -6,7 +6,7 @@
 #'
 #' @param db_connection active database connection
 #' @param db_table_name database table containing application level data
-#' @param service_area service area to collate data for, which must be one of: MAT, MED, PPC, TAX, LIS
+#' @param service_area service area to collate data for, which must be one of: MAT, MED, PPC, TAX, LIS, HRTPPC
 #' @param min_ym first month for analysis (format YYYYMM)
 #' @param max_ym last month for analysis (format YYYYMM)
 #' @param group_list list of fields to group results by
@@ -23,8 +23,8 @@ get_hes_application_data <- function(db_connection, db_table_name, service_area,
    
   # Test Parameter: service_area
   # abort if invalid service_area has been supplied
-  if(!toupper(service_area) %in% c('MAT', 'MED', 'PPC', 'TAX', 'LIS')){
-    stop("Invalid parameter (service_area) supplied to get_hes_application_data. Must be one of: MAT, MED, PPC, TAX, LIS", call. = FALSE)
+  if(!toupper(service_area) %in% c('MAT', 'MED', 'PPC', 'TAX', 'LIS', 'HRTPPC')){
+    stop("Invalid parameter (service_area) supplied to get_hes_application_data. Must be one of: MAT, MED, PPC, TAX, LIS, HRTPPC", call. = FALSE)
   } 
   
   # Test Parameter: min_ym

@@ -7,14 +7,12 @@
 #' the geography level and the age range
 #'
 #' @param year population year based on mid-year estimate (2021, 2022)
-#' @param geo geography level to aggregate data by (SICBL, ICB, NHSREG)
 #' @param min_age minimum age to consider in aggregation (0 to 90)
 #' @param max_age maximum age to consider in aggregation (0 to 90)
 #' @param gender character to identify gender to include in reporting (M = Male, F = Female, T = Total)
 #'
 icb_population_data <- function(
     year, 
-    geo, 
     min_age, 
     max_age,
     gender
@@ -27,22 +25,17 @@ icb_population_data <- function(
     stop("Invalid parameter (year) supplied to icb_population_data: must be year between 2021 and 2022", call. = FALSE)
   }
   
-  # parameter test: geo  
-  if(!(geo %in% c("SICBL", "ICB", "NHSREG"))){
-    stop("Invalid parameter (geo) supplied to icb_population_data: must be one of SICBL, ICB or NHSREG", call. = FALSE)
-  }
-  
-  # parameter test: geo  
+  # parameter test: min_age  
   if(!(min_age %in% seq(0,90))){
     stop("Invalid parameter (min_age) supplied to icb_population_data: must be integer between 0 and 90", call. = FALSE)
   }
   
-  # parameter test: geo  
+  # parameter test: max_age  
   if(!(max_age %in% seq(0,90))){
     stop("Invalid parameter (max_age) supplied to icb_population_data: must be integer between 0 and 90", call. = FALSE)
   }
   
-  # parameter test: geo  
+  # parameter test: gender  
   if(!(gender %in% c("M", "F", "T"))){
     stop("Invalid parameter (gender) supplied to icb_population_data: must be one of M, F or T (M=male/F=female/T=total)", call. = FALSE)
   }
@@ -129,7 +122,7 @@ icb_population_data <- function(
   
   # apply grouping based on chosen geography
   pop_data <- pop_data |>
-    dplyr::group_by(.data[[geo]], PopulationAgeRange) |> 
+    dplyr::group_by(ICB, PopulationAgeRange) |> 
     dplyr::summarise(
       M = sum(M),
       F = sum(F),

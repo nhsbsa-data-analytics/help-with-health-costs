@@ -29,7 +29,7 @@ create_dataset_from_sql <- function(db_connection, path_to_sql_file, db_table_na
     gsub(pattern = " +", replacement = " ")
   
   # replace variables based on supplied details
-  num_var = length(ls_variables)
+  num_var = length(ls_variables$var)
   if(num_var > 0){
     for(v in 1:num_var){
       sql_script <- sql_script |>

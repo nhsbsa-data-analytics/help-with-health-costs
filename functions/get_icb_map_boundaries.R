@@ -23,7 +23,7 @@ get_icb_map_boundaries <- function(icb_year){
   # Import map boundary data for ICB from ONS arcgis service
   icb_map_boundaries <- sf::read_sf(map_url) |>
     janitor::clean_names() |>
-    dplyr::rename(ONS_CODE = icb_field) |> 
+    dplyr::rename(ONS_CODE := {{ icb_field }}) |> 
     # limit to the relevant fields and limit to England, converting area codes to generic ONS_CODE
     dplyr::filter(grepl("^E", ONS_CODE)) |>
     dplyr::select(ONS_CODE, ONS_GEOMETRY = geometry) |>

@@ -9,9 +9,14 @@ publication_table_title: "Help with Health Costs (HwHC) - 2019/20 to 2023/24"
 rebuild_base_data: FALSE
 extract_date_lis: "20240409"
 extract_date_hes: "20240409"
+extract_date_hrt: "20240503"
+extract_px_min_ym: 202304
+extract_px_max_ym: 202403
+extract_px_age_dt: 20230930   # date to use to calculate patient age
 
 # time period criteria
 min_trend_ym_lis: "201804"
+min_trend_active_ym_lis: "201904" # need to check impact of deleted records to choose period
 max_trend_ym_lis: "202403"
 min_focus_ym_lis: "202304"
 max_focus_ym_lis: "202403"
@@ -38,6 +43,9 @@ max_trend_ym_tax: "202403"
 min_focus_ym_tax: "202304"
 max_focus_ym_tax: "202403"
 
+min_focus_ym_hrt: "202304"
+max_focus_ym_hrt: "202403"
+
 # base population criteria
 ons_pop_year: "2022"
 lis_min_pop_age: 16
@@ -50,6 +58,8 @@ ppc_min_pop_age: 16
 ppc_max_pop_age: 59
 tax_min_pop_age: 16
 tax_max_pop_age: 90
+hrt_min_pop_age: 16
+hrt_max_pop_age: 59
 ons_pop_rate_denominator: 10000
 
 # ONS live birth criteria

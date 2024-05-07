@@ -9,7 +9,7 @@
 #'
 #' @param db_connection active database connection
 #' @param db_table_name database table containing application level data
-#' @param service_area service area to collate data for, which must be one of: MAT, MED, PPC, TAX, LIS
+#' @param service_area service area to collate data for, which must be one of: MAT, MED, PPC, TAX, LIS, HRTPPC
 #' @param min_ym first month for analysis (format YYYYMM)
 #' @param max_ym last month for analysis (format YYYYMM)
 #' @param subtype_split (TRUE/FALSE) Boolean parameter to define is certificate subtypes should be included
@@ -89,7 +89,7 @@ create_hes_duration_objects <- function(db_connection, db_table_name, service_ar
       rename_df_fields()
     
     # for "England only" services use a n/a placeholder for country
-    if(service_area %in% c("MAT","MED","PPC")){
+    if(service_area %in% c("MAT","MED","PPC","HRTPPC")){
       obj_suppData <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'ISSUE_FY', 'CERTIFICATE_DURATION')) |> 
         dplyr::mutate(COUNTRY = 'n/a') |> 
         dplyr::relocate(COUNTRY, .after = ISSUE_FY) |> 

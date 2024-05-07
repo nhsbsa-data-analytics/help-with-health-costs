@@ -1,4 +1,4 @@
-#' create_hes_application_objects
+#' create_hes_application_month_objects
 #'
 #' Create objects to summarise the HES application data
 #' Output will include a line chart, supporting download data and data for supplementary datasets
@@ -14,22 +14,23 @@
 #' @param max_ym last month for analysis (format YYYYMM)
 #' @param subtype_split (TRUE/FALSE) Boolean parameter to define is certificate subtypes should be included
 #'
-create_hes_application_objects <- function(db_connection, db_table_name, service_area, min_ym, max_ym, subtype_split = FALSE){
+create_hes_application_month_objects <- function(db_connection, db_table_name, service_area, min_ym, max_ym, subtype_split = FALSE){
   
   # if certificate sub-types are required slightly different objects will be required to allow for this
   if(subtype_split == TRUE){
     
     # create the chart using a grouped chart object
-    obj_chart <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('CERTIFICATE_SUBTYPE', 'APPLICATION_FY')) |> 
+    obj_chart <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('CERTIFICATE_SUBTYPE', 'APPLICATION_YM')) |> 
       dplyr::filter(CERTIFICATE_SUBTYPE != 'N/A') |> 
-      dplyr::arrange(APPLICATION_FY, CERTIFICATE_SUBTYPE) |> 
+      dplyr::arrange(APPLICATION_YM, CERTIFICATE_SUBTYPE) |> 
+      dplyr::mutate(APPLICATION_YM = paste0(substr(APPLICATION_YM,1,4),'-',substr(APPLICATION_YM,5,6))) |> 
       dplyr::mutate(APPLICATIONS_SF = signif(APPLICATIONS,3)) |> 
       nhsbsaVis::group_chart_hc(
-        x = APPLICATION_FY,
+        x = APPLICATION_YM,
         y = APPLICATIONS_SF,
         type = "line",
         group = "CERTIFICATE_SUBTYPE",
-        xLab = "Financial Year",
+        xLab = "Month",
         yLab = "Number of applications received",
         title = "",
         dlOn = FALSE
@@ -41,35 +42,39 @@ create_hes_application_objects <- function(db_connection, db_table_name, service
       )
     
     # create the support datasets
-    obj_chData <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'APPLICATION_FY', 'CERTIFICATE_SUBTYPE')) |> 
-      dplyr::arrange(APPLICATION_FY, CERTIFICATE_SUBTYPE) |> 
+    obj_chData <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'APPLICATION_YM', 'CERTIFICATE_SUBTYPE')) |> 
+      dplyr::arrange(APPLICATION_YM, CERTIFICATE_SUBTYPE) |> 
+      dplyr::mutate(APPLICATION_YM = paste0(substr(APPLICATION_YM,1,4),'-',substr(APPLICATION_YM,5,6))) |> 
       rename_df_fields()
     
     # for "England only" services use a n/a placeholder for country
     if(service_area %in% c("MAT","MED","PPC","HRTPPC")){
-      obj_suppData <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'APPLICATION_FY', 'CERTIFICATE_SUBTYPE')) |> 
+      obj_suppData <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'APPLICATION_YM', 'CERTIFICATE_SUBTYPE')) |> 
         dplyr::mutate(COUNTRY = 'n/a') |> 
-        dplyr::relocate(COUNTRY, .after = APPLICATION_FY) |> 
-        dplyr::arrange(APPLICATION_FY, CERTIFICATE_SUBTYPE) |> 
+        dplyr::relocate(COUNTRY, .after = APPLICATION_YM) |> 
+        dplyr::arrange(APPLICATION_YM, CERTIFICATE_SUBTYPE) |> 
+        dplyr::mutate(APPLICATION_YM = paste0(substr(APPLICATION_YM,1,4),'-',substr(APPLICATION_YM,5,6))) |> 
         rename_df_fields()
       
     } else {
-      obj_suppData <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'APPLICATION_FY', 'COUNTRY', 'CERTIFICATE_SUBTYPE')) |> 
-        dplyr::arrange(COUNTRY, APPLICATION_FY, CERTIFICATE_SUBTYPE) |> 
+      obj_suppData <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'APPLICATION_YM', 'COUNTRY', 'CERTIFICATE_SUBTYPE')) |> 
+        dplyr::arrange(COUNTRY, APPLICATION_YM, CERTIFICATE_SUBTYPE) |> 
+        dplyr::mutate(APPLICATION_YM = paste0(substr(APPLICATION_YM,1,4),'-',substr(APPLICATION_YM,5,6))) |> 
         rename_df_fields()
     }
     
   } else {
     
     # create the chart using a basic single column chart
-    obj_chart <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('APPLICATION_FY')) |>
-      dplyr::arrange(APPLICATION_FY) |> 
+    obj_chart <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('APPLICATION_YM')) |>
+      dplyr::arrange(APPLICATION_YM) |> 
+      dplyr::mutate(APPLICATION_YM = paste0(substr(APPLICATION_YM,1,4),'-',substr(APPLICATION_YM,5,6))) |> 
       dplyr::mutate(APPLICATIONS_SF = signif(APPLICATIONS,3)) |> 
       nhsbsaVis::basic_chart_hc(
-        x = APPLICATION_FY,
+        x = APPLICATION_YM,
         y = APPLICATIONS_SF,
         type = "line",
-        xLab = "Financial Year",
+        xLab = "Month",
         yLab = "Number of applications received",
         seriesName = "Applications received",
         title = "",
@@ -82,20 +87,23 @@ create_hes_application_objects <- function(db_connection, db_table_name, service
       )
     
     # create the support datasets
-    obj_chData <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'APPLICATION_FY')) |> 
-      dplyr::arrange(APPLICATION_FY) |> 
+    obj_chData <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'APPLICATION_YM')) |> 
+      dplyr::arrange(APPLICATION_YM) |> 
+      dplyr::mutate(APPLICATION_YM = paste0(substr(APPLICATION_YM,1,4),'-',substr(APPLICATION_YM,5,6))) |> 
       rename_df_fields()
     
     # for "England only" services use a n/a placeholder for country
     if(service_area %in% c("MAT","MED","PPC","HRTPPC")){
-      obj_suppData <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'APPLICATION_FY')) |> 
+      obj_suppData <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'APPLICATION_YM')) |> 
         dplyr::mutate(COUNTRY = 'n/a') |> 
-        dplyr::relocate(COUNTRY, .after = APPLICATION_FY) |> 
-        dplyr::arrange(APPLICATION_FY) |> 
+        dplyr::relocate(COUNTRY, .after = APPLICATION_YM) |> 
+        dplyr::arrange(APPLICATION_YM) |> 
+        dplyr::mutate(APPLICATION_YM = paste0(substr(APPLICATION_YM,1,4),'-',substr(APPLICATION_YM,5,6))) |> 
         rename_df_fields()
     } else {
-      obj_suppData <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'APPLICATION_FY', 'COUNTRY')) |> 
-        dplyr::arrange(COUNTRY, APPLICATION_FY) |> 
+      obj_suppData <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'APPLICATION_YM', 'COUNTRY')) |> 
+        dplyr::arrange(COUNTRY, APPLICATION_YM) |> 
+        dplyr::mutate(APPLICATION_YM = paste0(substr(APPLICATION_YM,1,4),'-',substr(APPLICATION_YM,5,6))) |> 
         rename_df_fields()
     }
   }

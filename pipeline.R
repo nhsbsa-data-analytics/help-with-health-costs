@@ -146,7 +146,39 @@ if(config$rebuild_base_data == TRUE){
     db_table_name = "HES_FACT",
     ls_variables = list(
       var = c("p_extract_date"),
+      val = c(config$extract_date_hrt)
+    )
+  )
+}
+
+# 2.3 Data Import: HRT PPC ----------------------------------
+
+# create the base dataset for HRT PPC
+# data at individual case level (ID) for all applications/certificates
+if(config$rebuild_base_data == TRUE){
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/HRTPPC_FACT.sql",
+    db_table_name = "HRTPPC_FACT",
+    ls_variables = list(
+      var = c("p_extract_date"),
       val = c(config$extract_date_hes)
+    )
+  )
+}
+
+# 2.4 Data Import: PX PATIENT COUNTS ----------------------------------
+
+# create the base dataset for prescription patient counts
+# data at aggregated level showing counts of patients from the NHS prescription data
+if(config$rebuild_base_data == TRUE){
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/PX_PAT_FACT.sql",
+    db_table_name = "PX_PAT_FACT",
+    ls_variables = list(
+      var = c("p_min_ym","p_max_ym","p_age_date"),
+      val = c(config$extract_px_min_ym, config$extract_px_max_ym, config$extract_px_age_dt)
     )
   )
 }
@@ -194,7 +226,7 @@ lis_active_objs <- create_hes_active_objects(
   db_connection = con,
   db_table_name = 'LIS_FACT',
   service_area = 'LIS',
-  min_ym = config$min_trend_ym_lis,
+  min_ym = config$min_trend_active_ym_lis,
   max_ym = config$max_trend_ym_lis,
   subtype_split = TRUE
 )
@@ -251,14 +283,12 @@ lis_icb_objs <- create_hes_icb_objects(
   min_ym = config$min_focus_ym_lis,
   max_ym = config$max_focus_ym_lis,
   subtype_split = TRUE,
-  population_year = config$ons_pop_year, 
-  population_geo = "ICB", 
+  base_population_source = "ONS",
   population_min_age = config$lis_min_pop_age, 
   population_max_age = config$lis_max_pop_age,
-  population_gender = "T"
+  ons_population_year = config$ons_pop_year, 
+  ons_population_gender = "T"
 )
-
-
 
 # 3.2 Aggregation and analysis: Maternity Exemption (MATEX) ---------------
 
@@ -475,11 +505,11 @@ mat_icb_objs <- create_hes_icb_objects(
   min_ym = config$min_focus_ym_mat,
   max_ym = config$max_focus_ym_mat,
   subtype_split = FALSE,
-  population_year = config$ons_pop_year, 
-  population_geo = "ICB", 
+  base_population_source = "ONS",
   population_min_age = config$mat_min_pop_age, 
   population_max_age = config$mat_max_pop_age,
-  population_gender = "F"
+  ons_population_year = config$ons_pop_year, 
+  ons_population_gender = "F"
 )
 
 # 3.3 Aggregation and analysis: Medical Exemption (MEDEX) ---------------
@@ -550,9 +580,29 @@ med_imd_objs <- create_hes_imd_objects(
 # 3.3.6 MEDEX: ICB profile (latest year)-------------------------------------------------
 # ICBs can vary in size and therefore are not appropriate for direct comparison
 # Figures should be standardised by a population denominator
+
+
+# ICB by ONS population denominator
 # ONS only publish mid-year estimates and at a delayed schedule
 # latest available population year should be defined in the config file
 
+# med_icb_objs <- create_hes_icb_objects(
+#   db_connection = con,
+#   db_table_name = 'HES_FACT',
+#   service_area = 'MED',
+#   min_ym = config$min_focus_ym_med,
+#   max_ym = config$max_focus_ym_med,
+#   subtype_split = FALSE,
+#   base_population_source = 'ONS',
+#   population_min_age = config$med_min_pop_age, 
+#   population_max_age = config$med_max_pop_age,
+#   ons_population_year = config$ons_pop_year, 
+#   ons_population_gender = "T"
+# )
+
+# ICB by NHS prescription patient count
+# Limited to EPS where LSOA is captured
+# Based on all patients in relevant year receiving any prescribing
 med_icb_objs <- create_hes_icb_objects(
   db_connection = con,
   db_table_name = 'HES_FACT',
@@ -560,11 +610,11 @@ med_icb_objs <- create_hes_icb_objects(
   min_ym = config$min_focus_ym_med,
   max_ym = config$max_focus_ym_med,
   subtype_split = FALSE,
-  population_year = config$ons_pop_year, 
-  population_geo = "ICB", 
+  base_population_source = 'PX',
   population_min_age = config$med_min_pop_age, 
   population_max_age = config$med_max_pop_age,
-  population_gender = "T"
+  db_px_patient_table = 'PX_PAT_FACT',
+  px_population_type = 'PATIENT_COUNT'
 )
 
 
@@ -623,9 +673,27 @@ ppc_imd_objs <- create_hes_imd_objects(
 # 3.4.5 PPC: ICB profile (latest year)-------------------------------------------------
 # ICBs can vary in size and therefore are not appropriate for direct comparison
 # Figures should be standardised by a population denominator
+
+
 # ONS only publish mid-year estimates and at a delayed schedule
 # latest available population year should be defined in the config file
+# ppc_icb_objs <- create_hes_icb_objects(
+#   db_connection = con,
+#   db_table_name = 'HES_FACT',
+#   service_area = 'PPC',
+#   min_ym = config$min_focus_ym_ppc,
+#   max_ym = config$max_focus_ym_ppc,
+#   subtype_split = TRUE,
+#   base_population_source = 'ONS',
+#   population_min_age = config$ppc_min_pop_age, 
+#   population_max_age = config$ppc_max_pop_age,
+#   ons_population_year = config$ons_pop_year, 
+#   ons_population_gender = "T"
+# )
 
+# ICB by NHS prescription patient count
+# Limited to EPS where LSOA is captured
+# Based on all patients in relevant year receiving any prescribing
 ppc_icb_objs <- create_hes_icb_objects(
   db_connection = con,
   db_table_name = 'HES_FACT',
@@ -633,16 +701,135 @@ ppc_icb_objs <- create_hes_icb_objects(
   min_ym = config$min_focus_ym_ppc,
   max_ym = config$max_focus_ym_ppc,
   subtype_split = TRUE,
-  population_year = config$ons_pop_year, 
-  population_geo = "ICB", 
+  base_population_source = 'PX',
   population_min_age = config$ppc_min_pop_age, 
   population_max_age = config$ppc_max_pop_age,
-  population_gender = "T"
+  db_px_patient_table = 'PX_PAT_FACT',
+  px_population_type = 'PATIENT_COUNT'
 )
 
-# 3.5 Aggregation and analysis: Tax Credit (TAX) ---------------
+# 3.5 Aggregation and analysis: HRT PPC (HRTPPC) ---------------------
 
-# 3.5.1 TAX: Certificates issued (trend) ------------------------------------------------
+# 3.5.1 HRTPPC: Applications received (trend) --------------------------------------------------
+# Applications will include any application to the scheme regardless of current status or outcome
+
+hrt_application_objs <- create_hes_application_month_objects(
+  db_connection = con,
+  db_table_name = 'HRTPPC_FACT',
+  service_area = 'HRTPPC',
+  min_ym = config$min_focus_ym_hrt,
+  max_ym = config$max_focus_ym_hrt,
+  subtype_split = FALSE
+)
+
+# 3.5.2 HRTPPC: Certificates issued (trend) --------------------------------------------------
+# Issued certificates will only include cases where a certificate was issued to the customer
+
+hrt_issued_objs <- create_hes_issued_month_objects(
+  db_connection = con,
+  db_table_name = 'HRTPPC_FACT',
+  service_area = 'HRTPPC',
+  min_ym = config$min_focus_ym_hrt,
+  max_ym = config$max_focus_ym_hrt,
+  subtype_split = FALSE
+)
+
+# 3.5.3 HRTPPC: Age profile (latest year)------------------------------------------------
+# Some processing applied to base dataset to reclassify ages that are outside of expected ranges as these may be errors
+
+hrt_age_objs <- create_hes_age_objects(
+  db_connection = con,
+  db_table_name = 'HRTPPC_FACT',
+  service_area = 'HRTPPC',
+  min_ym = config$min_focus_ym_hrt,
+  max_ym = config$max_focus_ym_hrt,
+  subtype_split = FALSE
+)
+
+hrt_age_base_pop_objs <- create_px_patient_age_objects(
+  db_connection = con,
+  db_table_name = 'PX_PAT_FACT',
+  
+  patient_group = 'HRT_PATIENT_COUNT'
+)
+
+hrt_age_objs$chart_data <- hrt_age_objs$chart_data |> 
+  dplyr::left_join(
+    y = hrt_age_base_pop_objs$chart_data,
+    by = c('Age Band')
+  ) |> 
+  dplyr::rename(`Estimated patients receiving HRT PPC qualifying medication (aged 16-59)` = BASE_POPULATION)
+  
+
+
+# 3.4.4 HRTPPC: Deprivation profile (latest year)------------------------------------------------
+# IMD may not be available if the postcode cannot be mapped to NSPL
+
+hrt_imd_objs <- create_hes_imd_objects(
+  db_connection = con,
+  db_table_name = 'HRTPPC_FACT',
+  service_area = 'HRTPPC',
+  min_ym = config$min_focus_ym_hrt,
+  max_ym = config$max_focus_ym_hrt,
+  subtype_split = FALSE
+)
+
+hrt_imd_base_pop_objs <- create_px_patient_imd_objects(
+  db_connection = con,
+  db_table_name = 'PX_PAT_FACT',
+  patient_group = 'HRT_PATIENT_COUNT',
+  min_age = config$hrt_min_pop_age,
+  max_age = config$hrt_max_pop_age
+)
+
+hrt_imd_objs$chart_data <- hrt_imd_objs$chart_data |> 
+  dplyr::left_join(
+    y = hrt_imd_base_pop_objs$chart_data,
+    by = c('IMD Quintile')
+  ) |> 
+  dplyr::rename(`Estimated patients receiving HRT PPC qualifying medication (aged 16-59)` = BASE_POPULATION)
+
+# 3.4.5 HRTPPC: ICB profile (latest year)-------------------------------------------------
+# ICBs can vary in size and therefore are not appropriate for direct comparison
+# Figures should be standardised by a population denominator
+
+# ONS only publish mid-year estimates and at a delayed schedule
+# latest available population year should be defined in the config file
+# hrt_icb_objs <- create_hes_icb_objects(
+#   db_connection = con,
+#   db_table_name = 'HRTPPC_FACT',
+#   service_area = 'HRTPPC',
+#   min_ym = config$min_focus_ym_hrt,
+#   max_ym = config$max_focus_ym_hrt,
+#   subtype_split = FALSE,
+#   base_population_source = 'ONS',
+#   population_min_age = config$hrt_min_pop_age, 
+#   population_max_age = config$hrt_max_pop_age,
+#   ons_population_year = config$ons_pop_year, 
+#   ons_population_gender = "F"
+# )
+
+# ICB by NHS prescription patient count
+# Limited to EPS where LSOA is captured
+# Based on all patients in relevant year receiving any prescribing of HRT PPC medicines
+hrt_icb_objs <- create_hes_icb_objects(
+  db_connection = con,
+  db_table_name = 'HRTPPC_FACT',
+  service_area = 'HRTPPC',
+  min_ym = config$min_focus_ym_hrt,
+  max_ym = config$max_focus_ym_hrt,
+  subtype_split = FALSE,
+  base_population_source = 'PX',
+  population_min_age = config$hrt_min_pop_age, 
+  population_max_age = config$hrt_max_pop_age,
+  db_px_patient_table = 'PX_PAT_FACT',
+  px_population_type = 'HRT_PATIENT_COUNT'
+)
+
+
+# 3.6 Aggregation and analysis: Tax Credit (TAX) ---------------
+
+# 3.6.1 TAX: Certificates issued (trend) ------------------------------------------------
 # Issued certificates will only include cases where a certificate was issued to the customer
 
 tax_issued_objs <- create_hes_issued_objects(
@@ -655,7 +842,7 @@ tax_issued_objs <- create_hes_issued_objects(
 )
 
 
-# 3.5.2 TAX: Age profile (latest year)------------------------------------------------
+# 3.6.2 TAX: Age profile (latest year)------------------------------------------------
 # Some processing has been performed to group by set age bands and reclassify potential errors 
 
 tax_age_objs <- create_hes_age_objects(
@@ -732,7 +919,7 @@ sd_tax_age_trend <- get_hes_issue_data(con, 'HES_FACT', 'TAX', config$min_trend_
   dplyr::select(-SORT_ORDER) |> 
   rename_df_fields()
 
-# 3.5.3 TAX: Deprivation profile (latest year)------------------------------------------------
+# 3.6.3 TAX: Deprivation profile (latest year)------------------------------------------------
 # IMD may not be available if the postcode cannot be mapped to NSPL
 
 tax_imd_objs <- create_hes_imd_objects(
@@ -744,7 +931,7 @@ tax_imd_objs <- create_hes_imd_objects(
   subtype_split = FALSE
 )
 
-# 3.3.6 TAX: ICB profile (latest year)-------------------------------------------------
+# 3.6.4 TAX: ICB profile (latest year)-------------------------------------------------
 # ICBs can vary in size and therefore are not appropriate for direct comparison
 # Figures should be standardised by a population denominator
 # ONS only publish mid-year estimates and at a delayed schedule
@@ -757,15 +944,15 @@ tax_icb_objs <- create_hes_icb_objects(
   min_ym = config$min_focus_ym_tax,
   max_ym = config$max_focus_ym_tax,
   subtype_split = FALSE,
-  population_year = config$ons_pop_year, 
-  population_geo = "ICB", 
+  base_population_source = 'ONS',
   population_min_age = config$tax_min_pop_age, 
   population_max_age = config$tax_max_pop_age,
-  population_gender = "T"
+  ons_population_year = config$ons_pop_year, 
+  ons_population_gender = "T"
 )
 
 
-# 3.4 Close database connection---------------------------------------------------------------
+# 3.7 Close database connection---------------------------------------------------------------
 
 # close connection to database
 DBI::dbDisconnect(con)

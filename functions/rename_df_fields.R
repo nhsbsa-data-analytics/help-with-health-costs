@@ -13,7 +13,9 @@ rename_df_fields <- function(df) {
     `HwHC Service` = "SERVICE_AREA_NAME",
     `Certificate Type` = "CERTIFICATE_SUBTYPE",
     `Financial Year` = "APPLICATION_FY",
+    `Month` = "APPLICATION_YM",
     `Financial Year` = "ISSUE_FY",
+    `Month` = "ISSUE_YM",
     `Financial Year` = "FINANCIAL_YEAR",
     `Country` = "COUNTRY",
     `Age Band` = "CUSTOM_AGE_BAND",
@@ -26,6 +28,8 @@ rename_df_fields <- function(df) {
     `Number of active certificates` = "ACTIVE_CERTS",
     `Number of HC2 certificates issued` = "pvt_issue_HC2",
     `Number of HC3 certificates issued` = "pvt_issue_HC3",
+    `Number of 12-month certificates issued` = "pvt_issue_12-month",
+    `Number of 3-month certificates issued` = "pvt_issue_3-month",
     `Number of outcomes with no certificate issued` = "pvt_issue_No certificate issued"
   )
   

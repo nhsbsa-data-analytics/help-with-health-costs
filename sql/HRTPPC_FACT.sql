@@ -6,6 +6,8 @@ Version 1.0
 
 AMENDMENTS:
 	2024-03-25  : Steven Buckley    : Initial script created
+    2024-05-03  : Steven Buckley    : Tweaked script to fit report scripts
+                                        Added some additional fields and links to age bands
 
 
 DESCRIPTION:
@@ -38,19 +40,43 @@ DEPENDENCIES:
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------SCRIPT START----------------------------------------------------------------------------------------------------------------------
 
-drop table HRTPPC_FACT purge;
 create table HRTPPC_FACT compress for query high as
 select      hapf.CERTIFICATE_ID                                                                             as CERTIFICATE_NUMBER,
-            hapf.CERTIFICATE_COUNT                                                                          as CERTIFICATE_ISSUED_FLAG,
-            hapf.CERTIFICATE_STATUS_ID,
+            'HRTPPC'                                                                                        as CERTIFICATE_TYPE,
+            'N/A'                                                                                           as CERTIFICATE_SUBTYPE,
+            'HRTPPC'                                                                                        as SERVICE_AREA,
+            'NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT PPC)'                 as SERVICE_AREA_NAME,
+            case when hapf.CERTIFICATE_STATUS_ID = 'ISSUED' then 1 else 0 end                               as CERTIFICATE_ISSUED_FLAG,
+            hapf.CERTIFICATE_COUNT,
+            hapf.CERTIFICATE_STATUS_ID                                                                      as CERTIFICATE_STATUS,
+            case when hapf.CERTIFICATE_STATUS_ID = 'CANCELLED' then 1 else 0 end                            as CERTIFICATE_CANCELLED_FLAG,
             --applicant/holder information
             hapf.AGE_ON_APPLICATION                                                                         as CERTIFICATE_HOLDER_AGE,
+            age.BAND_5YEARS,
+            age.BAND_10YEARS,
+            --calculate custom age band
+            case
+                -- for MATEX, MEDEX and PPC exclude any ages outside of expected range 15-59 (likely errors)
+                --for MATEX anything above 45 group as 45+
+                when hcd.CERTIFICATE_HOLDER_AGE <= 15   then 'N/A'
+                when hcd.CERTIFICATE_HOLDER_AGE >= 60   then 'N/A'
+                                                        else age.BAND_5YEARS
+            end                                                                                             as CUSTOM_AGE_BAND,
             hapf.POSTCODE,
             pcd.LSOA11                                                                                      as LSOA,
-            pcd.ICB,
-            pcd.ICB23CDH,
-            pcd.ICB23NM, 
+            --remove ONS code for non-England areas
+            case when substr(pcd.ICB,1,1) = 'E' then ICB else 'N/A' end                                     as ICB,
+            nvl(pcd.ICB23CDH,'N/A')                                                                         as ICB_CODE,
+            nvl(pcd.ICB23NM,'N/A')                                                                          as ICB_NAME,
             pcd.IMD_DECILE,
+            case
+                when pcd.IMD_DECILE in (1,2)    then 1
+                when pcd.IMD_DECILE in (3,4)    then 2
+                when pcd.IMD_DECILE in (5,6)    then 3
+                when pcd.IMD_DECILE in (7,8)    then 4
+                when pcd.IMD_DECILE in (9,10)   then 5
+                                            else null
+            end                                                                                             as IMD_QUINTILE,
             case
                 when pcd.CTRY = 'E92000001' then 'England'
                 when pcd.CTRY is null       then 'Unknown'
@@ -72,9 +98,11 @@ select      hapf.CERTIFICATE_ID                                                 
 from        AML.HRT_APPLICATION_PROCESS_FACT    hapf
 inner join  DIM.HRT_CERTIFICATE_DIM             hcd     on  hapf.CERTIFICATE_ID  =   hcd.CERTIFICATE_ID
 left join   GRALI.ONS_NSPL_MAY_23               pcd     on  regexp_replace(upper(hapf.POSTCODE),'[^A-Z0-9]','') = regexp_replace(upper(pcd.PCD),'[^A-Z0-9]','')
+left join   DIM.AGE_DIM                         age     on  hcd.CERTIFICATE_HOLDER_AGE                          =   age.AGE
 where       1=1
-    --limit to single record per certificate
-    and     hapf.DW_ACTIVE_IND = 1
+    --limit to records as of a set date supplied at runtime
+    and     trunc(hapf.DW_DATE_CREATED) <= to_date(&&p_extract_date,'YYYYMMDD')
+    and     nvl(hapf.DW_DATE_UPDATED,to_date(99991231,'YYYYMMDD')) > to_date(&&p_extract_date,'YYYYMMDD')
     --exclude test cases
     and     hapf.TEST_FLAG = 0
     and     not upper(hcd.ADDRESS_LINE1) like '%NHS B S A%'

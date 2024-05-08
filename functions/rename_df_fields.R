@@ -30,7 +30,12 @@ rename_df_fields <- function(df) {
     `Number of HC3 certificates issued` = "pvt_issue_HC3",
     `Number of 12-month certificates issued` = "pvt_issue_12-month",
     `Number of 3-month certificates issued` = "pvt_issue_3-month",
-    `Number of outcomes with no certificate issued` = "pvt_issue_No certificate issued"
+    `Number of outcomes with no certificate issued` = "pvt_issue_No certificate issued",
+    `Number of months between due date and certificate issue date` = "MONTHS_BETWEEN_DUE_DATE_AND_ISSUE",
+    `Number of certificates issued (cumulative)` = "CUM_SUM_ISSUED_CERTS",
+    `Proportion of certificates issued (cumulative %)` = "PROP_CUM_SUM_ISSUED_CERTS",
+    `Number of issued certificates post-dated to start the following month` = 'POST_DATE_CERTS',
+    `Proportion of issued certificates post-dated to start the following month` = 'PROP_CERTS_POSTDATE'
   )
   
   # apply renaming if columns exist

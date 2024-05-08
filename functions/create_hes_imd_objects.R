@@ -21,7 +21,7 @@ create_hes_imd_objects <- function(db_connection, db_table_name, service_area, m
     
     # create the chart object
     obj_chart <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('CERTIFICATE_SUBTYPE', 'IMD_QUINTILE')) |>
-      dplyr::filter(!CERTIFICATE_SUBTYPE %in% c('N/A','No certificate issued')) |> 
+      dplyr::filter(!CERTIFICATE_SUBTYPE %in% c('N/A')) |> 
       dplyr::filter(!is.na(IMD_QUINTILE)) |> 
       dplyr::arrange(IMD_QUINTILE) |> 
       dplyr::mutate(ISSUED_CERTS_SF = signif(ISSUED_CERTS,3)) |> 
@@ -44,6 +44,7 @@ create_hes_imd_objects <- function(db_connection, db_table_name, service_area, m
     # create the support datasets
     obj_chData <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'ISSUE_FY', 'CERTIFICATE_SUBTYPE', 'IMD_QUINTILE')) |>
       dplyr::arrange(ISSUE_FY, CERTIFICATE_SUBTYPE, IMD_QUINTILE) |> 
+      dplyr::mutate(IMD_QUINTILE = ifelse(is.na(IMD_QUINTILE), 'N/A', IMD_QUINTILE)) |> 
       rename_df_fields()
     
     # for "England only" services use a n/a placeholder for country
@@ -57,6 +58,7 @@ create_hes_imd_objects <- function(db_connection, db_table_name, service_area, m
     
     obj_suppData <- obj_suppData |> 
       dplyr::arrange(ISSUE_FY, COUNTRY, CERTIFICATE_SUBTYPE, IMD_QUINTILE) |>
+      dplyr::mutate(IMD_QUINTILE = ifelse(is.na(IMD_QUINTILE), 'N/A', IMD_QUINTILE)) |> 
       rename_df_fields()
     
     
@@ -86,6 +88,7 @@ create_hes_imd_objects <- function(db_connection, db_table_name, service_area, m
     # create the support datasets
     obj_chData <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'ISSUE_FY', 'IMD_QUINTILE')) |>
       dplyr::arrange(ISSUE_FY, IMD_QUINTILE) |> 
+      dplyr::mutate(IMD_QUINTILE = ifelse(is.na(IMD_QUINTILE), 'N/A', IMD_QUINTILE)) |> 
       rename_df_fields()
     
     # for "England only" services use a n/a placeholder for country
@@ -99,6 +102,7 @@ create_hes_imd_objects <- function(db_connection, db_table_name, service_area, m
     
     obj_suppData <- obj_suppData |> 
       dplyr::arrange(ISSUE_FY, COUNTRY, IMD_QUINTILE) |>
+      dplyr::mutate(IMD_QUINTILE = ifelse(is.na(IMD_QUINTILE), 'N/A', IMD_QUINTILE)) |> 
       rename_df_fields()
   }
   

@@ -22,7 +22,7 @@ create_hes_age_objects <- function(db_connection, db_table_name, service_area, m
     
     # create the chart using a grouped chart object
     obj_chart <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('CERTIFICATE_SUBTYPE', 'CUSTOM_AGE_BAND')) |> 
-      dplyr::filter(!CERTIFICATE_SUBTYPE %in% c('N/A','No certificate issued')) |> 
+      dplyr::filter(!CERTIFICATE_SUBTYPE %in% c('N/A')) |> 
       dplyr::filter(CUSTOM_AGE_BAND != 'N/A') |> 
       dplyr::arrange(CERTIFICATE_SUBTYPE,CUSTOM_AGE_BAND) |> 
       dplyr::mutate(ISSUED_CERTS_SF = signif(ISSUED_CERTS,3)) |> 

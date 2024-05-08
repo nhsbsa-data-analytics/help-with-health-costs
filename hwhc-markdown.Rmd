@@ -59,45 +59,45 @@ Published `r config$publication_date`
 
 ### NHS Low Income Scheme {.toc-ignore}
 
-The number of applications and issued certificates in 2023/24 was a slight decrease from 2022/23 but higher than the two years prior. There were 161,000 HC2 certificates, and 58,000 HC3 certificates, issued in 2023/24.
+* The number of applications and issued certificates in 2023/24 was a slight decrease from 2022/23 but higher than the two years prior. There were 161,000 HC2 certificates, and 58,000 HC3 certificates, issued in 2023/24.
 
-Certificates were most commonly issued to people from the most deprived areas of the country and people from the younger (15-24) and older (65+) age groups.
+* Certificates were most commonly issued to people from the most deprived areas of the country and people from the younger (15-24) and older (65+) age groups.
 
 ### Maternity exemption certificates {.toc-ignore}
 
-The number of applications and certificates issued has risen over the past few years. There were 552,000 maternity exemption certificates issued in 2023/24.
+* The number of applications and certificates issued has risen over the past few years. There were 552,000 maternity exemption certificates issued in 2023/24.
 
-Almost two-thirds of medical exemption certificates were issued to women by 7 months before the expected due date. Less than 5% of certificates were issued after the expected due date.
+* Almost two-thirds of medical exemption certificates were issued to women by 7 months before the expected due date. Less than 5% of certificates were issued after the expected due date.
 
-The number of maternity exemption certificates issued in the most deprived areas is a little lower than may be expected based on the distribution of live births.
+* The number of maternity exemption certificates issued in the most deprived areas is a little lower than may be expected based on the distribution of live births.
 
 ### Medical exemption certificates {.toc-ignore}
 
-The number of applications and certificates issued has risen over the past few years following a drop during 2019/20 and 2021/22. There were 475,000 medical exemption certificates issued in 2023/24.
+* The number of applications and certificates issued has risen over the past few years following a drop during 2019/20 and 2021/22. There were 475,000 medical exemption certificates issued in 2023/24.
 
-The is a strong relationship with age, with the number of certificates issued rising as age rises.
+* The is a strong relationship with age, with the number of certificates issued rising as age rises.
 
 ### NHS Prescription Prepayment Certificate (PPC) {.toc-ignore}
 
-The number of PPC certificates purchased has increased in each of the past 5 years. The 12-month certificate is more popular than the 3-month certificate, with 2,070,000 12-month certificates issued in 2023/24 compared to 936,000 3-month certificates issued.
+* The number of PPC certificates purchased has increased in each of the past 5 years. The 12-month certificate is more popular than the 3-month certificate, with 2,070,000 12-month certificates issued in 2023/24 compared to 936,000 3-month certificates issued.
 
-The is a strong relationship with age, with the number of certificates issued rising as age rises.
+* The is a strong relationship with age, with the number of certificates issued rising as age rises.
 
-In 2023/24 the five London ICBs were the bottom five in terms of certificates issued per 10,000 population.
+* In 2023/24 the five London ICBs were the bottom five in terms of certificates issued per 10,000 population.
 
 ### NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT PPC) {.toc-ignore}
 
-The HRT PPC was launched in April 2023, with 131,000 certificates being issued in the first month. This represents 23% of the 566,000 certificates issued in 2023/24.
+* The HRT PPC was launched in April 2023, with 131,000 certificates being issued in the first month. This represents 23% of the 566,000 certificates issued in 2023/24.
 
-There is a strong relationship with deprivation, with the number of certificates issued rising as deprivation decreases. This relationship is similar to the pattern seen for patient's receiving prescribing of drugs licensed to treat menopause in the UK which are covered by the HRT PPC.
+* There is a strong relationship with deprivation, with the number of certificates issued rising as deprivation decreases. This relationship is similar to the pattern seen for patient's receiving prescribing of drugs licensed to treat menopause in the UK which are covered by the HRT PPC.
 
-The South West region has some of the largest rates of HRT PPCs issued. In 2023/24, 5 of the 7 ICBs in the South West region were in the top 10 for number of HRT PPCs issued per 10,000 population.
+* The South West region has some of the largest rates of HRT PPCs issued. In 2023/24, 5 of the 7 ICBs in the South West region were in the top 10 for number of HRT PPCs issued per 10,000 population.
 
 ### NHS tax credit exemption certificates {.toc-ignore}
 
-The number of NHS tax credit exemption certificates has been declining for a number of years. As part of the Universal Credit rollout people are being migrated away from tax credits and onto new benefit schemes. In 2023/24 1,150,000 certificates were issued, compared to 3,740,000 in 2018/19.
+* The number of NHS tax credit exemption certificates has been declining for a number of years. As part of the Universal Credit rollout people are being migrated away from tax credits and onto new benefit schemes. In 2023/24 1,150,000 certificates were issued, compared to 3,740,000 in 2018/19.
 
-The age profile of recipients has changed over the past few years. In 2018/19, 55% of certificates were issued to people aged under 40 years old but in 2023/24 this has dropped to 30% of issued certificates.
+* The age profile of recipients has changed over the past few years. In 2018/19, 55% of certificates were issued to people aged under 40 years old but in 2023/24 this has dropped to 30% of issued certificates.
 
 ------------------------------------------------------------------------
 
@@ -152,7 +152,7 @@ NHS Low Income Scheme exemption provides help with:
 The amount of support provided is based on weekly income, necessary outgoings, plus any savings or investments. Issued certificates will also cover the applicant's partner and dependent children under 20 years old."
 , width = "100%")`
 
-#### Figure X: Number of applications received 2019/20 to 2023/24 {.toc-ignore}
+#### Figure X: Number of applications received 2018/19 to 2023/24 {.toc-ignore}
 
 ::: {.row style="display: flex; padding-bottom: 15px;"}
 ::: col-md-6
@@ -174,11 +174,11 @@ Applicants will either complete a paper HC1 form or apply via the [online applic
 
 Applications will include new applicants and existing certificate holders reapplying. The number of applications will also include incomplete applications.
 
-Applications to the NHS Low Income Scheme decreased slightly in 2023/24, with 374,000 applications compared to 388,000 applications in 2022/23. The number of applications is notably higher than between 20219/20 and 2021/22.
+Applications to the NHS Low Income Scheme decreased slightly in 2023/24, with 374,000 applications compared to 388,000 applications in 2022/23. Despite this decrease, the number of applications received still higher than previous years.
 
-In 2023/24, applications to the NHS Low Income Scheme decreased compared to the previous year. There were 374,000 applications in 2023/24, compared to 388,000 thousand applications in 2022/23. But the number of applications received was still higher in 2023/24 than between 20219/20 and 2021/22.
+Applications to the NHS Low Income Scheme are assessed to determine if the applicant qualifies for any support.
 
-#### Figure X: Number of outcome decisions by support type 2019/20 to 2023/24 {.toc-ignore}
+#### Figure X: Number of outcome decisions by support type 2018/19 to 2023/24 {.toc-ignore}
 
 ::: {.row style="display: flex; padding-bottom: 15px;"}
 ::: col-md-6
@@ -205,6 +205,10 @@ In some cases the outcome of the application assessment will not result in a HC2
 
 There were 261,000 decisions issued in 2023/24. This included 161,000 HC2 certificates and 58,000 HC3 certificates. Compared to 2022/23 there has been a slight decrease in the number of certificates issued.
 
+The proportion of outcome decisions that do not include a HC2 or HC3 certificate has risen from 11% in 2018/19 to 16% in 2023/24.
+
+An outcome decision is only issued to the applicant following the completion of the assessment. Therefore these figures will not include any applications that are ongoing or were abandoned before completion. 
+
 #### Figure X: Estimated number of active NHS Low Income Scheme certificates 2019/20 to 2023/24 {.toc-ignore}
 
 ::: {.row style="display: flex; padding-bottom: 15px;"}
@@ -223,7 +227,11 @@ lis_active_objs$chart
 
 `r get_download_button(title = "Download chart data", data = lis_active_objs$chart_data, filename = "hwhc_figure_x")`
 
-Active certificates measures the number of certificates valid in the specified financial year. Some NHS Low Income Scheme certificates can be valid up to 5 years. Therefore, the number of active certificates are higher than the certificates issued. When certificates expire a certificate holder could reapply. They may then end up with two (or more) active certificates for a single financial year.
+Active certificates measures the number of certificates valid in the specified financial year. Some NHS Low Income Scheme certificates can be valid up to 5 years. Therefore, the number of active certificates are higher than the certificates issued. 
+
+When certificates expire a certificate holder could reapply, and may then end up with two (or more) active certificates within a single financial year.
+
+The number of active certificates is only available from 2019/20 due to retention schedules for certificates prior to this period. It should be noted that active certificates are based solely on the start and expiration date of the issued certificates. This does not consider if the certificate holder was using the certificate or not.
 
 Trends in active certificates are generally in line with certificates issued. In 2023/24 there were 355,000 HC2 certificates active and 137,000 active HC3 certificates.
 
@@ -231,7 +239,7 @@ Trends in active certificates are generally in line with certificates issued. In
 
 ::: {.row style="display: flex; padding-bottom: 15px;"}
 ::: col-md-6
-`r infoBox_no_border("", text = "<b>Over 80% of HC3 certificates were valid for 12 months</b>", width = "100%")`
+`r infoBox_no_border("", text = "<b>Over 83% of HC3 certificates were valid for 12 months</b>", width = "100%")`
 :::
 
 ::: col-md-6
@@ -253,9 +261,9 @@ The circumstances of the applicant will determine the duration of the certificat
 * Non final-year students may receive a 12 month certificate.
 * Applicants in receipt of non-means tested benefit may receive a 12 month certificate.
 * Applicants earning a wage may receive a 6 month certificate.
-* Students nearing the end of their course may receive a short term certificate.
+* Students nearing the end of their course may receive a short term certificate until the end of their course.
 
-Almost 48,000 HC3 certificates, issued in 2023/24, were valid for a period of 12 months. This represents over 83% of all HC3 certificates issued in 2023/24. HC2 certificates show more variation in length the HC3 certificates. In 2023/24 43,000 HC2 certificates were valid for 6 months and 92,000 were valid for 12 months.
+Almost 48,000 HC3 certificates, issued in 2023/24, were valid for a period of 12 months. This represents over 83% of all HC3 certificates issued in 2023/24. HC2 certificates show more variation in length than HC3 certificates. In 2023/24 43,000 HC2 certificates were valid for 6 months and 92,000 were valid for 12 months.
 
 
 #### Figure X: Number of NHS Low Income Scheme certificates issued, split by certificate type and applicant age band (2023/24) {.toc-ignore}
@@ -278,9 +286,11 @@ lis_age_objs$chart
 
 NHS Low Income Scheme certificates cover the applicant, partners and any dependent children. Age information is only captured for the lead applicant though. 
 
-Pensioners are more likely than other age groups to receive a long term certificate. This will impact the age distribution of certificates issued in a year.
+Pensioners are more likely than other age groups to receive a long term certificate. This will impact the age distribution of certificates issued in a year as pensioners may only have to apply once every 5 years.
 
-The younger and older age groups receive more certificates than other ages. Almost 52,000 certificates went to people aged 65 and over in 2023/24. A further 45,000 went to applicants 20-24 and 29,000 to applicants aged 19 and under.
+The younger and older age groups receive more certificates than other ages. Almost 52,000 certificates went to people aged 65 and over in 2023/24. A further 45,000 went to applicants 20-24 and 29,000 to applicants aged 19 and under. For HC3 certificates in particular this is stronger relationship with age with only 24% of certificates issued to people aged 25 to 64.
+
+For outcome decisions where no certificate was issued there is less variation by age and more activity for people in the 30 to 54 age group. In 2023/24, over a quarter of the decisions issued to people aged 30 to 54 had no certificate issued.
 
 #### Figure X: Number of NHS Low Income Scheme certificates issued, split by certificate type and IMD quintile (2023/24) {.toc-ignore}
 
@@ -304,7 +314,10 @@ The English Indices of Deprivation provide a measure of deprivation. In this rep
 
 Certificates were issued in the most deprived areas more than three times more often than the least deprived areas. 
 
+The distribution of outcome decision is similar within each IMD quintile. This suggests that deprivation profile alone is not a strong indicator of whether or not an application will result in a HC2, HC3 or no certificate being issued. However, it should be noted that this will not include applications that were abandoned before being completed.
+
 Despite being means-tested, certificates are still issued to applicants from less deprived areas. In 2023/24, over 13,000 HC2 certificates and over 5,000 HC3 certificates went to the least deprived areas.
+
 
 #### Figure X: Number of NHS Low Income Scheme certificates issued per 10,000 population, by ICB (2023/24) {.toc-ignore}
 
@@ -320,11 +333,11 @@ highcharter::hw_grid(lis_icb_objs$map, lis_icb_objs$chart, ncol = 2)
 
 `r get_download_button(title = "Download chart data", data = lis_icb_objs$chart_data, filename = "hwhc_figure_x")`
 
-Population estimates use figures published by [Office for National Statistics for ICB population](https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/clinicalcommissioninggroupmidyearpopulationestimates). These figures are mid-year estimates with 2022 population estimates used for this report. This is the latest available population statistics at the time of publication.
+Population estimates use figures published by [Office for National Statistics for ICB population](https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/clinicalcommissioninggroupmidyearpopulationestimates). These figures are mid-year estimates with 2022 population estimates used for this report. These are the latest available population statistics at the time of publication. To align with the people who may benefit from the NHS Low Income Scheme, population figures are based on people aged 16 and over.
 
 The map and chart are based on the total number of HC2 and HC3 certificates issued in 2023/24. This does not include any application outcomes where a HC2 or HC3 was not issued. Figures for individual application outcome types are included in the accompanying data.
 
-North West London ICB had the highest estimated number of certificates issued per 10,000 population. In 2023/24, an estimated 79 certificates were issued per 10,000 population in this ICB.
+North West London ICB had the highest estimated number of certificates issued per 10,000 population. In 2023/24, an estimated 79 certificates were issued per 10,000 population in this ICB. The top three ICBs in terms of certificates issued per 10,000 population were all from north London.
 
 Surrey Heartlands ICB had the lowest estimated number of certificates issued per 10,000 population in 2023/24. This ICB had an estimated 25 certificates per 10,000 population.
 
@@ -405,6 +418,8 @@ mat_active_objs$chart
 
 `r get_download_button(title = "Download chart data", data = mat_active_objs$chart_data, filename = "hwhc_figure_x")`
 
+The number of active certificates is only available from 2019/20 due to retention schedules for certificates prior to this period. It should be noted that active certificates are based solely on the start and expiration date of the issued certificates. This does not consider if the certificate holder was using the certificate or not.
+
 There have been over 1,100,000 maternity certificates active in each of the past five financial years. The 1,260,000 certificates active in 2023/24 is a 4% increase on the 1,210,000 certificates active in 2022/23.
 
 Some certificates may be active in multiple financial years, and the number of years a certificate will cover depends on how early on during pregnancy the certificate is issued.
@@ -413,7 +428,7 @@ Some certificates may be active in multiple financial years, and the number of y
 
 ::: {.row style="display: flex; padding-bottom: 15px;"}
 ::: col-md-6
-`r infoBox_no_border("", text = "<b> Over 60% of certificates were issued by 7 months before the expected due date</b>", width = "100%")`
+`r infoBox_no_border("", text = "<b>Over 60% of certificates were issued by 7 months before the expected due date</b>", width = "100%")`
 :::
 
 ::: col-md-6
@@ -436,8 +451,12 @@ In almost 95% of cases, the certificate had been issued by the expected due date
 #### Figure X: Number of maternity exemption certificates issued, split by age band of recipient (2023/24) {.toc-ignore}
 
 ::: {.row style="display: flex; padding-bottom: 15px;"}
-::: col-md-12
+::: col-md-6
 `r infoBox_no_border("", text = "<b>Numbers peak in the 30-34 age band, with 198,000 certificates issued to this age group</b>", width = "100%")`
+:::
+
+::: col-md-6
+`r infoBox_no_border("", text = "<b>Distribution by age is similar to the pattern seen for live birth statistics</b>", width = "100%")`
 :::
 :::
 
@@ -484,9 +503,9 @@ highcharter::hw_grid(
 
 The English Indices of Deprivation provide a measure of deprivation. In this report deprivation reflects the applicant's registered address. [Section 3.3 of this summary](#about_imd) contains more information on this measure.
 
-In general the number of maternity exemption certificates decreases in line with deprivation. The exception is the most deprived areas, where the 118,000 certificates issued is slightly less than 123,000 issued to the second most deprived group. 
+In general the number of maternity exemption certificates decreases in line with deprivation. The exception is the most deprived areas, where the 118,000 certificates issued is slightly less than 123,000 issued to the second most deprived group.
 
-The latest available live birth statistics published by Office for National Statistics suggest that more births are registered in the most deprived areas. In these most deprived areas, there are higher rates of people on income-related benefits which may entitle them to other help with health costs.
+The latest available live birth statistics published by Office for National Statistics suggest that in general the number of births are higher in the more deprived areas. In the most deprived areas, women may be more likely to qualify for other income-related benefits that offer the same support as a maternity exemption certificate.
 
 #### Figure X: Number of maternity exemption certificates issued per 10,000 population, by ICB (2023/24) {.toc-ignore}
 
@@ -502,7 +521,7 @@ highcharter::hw_grid(mat_icb_objs$map, mat_icb_objs$chart, ncol = 2)
 
 `r get_download_button(title = "Download chart data", data = mat_icb_objs$chart_data, filename = "hwhc_figure_x")`
 
-Population estimates use figures published by [Office for National Statistics for ICB population](https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/clinicalcommissioninggroupmidyearpopulationestimates). These figures are mid-year estimates with 2022 population estimates used for this report. This is the latest available population statistics at the time of publication. To align with maternity exemption certificates, population figures are based on the female population aged 15-45.
+Population estimates use figures published by [Office for National Statistics for ICB population](https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/clinicalcommissioninggroupmidyearpopulationestimates). These figures are mid-year estimates with 2022 population estimates used for this report. This is the latest available population statistics at the time of publication. To align with women who may benefit from maternity exemption certificates, population figures are based on the female population aged 15-45. However, these population statistics only cover a single year and will include women who are not pregnant and have not recently given birth.
 
 Bedfordshire, Luton and Milton Keynes ICB had the highest estimated number of certificates issued per 10,000 population. In 2023/24, an 636 certificates were issued per 10,000 population in this ICB.
 
@@ -599,6 +618,8 @@ med_active_objs$chart
 
 `r get_download_button(title = "Download chart data", data = med_active_objs$chart_data, filename = "hwhc_figure_x")`
 
+The number of active certificates is only available from 2019/20 due to retention schedules for certificates prior to this period. It should be noted that active certificates are based solely on the start and expiration date of the issued certificates. This does not consider if the certificate holder was using the certificate or not.
+
 Over the past five years there have been around 2,500,000 medical exemption certificates active each year. The 2,530,000 active certificates in 2023/24 is a 2% decrease from the 2,580,000. Although the number of certificates issued has increased over the past couple of years, the drop in certificates issued from 2020/21 will be reflected in the number of active certificates for the next couple of years.
 
 #### Figure X: Number of medical exemption certificates issued, split by age of recipient (2023/24) {.toc-ignore}
@@ -607,7 +628,6 @@ Over the past five years there have been around 2,500,000 medical exemption cert
 ::: col-md-6
 `r infoBox_no_border("", text = "<b>The number of certificates issued rises as the age of recipient rises</b>", width = "100%")`
 :::
-
 ::: col-md-6
 `r infoBox_no_border("", text = "<b>134,000 certificates were issued to people aged 55-59 in 2023/24</b>", width = "100%")`
 :::
@@ -627,8 +647,11 @@ As a medical exemption certificate only entitles the holder to free NHS prescrip
 
 
 ::: {.row style="display: flex; padding-bottom: 15px;"}
-::: col-md-12
+::: col-md-6
 `r infoBox_no_border("", text = "<b>The least deprived areas of the country had the lowest number of medical exemption certificates issued in 2023/34</b>", width = "100%")`
+:::
+::: col-md-6
+`r infoBox_no_border("", text = "<b>The number of medical exemption certificates issued in the most deprived quintile was lower than the next two quintiles with less deprivation</b>", width = "100%")`
 :::
 :::
 
@@ -641,6 +664,9 @@ med_imd_objs$chart
 The English Indices of Deprivation provide a measure of deprivation. In this report deprivation reflects the applicant's registered address. [Section 3.3 of this summary](#about_imd) contains more information on this measure.
 
 There is a slight correlation between deprivation of an area and the number of medical exemption certificates issued. Excluding the most deprived area, as deprivation decreases so does the number of issued certificates.
+
+The number of certificates issued in the most deprived areas was slightly lower than that for the next two, less deprived, groups.
+
 
 #### Figure X: Number of medical exemption certificates issued per 10,000 population, by ICB (2023/24) {.toc-ignore}
 
@@ -692,6 +718,8 @@ ppc_application_objs$chart
 Applications for 12-month PPCs have shown a consistent year-on-year increase. In 2023/24 there were 2,160,000 applications received, up from 2,060,000 in 2022/23 which is a 5% increase. The number of applications for 12-month certificates is more than double the number of applications for 3-month certificates. 
 
 The year-on-year increase for 3-month certificate applications is not as high, and applications dropped in 2020/21. In 2023/24 there were 992,000 applications for 3-month certificates, up 2% from the 973,000 applications received in 2022/23.
+
+The number of applications for 12-month PPCs is roughly double the number of applications for 3-month PPCs, with this rate gradually increasing each year. If a PPC is required for the full year, a 12-month certificate will cost less than 3-month certificates for the same period.
 
 Not all applications will result in a certificate being issued. Certificates will not be issued if there are issues with the initial payment for the certificate and in some cases the applicant may drop out for other reasons.
 
@@ -829,12 +857,18 @@ As this is the first year the HRT PPC has been available it is difficult to assu
 :::
 
 ::: col-md-6
-`r infoBox_no_border("", text = "<b>Almost half of the certificates issued in March 2024 were set to start the following month (?is evidence data required?)</b>", width = "100%")`
+`r infoBox_no_border("", text = "<b>Almost half of the certificates issued in March 2024 were set to start in April 2024</b>", width = "100%")`
 :::
 :::
 
 ```{r hrtppc_issued_chart}
-hrt_issued_objs$chart
+highcharter::hw_grid(
+  hrt_issued_objs$chart |> 
+    highcharter::hc_title(text = 'Number of HRT PPCs issued'), 
+  ch_hrt_issued_postdate |> 
+    highcharter::hc_title(text = 'Proportion of issued certificates dated to start the following month'), 
+  ncol = 2
+)
 ```
 
 `r get_download_button(title = "Download chart data", data = hrt_issued_objs$chart_data, filename = "hwhc_figure_x")`
@@ -844,6 +878,8 @@ The data for issued certificates is very similar to the application data. This i
 There were 566,000 HRT PPCs issued in 2023/24. Although numbers decreased after a very strong launch of the service, numbers have started to increase near the end of the year when existing certificates will be nearing expiration.
 
 The 131,000 certificates issued in the first month represent 23% of all HRT PPC certificates issued in 2023/24.
+
+The number of certificates issued leveled out near the end of the near with a notable jump in March 2024 when 37,600 certificates were issued. However, almost half of the certificates issued in March 2024 had a certificate start date in April 2024 which may suggest a large number of these were customers renewing expiring certificates. 
 
 #### Figure X: Number of HRT PPCs issued by age of recipient (2023/24) {.toc-ignore}
 
@@ -895,7 +931,7 @@ highcharter::hw_grid(
 )
 ```
 
-`r get_download_button(title = "Download chart data", data = hrt_age_objs$chart_data, filename = "hwhc_figure_x")`
+`r get_download_button(title = "Download chart data", data = hrt_imd_objs$chart_data, filename = "hwhc_figure_x")`
 
 There is a strong relationship between deprivation and the number of HRT PPCs issued in 2023/24. There were only 37,600 certificates issued in the most deprived areas. There were 189,000 certificates issued in the least deprived areas.
 
@@ -1030,7 +1066,7 @@ There is a strong relationship between deprivation and number of NHS tax credit 
 
 ::: {.row style="display: flex; padding-bottom: 15px;"}
 ::: col-md-12
-`r infoBox_no_border("", text = "<b>....</b>", width = "100%")`
+`r infoBox_no_border("", text = "<b>In 2023/24 figures ranged from 85 certificates per 10,000 population in Bath and North East Somerset, Swindon and Wiltshire ICB to 510 per 10,000 population in North East London ICB</b>", width = "100%")`
 :::
 :::
 

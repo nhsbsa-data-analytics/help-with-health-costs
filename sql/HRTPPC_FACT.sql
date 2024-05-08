@@ -94,7 +94,13 @@ select      hapf.CERTIFICATE_ID                                                 
                 extract(YEAR from add_months(to_date(hapf.CERTIFICATE_ACTIVE_DATE_SID,'YYYYMMDD'), 9))      as ISSUE_FY,
             --key dates: active
             to_date(hapf.CERTIFICATE_START_DATE_SID, 'YYYYMMDD')                                            as CERTIFICATE_START_DATE,
-            to_date(hapf.CERTIFICATE_END_DATE_SID, 'YYYYMMDD')                                              as CERTIFICATE_EXPIRY_DATE
+            to_date(hapf.CERTIFICATE_END_DATE_SID, 'YYYYMMDD')                                              as CERTIFICATE_EXPIRY_DATE,
+            --flag if certificates are post-dated to start the following month
+            case 
+                when substr(hapf.CERTIFICATE_START_DATE_SID,1,6) > substr(hapf.CERTIFICATE_ACTIVE_DATE_SID,1,6) 
+                then 1 
+                else 0 
+            end                                                                                             as FLAG_START_FOLLOWING_MONTH
 from        AML.HRT_APPLICATION_PROCESS_FACT    hapf
 inner join  DIM.HRT_CERTIFICATE_DIM             hcd     on  hapf.CERTIFICATE_ID  =   hcd.CERTIFICATE_ID
 left join   GRALI.ONS_NSPL_MAY_23               pcd     on  regexp_replace(upper(hapf.POSTCODE),'[^A-Z0-9]','') = regexp_replace(upper(pcd.PCD),'[^A-Z0-9]','')

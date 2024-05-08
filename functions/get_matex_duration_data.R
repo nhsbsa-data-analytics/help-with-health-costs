@@ -61,7 +61,7 @@ get_matex_duration_data <- function(db_connection, db_table_name, min_ym, max_ym
       TRUE ~ MONTHS_BETWEEN_DUE_DATE_AND_ISSUE
     )) |> 
     # summarise, splitting by month/fy and country of applicant
-    dplyr::group_by(ISSUE_FY, MONTHS_BETWEEN_DUE_DATE_AND_ISSUE) |> 
+    dplyr::group_by(SERVICE_AREA_NAME, ISSUE_FY, MONTHS_BETWEEN_DUE_DATE_AND_ISSUE) |> 
     dplyr::summarise(ISSUED_CERTS = n(), .groups = "keep") |> 
     dplyr::collect()
   
@@ -70,8 +70,8 @@ get_matex_duration_data <- function(db_connection, db_table_name, min_ym, max_ym
     dplyr::arrange(MONTHS_BETWEEN_DUE_DATE_AND_ISSUE) |> 
     dplyr::ungroup() |> 
     dplyr::mutate(
-      ROLLING_ISSUED_CERTS = cumsum(ISSUED_CERTS),
-      ROLLING_PROPORTION = round(ROLLING_ISSUED_CERTS / sum(ISSUED_CERTS) * 100, 1)
+      CUM_SUM_ISSUED_CERTS = cumsum(ISSUED_CERTS),
+      PROP_CUM_SUM_ISSUED_CERTS = round(CUM_SUM_ISSUED_CERTS / sum(ISSUED_CERTS) * 100, 1)
     )
   
   # return output

@@ -338,7 +338,7 @@ mat_active_objs <- create_hes_active_objects(
 ch_mat_duration <- get_matex_duration_data(con, 'HES_FACT', config$min_focus_ym_mat, config$max_focus_ym_mat) |>
   nhsbsaVis::basic_chart_hc(
     x = MONTHS_BETWEEN_DUE_DATE_AND_ISSUE,
-    y = ROLLING_PROPORTION,
+    y = PROP_CUM_SUM_ISSUED_CERTS,
     type = "line",
     xLab = "Number of months between due date and certificate issue date",
     yLab = "Proportion of certificates issued (%)",
@@ -369,26 +369,16 @@ ch_mat_duration <- get_matex_duration_data(con, 'HES_FACT', config$min_focus_ym_
   ))
 
 # Chart Data Download:
-dl_mat_duration <- get_matex_duration_data(con, 'HES_FACT', config$min_focus_ym_mat, config$max_focus_ym_mat) |>
-  dplyr::select(
-    `Financial Year` = ISSUE_FY,
-    `Number of months between due date and certificate issue date` = MONTHS_BETWEEN_DUE_DATE_AND_ISSUE,
-    `Number of certificates issued` = ISSUED_CERTS,
-    `Number of certificates issued (cumulative)` = ROLLING_ISSUED_CERTS,
-    `Proportion of certificates issued (cumulative %)` = ROLLING_PROPORTION
-  )
+dl_mat_duration <- get_matex_duration_data(con, 'HES_FACT', config$min_focus_ym_mat, config$max_focus_ym_mat) |> 
+  dplyr::mutate(MONTHS_BETWEEN_DUE_DATE_AND_ISSUE = ifelse(is.na(MONTHS_BETWEEN_DUE_DATE_AND_ISSUE ),"N/A",MONTHS_BETWEEN_DUE_DATE_AND_ISSUE)) |> 
+  rename_df_fields()
 
 # Support Data:
 sd_mat_duration <- get_matex_duration_data(con, 'HES_FACT', config$min_focus_ym_mat, config$max_focus_ym_mat) |>
-  dplyr::mutate(COUNTRY = "n/a") |> 
-  dplyr::select(
-    `Financial Year` = ISSUE_FY,
-    `Country` = COUNTRY,
-    `Number of months between due date and certificate issue date` = MONTHS_BETWEEN_DUE_DATE_AND_ISSUE,
-    `Number of certificates issued` = ISSUED_CERTS,
-    `Number of certificates issued (cumulative)` = ROLLING_ISSUED_CERTS,
-    `Proportion of certificates issued (cumulative %)` = ROLLING_PROPORTION
-  )
+  dplyr::mutate(MONTHS_BETWEEN_DUE_DATE_AND_ISSUE = ifelse(is.na(MONTHS_BETWEEN_DUE_DATE_AND_ISSUE ),"N/A",MONTHS_BETWEEN_DUE_DATE_AND_ISSUE)) |> 
+  dplyr::mutate(COUNTRY = "N/A") |> 
+  dplyr::relocate(COUNTRY, .after = ISSUE_FY) |> 
+  rename_df_fields()
 
 # 3.2.5 MATEX: Age profile (latest year)------------------------------------------------
 # Issued certificates will only include cases where a certificate was issued to the customer
@@ -455,7 +445,8 @@ mat_imd_objs <- create_hes_imd_objects(
 )
 
 # for additional context identify the number of live births published by ONS
-df_births_imd <- get_ons_live_birth_imd_data(con, config$ons_birth_imd_table, "IMD_QUINTILE", config$ons_births_year)
+df_births_imd <- get_ons_live_birth_imd_data(con, config$ons_birth_imd_table, "IMD_QUINTILE", config$ons_births_year) |> 
+  dplyr::mutate(IMD_QUINTILE)
 
 # create chart for ONS data
 ch_births_imd  = df_births_imd |>
@@ -480,14 +471,14 @@ ch_births_imd  = df_births_imd |>
 # add ONS data to chart and supporting data
 mat_imd_objs$chart_data <- mat_imd_objs$chart_data |> 
   dplyr::left_join(
-    y = df_births_imd,
+    y = df_births_imd |> dplyr::mutate(IMD_QUINTILE = as.character(IMD_QUINTILE)),
     by = c(`IMD Quintile` = "IMD_QUINTILE")
   ) |> 
   dplyr::rename(!!paste0("ONS Live Births (", config$ons_births_year, ")") := LIVE_BIRTHS)
 
 mat_imd_objs$support_data <- mat_imd_objs$support_data |> 
   dplyr::left_join(
-    y = df_births_imd,
+    y = df_births_imd |> dplyr::mutate(IMD_QUINTILE = as.character(IMD_QUINTILE)),
     by = c(`IMD Quintile` = "IMD_QUINTILE")
   ) |> 
   dplyr::rename(!!paste0("ONS Live Births (", config$ons_births_year, ")") := LIVE_BIRTHS)
@@ -563,7 +554,6 @@ med_age_objs <- create_hes_age_objects(
   max_ym = config$max_focus_ym_med,
   subtype_split = FALSE
 )
-
 
 # 3.3.5 MEDEX: Deprivation profile (latest year)------------------------------------------------
 # IMD may not be available if the postcode cannot be mapped to NSPL
@@ -734,6 +724,57 @@ hrt_issued_objs <- create_hes_issued_month_objects(
   subtype_split = FALSE
 )
 
+# identify the proportion of issued certificates post-dated to the next month
+df_hrt_issued_postdate <- dplyr::tbl(
+  con, 
+  from = dbplyr::in_schema(toupper(con@info$username), 'HRTPPC_FACT')
+) |> 
+  # filter to service area and time periods
+  dplyr::filter(
+    SERVICE_AREA == toupper('HRTPPC'),
+    ISSUE_YM >= config$min_focus_ym_hrt,
+    ISSUE_YM <= config$max_focus_ym_hrt,
+    CERTIFICATE_ISSUED_FLAG == 1
+  ) |> 
+  dplyr::group_by(ISSUE_YM) |> 
+  dplyr::summarise(
+    ISSUED_CERTS = n(),
+    POST_DATE_CERTS = sum(FLAG_START_FOLLOWING_MONTH)
+  ) |> 
+  dplyr::ungroup() |> 
+  dplyr::mutate(PROP_CERTS_POSTDATE = round(POST_DATE_CERTS/ISSUED_CERTS*100,1)) |> 
+  dplyr::mutate(ISSUE_YM = paste0(substr(ISSUE_YM,1,4),'-',substr(ISSUE_YM,5,6))) |> 
+  dplyr::arrange(ISSUE_YM) |> 
+  dplyr::collect()
+
+# create a column chart
+ch_hrt_issued_postdate <- df_hrt_issued_postdate |> 
+nhsbsaVis::basic_chart_hc(
+  x = ISSUE_YM,
+  y = PROP_CERTS_POSTDATE,
+  type = "column",
+  xLab = "Month",
+  yLab = "Proportion of issued certificates post-dated to start the following month",
+  seriesName = "Proportion of issued certificates",
+  title = "",
+  dlOn = FALSE
+) |> 
+  highcharter::hc_tooltip(
+    enabled = T,
+    shared = T,
+    sort = T
+  ) |>
+  highcharter::hc_yAxis(labels = list(enabled = TRUE))
+
+# update the chart data object
+hrt_issued_objs$chart_data <- hrt_issued_objs$chart_data |> 
+  dplyr::left_join(
+    y = df_hrt_issued_postdate |> dplyr::select(-ISSUED_CERTS),
+    by = c("Month" = "ISSUE_YM")
+  ) |> 
+  rename_df_fields()
+
+
 # 3.5.3 HRTPPC: Age profile (latest year)------------------------------------------------
 # Some processing applied to base dataset to reclassify ages that are outside of expected ranges as these may be errors
 
@@ -784,7 +825,7 @@ hrt_imd_base_pop_objs <- create_px_patient_imd_objects(
 
 hrt_imd_objs$chart_data <- hrt_imd_objs$chart_data |> 
   dplyr::left_join(
-    y = hrt_imd_base_pop_objs$chart_data,
+    y = hrt_imd_base_pop_objs$chart_data |> dplyr::mutate(`IMD Quintile` = as.character(`IMD Quintile`)),
     by = c('IMD Quintile')
   ) |> 
   dplyr::rename(`Estimated patients receiving HRT PPC qualifying medication (aged 16-59)` = BASE_POPULATION)

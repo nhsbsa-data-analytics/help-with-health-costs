@@ -72,6 +72,7 @@ select      standard_hash(hcd.CERTIFICATE_NUMBER, 'SHA256')                     
                 -- for MATEX, MEDEX and PPC exclude any ages outside of expected range 15-59 (likely errors)
                 --for MATEX anything above 45 group as 45+
                 when hcd.CERTIFICATE_TYPE is null                                                           then 'N/A'
+                when hcd.CERTIFICATE_HOLDER_AGE is null                                                     then 'N/A'
                 when hcd.CERTIFICATE_TYPE in ('MAT','MED','PPC','TAX') and hcd.CERTIFICATE_HOLDER_AGE <= 14 then 'N/A'
                 when hcd.CERTIFICATE_TYPE in ('MAT','MED','PPC') and hcd.CERTIFICATE_HOLDER_AGE >= 60       then 'N/A'
                 when hcd.CERTIFICATE_TYPE in ('TAX') and hcd.CERTIFICATE_HOLDER_AGE > 90                    then 'N/A'

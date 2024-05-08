@@ -9,7 +9,7 @@ publication_table_title: "Help with Health Costs (HwHC) - 2019/20 to 2023/24"
 rebuild_base_data: FALSE
 extract_date_lis: "20240409"
 extract_date_hes: "20240409"
-extract_date_hrt: "20240503"
+extract_date_hrt: "20240507"
 extract_px_min_ym: 202304
 extract_px_max_ym: 202403
 extract_px_age_dt: 20230930   # date to use to calculate patient age

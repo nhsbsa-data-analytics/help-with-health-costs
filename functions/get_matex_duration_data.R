@@ -54,9 +54,9 @@ get_matex_duration_data <- function(db_connection, db_table_name, min_ym, max_ym
       ISSUE_YM <= max_ym,
       CERTIFICATE_ISSUED_FLAG == 1 
     ) |>
-    # apply formatting to reclassify anything beyond -11 months and +12 months
+    # apply formatting to reclassify anything beyond -9 months and +12 months
     dplyr::mutate(MONTHS_BETWEEN_DUE_DATE_AND_ISSUE = dplyr::case_when(
-      MONTHS_BETWEEN_DUE_DATE_AND_ISSUE < -11 ~ NA,
+      MONTHS_BETWEEN_DUE_DATE_AND_ISSUE < -9 ~ NA,
       MONTHS_BETWEEN_DUE_DATE_AND_ISSUE > 12 ~ NA,
       TRUE ~ MONTHS_BETWEEN_DUE_DATE_AND_ISSUE
     )) |> 

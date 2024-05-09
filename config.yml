@@ -1,9 +1,12 @@
 publication_top_name: "Help with Health Costs (HwHC)"
-publication_sub_name: "2019/20 to 2023/24"
+publication_sub_name: "2018/19 to 2023/24"
 publication_date: "20 June 2024"
 responsible_statistician: "Steven Buckley"
 stats_survey_link: "https://online1.snapsurveys.com/Official_Statistics_Feedback"
 publication_table_title: "Help with Health Costs (HwHC) - 2019/20 to 2023/24"
+publication_title: "help-with-health-costs"
+methodology_title: "help-with-health-costs-methodology"
+output_type: "html_document" # html_document / word_document
 
 # data table criteria
 rebuild_base_data: FALSE

@@ -1788,22 +1788,32 @@ openxlsx::saveWorkbook(wb,
                        "outputs/hwhc_tables.xlsx",
                        overwrite = TRUE)
 
-
-# 5. Charts and figures ---------------------------------------------------
-
-
-# 6. Render outputs ------------------------------------------------------------
+# 5. Render outputs ------------------------------------------------------------
 
 rmarkdown::render(
   "hwhc-markdown.Rmd",
-  output_format = "html_document",
-  output_file = "outputs/help-with-health-costs.html"
+  output_format = config$output_type,
+  output_file = paste0(
+    "outputs/", 
+    config$publication_title, 
+    switch(config$output_type,
+           "html_document" = ".html",
+           "word_document" = ".docx"
+           )
+  )
 )
 
 rmarkdown::render(
   "hwhc-methodology.Rmd",
-  output_format = "html_document",
-  output_file = "outputs/help-with-health-costs-methodology.html"
+  output_format = config$output_type,
+  output_file = paste0(
+    "outputs/", 
+    config$methodology_title, 
+    switch(config$output_type,
+           "html_document" = ".html",
+           "word_document" = ".docx"
+    )
+  )
 )
 
 logr::log_close()

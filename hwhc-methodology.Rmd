@@ -3,6 +3,9 @@ title: "`r config$publication_top_name`"
 pagetitle: Help with Health Costs
 always_allow_html: true
 output:
+  word_document:
+    toc: yes
+    toc_depth: '3'
   html_document:
     anchor_sections: no
     css: www/style.css
@@ -10,9 +13,6 @@ output:
     toc_depth: 3
     toc_float:
       collapsed: no
-  word_document:
-    toc: yes
-    toc_depth: '3'
 ---
   
   <script>

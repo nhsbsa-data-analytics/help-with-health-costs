@@ -47,7 +47,6 @@ Published `r config$publication_date`
 ------------------------------------------------------------------------
   
 ## 1. Background information
-  
 The NHSBSA administer a range of services to help people with the health costs, include help with:
 
 * NHS prescription costs
@@ -70,7 +69,6 @@ Six different certificate schemes are available, with different levels of help w
 These statistics provide estimates of volumes related to these certificate schemes. Data covers the financial years 2019/2020 to 2023/24, where the financial year runs from April 1 to March 31.
 
 #### Users and uses
-
 This publication can have a wide range of uses, including:
 
 * informing government or local NHS policy
@@ -80,13 +78,11 @@ This publication can have a wide range of uses, including:
 
 The NHS Business Services Authority (NHSBSA) administer services providing help with health costs. The data that forms the basis of these statistics is collected as a by-product of this process.
 
-
 ## 2. Methodology
 
-### 2.1 Applicant/certificate holder details {.toc-ignore}
+### 2.1 Applicant and certificate holder details {.toc-ignore}
 
 #### 2.1.1 Age
-
 Reported ages represent the age of the applicant when they submitted the application.
 
 Some certificates may also provide support for partners and dependent children. In these cases, the age will represent the age of the lead applicant only.
@@ -98,13 +94,19 @@ These statistics use the National Statistics Postcode lookup (NSPL) to identify 
 
 Postcodes are usually provided during application process. Some applicant's may then update postcode details when addresses change. The postcode used for these statistics will represent the latest known postcode information.
 
+Some help with health cost services are ring-fenced to applicants from England whilst other services may also provide certificates for Scotland, Wales and Northern Ireland. Within the main report, figures will represent all activity. The supporting datasets will include a country breakdown. 
+
+ICB reporting is limited to applicants that have an identifiable postcode in England.
+
 Due to the method used to assign location, some data may change between releases. Historic location data may change:
 
 * if a person moves postcode and updates their details between releases
 * if the NSPL reclassifies a postcode against a different area in the new NSPL edition
 
 #### 2.1.3  Deprivation
-Deprivation reporting uses the [English Indices of Deprivation 2019](https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019). In particular, the headline Index of Multiple Deprivation (IMD). IMD data combines with the National Statistics Postcode Lookup (NSPL) using lower-layer super output area (LSOA) 2011. This identifies the general deprivation for an applicant's postcode. 
+Deprivation reporting uses the [English Indices of Deprivation 2019](https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019). In particular, the headline Index of Multiple Deprivation (IMD). IMD data combines with the National Statistics Postcode Lookup (NSPL) using lower-layer super output area (LSOA) 2011. This identifies the general deprivation for an applicant's postcode.
+
+As deprivation is based on indices calculated for England only, reporting is limiting to applicants that can be identified with an English postcode.
 
 The measure of deprivation reported in these statistics is the IMD quintile. Each quintile represents 20% of the population, based on groups of LSOA. If an applicant's postcode does not map to the NSPL the data will be reported as 'unknown' IMD quintile.
 
@@ -115,12 +117,37 @@ Due to the method used to assign IMD quintile, some data may change between rele
 * if a person moves postcode and updates their details between releases to a LSOA in a different IMD quintile
 * if the NSPL reclassifies a postcode against a different quintile in the new NSPL edition
 
-### 2.2 Service specific data capture methodology {.toc-ignore}
+### 2.2 Application and certificate count details {.toc-ignore}
 
-#### 2.2.1 NHS Low Income Scheme
+#### 2.2.1 Application counts
+Where a count of applications is reported, this includes all applications received regardless of application route, status or outcome.
+
+A single applicant could submit multiple applications during the same periods. Each application will be treated as a unique event and counted accordingly.
+
+For some help with health cost services, such a NHS Low Income Scheme, a single application could represent multiple people.
+
+#### 2.2.2 Issued certificate counts
+Where a count of issued certificates has been provided this will only include cases where the application has been completed and a certificate (or outcome for NHS Low Income Scheme) issued to the applicant.
+
+These counts are based solely on certificates issued by NHS BSA. There is no ability to identify if the certificate was received and then used by the applicant.
+
+Some certificates may be reissued if the certificate holder changes there personal information or requests a replacement due to damage or loss of a certificate. These additional (reissued) certificates will not be included in any certificate counts. However, if a certificate holder submits a completely new application, and receives an additional certificate, this will be counted alongside all other issued certificates.
+
+For NHS Low Income Scheme, applications are handled via an assessment process and may not qualify for support. Applicants will be informed of the outcome of the assessment, with either a certificate being issued or confirmation of no support. Outcome decisions of no support will be reported alongside the HC2 and HC3 certificates issued. Where no certificate is issued, the time period will represent the date of the application as no date is available for when the no support decision was issued to the applicant.
+
+#### 2.2.3 Active certificate counts
+Where a count of active certificates has been provided this will only include cases where a certificate has been issued to the customer.
+
+A certificate will be deemed "active" if the start and expiration date of the certificate cover one or more days in the reported time period.
+
+There is no ability to identify if a certificate is actively being used by the certificate holder.
+
+### 2.3 Service specific data capture methodology {.toc-ignore}
+
+#### 2.3.1 NHS Low Income Scheme
 Reporting reflects data available in the NHSBSA Data Warehouse environment as of `r format(as.Date(config$extract_date_lis,"%Y%m%d"),"%d %B %Y")`.
 
-##### 2.2.1.1 Date restrictions and exclusions applied
+##### 2.3.1.1 Date restrictions and exclusions applied
 The number of applications and issued outcomes cover the period 2018/19 to 2023/24.
 
 For "active" certificates data can only be reported from 2019/20 onwards. This is due to historic data retention 
@@ -134,28 +161,28 @@ The following restrictions apply to all reporting relating to NHS Low Income Sch
 * Excluding any HC5 (refund only) applications.
 * Excluding any data relating to UKVI Asylum Seekers.
 
-##### 2.2.1.2 Application outcome
+##### 2.3.1.2 Application outcome
 Applications are only considered as complete if the data shows an outcome has been issued to the applicant. Applications that are currently in progress are not included. Applications abandoned before completion are only included in figures relating to applications received.
 
 The certificate type for issued certificates will be HC2 or HC3. The term "no certificate issued" is used for all other outcomes.
 
 Where no HC2 or HC3 certificate was issued, there is no data available relating to the date this decision was supplied to the applicant. Where these outcomes have been reported, the date used will relate to the date of application. For HC2 or HC3 certificates the date will represent the date the certificate was issued to the applicant.
 
-##### 2.2.1.3 Age
+##### 2.3.1.3 Age
 The age reported will represent the age of the applicant at the time of application. Figures are reported in 5 year age bands, with applicants aged 65 and over grouped as 65+.
 
 To limit risk of inaccurate reporting, a classification of "unknown" represents data with confidence issues. For NHS Low Income Scheme data this includes where the calculated age would be less than 15 or greater than 99.
 
-##### 2.2.1.4 Certificate duration
+##### 2.3.1.4 Certificate duration
 Duration is the number of months between the start and expiry date for a certificate. To simplify reporting, age bands represent the most common scenarios.
 
-##### 2.2.1.5 ICB base population
-For ICB reporting, rates have been calculated per 10,000 base population. This base population is based on mid-year population estimates published by ONS, limited to population aged 16 and above. 
+##### 2.3.1.5 ICB base population
+For ICB reporting, rates have been calculated per 10,000 base population. This base population is based on mid-year population estimates published by ONS for 2022, limited to population aged 16 and above. 
 
-#### 2.2.2 Maternity exemption certificate
+#### 2.3.2 Maternity exemption certificate
 Reporting reflects data available in the NHSBSA Data Warehouse environment as of `r format(as.Date(config$extract_date_hes,"%Y%m%d"),"%d %B %Y")`.
 
-##### 2.2.2.1 Date restrictions and exclusions applied
+##### 2.3.2.1 Date restrictions and exclusions applied
 The number of applications and issued outcomes cover the period 2018/19 to 2023/24.
 
 For "active" certificates data can only be reported from 2019/20 onwards. This is due to historic data retention 
@@ -165,34 +192,111 @@ For analysis based on demographics such as age and location, data relates to the
 
 Applications that are still ongoing or were abandoned before completion are only included in figures relating to applications received.
 
-##### 2.2.2.2 Age
+##### 2.3.2.2 Age
 The age reported will represent the age of the applicant at the time of application. Figures are reported in 5 year age bands, with applicants aged 45 and over grouped as 45+.
 
 To limit risk of inaccurate reporting, a classification of "unknown" represents data with confidence issues. For maternity exemption data this includes where the calculated age would be less than 15 or greater than 60.
 
-##### 2.2.2.3 Proportion of certificates issued relative to expected due date
-This measure shows the relationship between the date the certificate was issued to the applicant and the expected due date. The expected due date will typically be supplied when the application is submitted and therefore may not always represent the actual date of delivery. 
+##### 2.3.2.3 Proportion of certificates issued relative to expected due date
+This measure shows the relationship between the date the certificate was issued to the applicant and the expected due date. Proportion figures are cumulative and therefore by 12 months after the due date all certificates must have been issued.
 
-Figures have been reported by number of months, with figures rounded to the nearest number of months. For example:
+The expected due date will typically be supplied when the application is submitted and therefore may not always represent the actual date of delivery.
 
-* expected due date of 10 January and certificate
+Figures have been reported by number of months, with figures rounded to the nearest number of months. For example, using an expected due date of 10 January 2024:
 
+* certificates issued on 26 June 2023 would show as -7 months
+* certificates issued on 25 December 2023 would show as -1 months
+* certificates issued on 26 December 2023 would show as 0 months
+* certificates issued on 25 January 2024 would show as 0 months
+* certificates issued on 26 January 2024 would show as 1 months
+* certificates issued on 30 March 2024 would show as 3 months
+* if no expected due date is available, or the captured due date appears invalid, figures will be reported as N/A
 
-
-##### 2.2.2.4 ICB base population
+##### 2.3.2.4 ICB base population
 For ICB reporting, rates have been calculated per 10,000 base population. This base population is based on mid-year population estimates published by ONS for 2022, limited to female population aged 16 to 45.
 
-### 2.3 Base population identification {.toc-ignore}
+#### 2.3.3 Medical exemption certificate
+Reporting reflects data available in the NHSBSA Data Warehouse environment as of `r format(as.Date(config$extract_date_hes,"%Y%m%d"),"%d %B %Y")`.
+
+##### 2.3.3.1 Date restrictions and exclusions applied
+The number of applications and issued outcomes cover the period 2018/19 to 2023/24.
+
+For "active" certificates data can only be reported from 2019/20 onwards. This is due to historic data retention 
+schedules and the potential length of issued certificates.
+
+For analysis based on demographics such as age and location, data relates to the latest financial year of 2023/24.
+
+Applications that are still ongoing or were abandoned before completion are only included in figures relating to applications received.
+
+##### 2.3.3.2 Age
+The age reported will represent the age of the applicant at the time of application. Figures are reported in 5 year age bands. The medical exemption certificate provides support with NHS prescriptions charges and therefore is only relevant between the ages of 16 and 59 when prescription items are not automatically free based on patient age.
+
+To limit risk of inaccurate reporting, a classification of "unknown" represents data with confidence issues. For medical exemption data this includes where the calculated age would be less than 15 or greater than 60.
+
+##### 2.3.3.3 ICB base population
+For ICB reporting, rates have been calculated per 10,000 base population. This base population is based estimated patient counts, aged 16-59, receiving any NHS prescription items during the reported time period.
+
+#### 2.3.4 NHS Prescription Prepayment Certificate (PPC)
+Reporting reflects data available in the NHSBSA Data Warehouse environment as of `r format(as.Date(config$extract_date_hes,"%Y%m%d"),"%d %B %Y")`.
+
+##### 2.3.4.1 Date restrictions and exclusions applied
+The number of applications and issued outcomes cover the period 2018/19 to 2023/24.
+
+For analysis based on demographics such as age and location, data relates to the latest financial year of 2023/24.
+
+Applications that are still ongoing or were abandoned before completion are only included in figures relating to applications received.
+
+##### 2.3.4.2 Age
+The age reported will represent the age of the applicant at the time of application. Figures are reported in 5 year age bands. The PPC provides support with NHS prescriptions charges and therefore is only relevant between the ages of 16 and 59 when prescription items are not automatically free based on patient age.
+
+To limit risk of inaccurate reporting, a classification of "unknown" represents data with confidence issues. For PPC data this includes where the calculated age would be less than 15 or greater than 60.
+
+##### 2.3.4.3 ICB base population
+For ICB reporting, rates have been calculated per 10,000 base population. This base population is based estimated patient counts, aged 16-59, receiving any NHS prescription items during the reported time period.
+
+#### 2.3.5 NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT PPC)
+Reporting reflects data available in the NHSBSA Data Warehouse environment as of `r format(as.Date(config$extract_date_hrt,"%Y%m%d"),"%d %B %Y")`.
+
+##### 2.3.5.1 Date restrictions and exclusions applied
+The HRT PPC was introduced in April 2023. All analysis in this publication reflects activity during 2023/24.
+
+Applications that are still ongoing or were abandoned before completion are only included in figures relating to applications received.
+
+##### 2.3.5.2 Age
+The age reported will represent the age of the applicant at the time of application. Figures are reported in 5 year age bands. The HRT PPC provides support with NHS prescriptions charges and therefore is only relevant between the ages of 16 and 59 when prescription items are not automatically free based on patient age.
+
+To limit risk of inaccurate reporting, a classification of "unknown" represents data with confidence issues. For HRT PPC data this includes where the calculated age would be less than 15 or greater than 60.
+
+##### 2.3.5.3 ICB base population
+For ICB reporting, rates have been calculated per 10,000 base population. This base population is based estimated patient counts, aged 16-59, receiving any NHS prescription items for drugs that were eligible for support by the HRT PPC during the reported time period.
+
+#### 2.3.6 NHS tax credit exemption certificates
+Reporting reflects data available in the NHSBSA Data Warehouse environment as of `r format(as.Date(config$extract_date_hes,"%Y%m%d"),"%d %B %Y")`.
+
+##### 2.3.6.1 Date restrictions and exclusions applied
+The number of issued certificates cover the period 2018/19 to 2023/24.
+
+For analysis based on demographics such as age and location, data relates to the latest financial year of 2023/24.
+
+##### 2.3.6.2 Age
+The age reported will represent the age of the applicant at the time of application. Figures are reported in 5 year age bands, with applicants aged 65 and over grouped as 65+.
+
+To limit risk of inaccurate reporting, a classification of "unknown" represents data with confidence issues. For NHS Low Income Scheme data this includes where the calculated age would be less than 15 or greater than 90.
+
+##### 2.3.6.3 ICB base population
+For ICB reporting, rates have been calculated per 10,000 base population. This base population is based on mid-year population estimates published by ONS for 2022, limited to population aged 16 and above.
+
+### 2.4 Base population identification {.toc-ignore}
 
 When reporting activity by geographic area, such as ICB, figures can be standardised to adjust for area size. The easiest method for this to calculate a rate using an appropriate population baseline. Within the help with health costs report two different population baselines have been applied.
 
-#### 2.3.1 NHS prescribing data patient counts
+#### 2.4.1 NHS prescribing data patient counts
 
 Some help with health cost services are focused on providing support with NHS prescription costs. For these services the most appropriate base population may be estimated patient counts based on data captured from NHS prescribing data. Where estimated patient counts 
 
 The patient count estimates are based on available data from the NHS prescription dataset maintained by NHSBSA. These patient counts may omit patients whose prescribing activity either cannot be identified or cannot be attributed to a geographic area or age group. For 2023/24, the required patient information could be identified for XXX% of prescription items dispensed in England.
 
-##### 2.3.1.1 Geographic area identification
+##### 2.4.1.1 Geographic area identification
 
 For prescribing via the Electronic Prescription Service (EPS), the patient's residential address is captured from the prescription data. This address is then assigned to a lower-layer super output area (LSOA) 2011. The LSOA can then be used to identify both the ICB and the deprivation profile (see section 2.1.3) based on mapping available in the National Statistics Postcode Lookup (NSPL).
 
@@ -200,7 +304,7 @@ LSOA is only captured for prescriptions via EPS. For patients receiving both pap
 
 Some patients may be captured with data against multiple residential addresses. To prevent patient's being counted multiple times, in these instances patients have been assigned to a single location. This is based on data captured against the latest available prescription record in the time period.
 
-##### 2.3.1.3 Patient age
+##### 2.4.1.2 Patient age
 
 To report a patient’s age consistently across a financial year these statistics classify a patient based on their age on the 30th of September of that given financial year. This uses date of birth information from Personal Demographic Service (PDS) for verified NHS numbers only. 
 
@@ -208,7 +312,7 @@ Information relating to NHS numbers that have not been verified by PDS were excl
 
 In rare circumstances patient data may be updated resulting in multiple dates of birth being captured for an NHS number. In these instances, the date of birth captured against the latest available prescription record in the time period was used to calculate the patient's age.
 
-##### 2.3.1.5 Drug classification (HRT PPC population only)
+##### 2.4.1.3 Drug classification (HRT PPC population only)
 
 The NHSBSA holds drug and prescription data at a pack level and uses this information for the correct reimbursement of dispensing contractors. The drug database maintained by NHSBSA includes flags to identify which drugs are licensed to treat menopause in the UK and covered by the HRT PPC.
 
@@ -216,7 +320,7 @@ For population baseline figures used for HRT PPC, prescribing activity is restri
 
 For population baseline figures for certificates other than HRT PPC, no drug restrictions have been applied.
 
-#### 2.3.2 ONS published population estimates
+#### 2.4.2 ONS published population estimates
 
 Some help with health cost services provide support with a range of costs. For these services the most appropriate base population may be estimated population counts as published by ONS.
 
@@ -224,7 +328,7 @@ The population estimates were sourced from [population estimates for health geog
 
 These population estimates are based on mid-year estimates, with 2022 being the latest available year at time of reporting. Figures published by ONS include a breakdown by age and gender. Within the help with health costs report, data was aggregated as required to include the most appropriate combination of age and gender for the service being reported.
 
-#### 2.3.2 ONS live birth statistics
+#### 2.4.3 ONS live birth statistics
 
 To provide context for the maternity exemption certificate some live birth statistics have been reported. These figures were sourced from data published by ONS. It is not suitable, or possible, to use these figures as an accurate representation of the number of potential claims for maternity exemption certificates. Therefore this figures should only be considered as additional context.
 
@@ -238,6 +342,7 @@ The distribution of live births by age of mother was sourced from [ONS nomis too
 The distribution of live births by IMD decile was sourced from [birth characteristics dataset published by ONS (see worksheet 12)](https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/birthsdeathsandmarriages/livebirths/datasets/birthcharacteristicsinenglandandwales/2021/birthcharacteristics2021workbooknew.xlsx).
 
 ## 3. Changes to this publication
+This is the first time this publication has been released.
 
 ## 4. Strengths and limitations
 
@@ -388,6 +493,7 @@ We have made a judgement about the suitability of the administrative data for us
 
 ## 8. Glossary of terms used in these statistics
 
+T.B.C
 
 
 

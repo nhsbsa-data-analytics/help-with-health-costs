@@ -774,6 +774,14 @@ hrt_issued_objs$chart_data <- hrt_issued_objs$chart_data |>
   ) |> 
   rename_df_fields()
 
+# update the support data object
+hrt_issued_objs$support_data <- hrt_issued_objs$support_data |> 
+  dplyr::left_join(
+    y = df_hrt_issued_postdate |> dplyr::select(-ISSUED_CERTS),
+    by = c("Month" = "ISSUE_YM")
+  ) |> 
+  rename_df_fields()
+
 
 # 3.5.3 HRTPPC: Age profile (latest year)------------------------------------------------
 # Some processing applied to base dataset to reclassify ages that are outside of expected ranges as these may be errors
@@ -795,6 +803,13 @@ hrt_age_base_pop_objs <- create_px_patient_age_objects(
 )
 
 hrt_age_objs$chart_data <- hrt_age_objs$chart_data |> 
+  dplyr::left_join(
+    y = hrt_age_base_pop_objs$chart_data,
+    by = c('Age Band')
+  ) |> 
+  dplyr::rename(`Estimated patients receiving HRT PPC qualifying medication (aged 16-59)` = BASE_POPULATION)
+
+hrt_age_objs$support_data <- hrt_age_objs$support_data |> 
   dplyr::left_join(
     y = hrt_age_base_pop_objs$chart_data,
     by = c('Age Band')
@@ -824,6 +839,13 @@ hrt_imd_base_pop_objs <- create_px_patient_imd_objects(
 )
 
 hrt_imd_objs$chart_data <- hrt_imd_objs$chart_data |> 
+  dplyr::left_join(
+    y = hrt_imd_base_pop_objs$chart_data |> dplyr::mutate(`IMD Quintile` = as.character(`IMD Quintile`)),
+    by = c('IMD Quintile')
+  ) |> 
+  dplyr::rename(`Estimated patients receiving HRT PPC qualifying medication (aged 16-59)` = BASE_POPULATION)
+
+hrt_imd_objs$support_data <- hrt_imd_objs$support_data |> 
   dplyr::left_join(
     y = hrt_imd_base_pop_objs$chart_data |> dplyr::mutate(`IMD Quintile` = as.character(`IMD Quintile`)),
     by = c('IMD Quintile')
@@ -1018,64 +1040,67 @@ sheetNames <- c(
   "LIS_Age_Breakdown",
   "LIS_Deprivation_Breakdown",
   "LIS_ICB_Breakdown",
-  "MAT_Applications",
-  "MAT_Outcomes",
-  "MAT_Active_Certificates",
-  "MAT_Certificate_Duration",
-  "MED_Applications",
-  "MED_Outcomes",
-  "MED_Active_Certificates",
+  
+  "MATEX_Applications",
+  "MATEX_Outcomes",
+  "MATEX_Active_Certificates",
+  "MATEX_Certificate_Duration",
+  "MATEX_Age_Breakdown",
+  "MATEX_Deprivation_Breakdown",
+  "MATEX_ICB_Breakdown",
+  
+  "MEDEX_Applications",
+  "MEDEX_Outcomes",
+  "MEDEX_Active_Certificates",
+  "MEDEX_Age_Breakdown",
+  "MEDEX_Deprivation_Breakdown",
+  "MEDEX_ICB_Breakdown",
+  
   "PPC_Applications",
   "PPC_Outcomes",
-  "TAX_Outcomes"
+  "PPC_Age_Breakdown",
+  "PPC_Deprivation_Breakdown",
+  "PPC_ICB_Breakdown",
+  
+  "HRTPPC_Applications",
+  "HRTPPC_Outcomes",
+  "HRTPPC_Age_Breakdown",
+  "HRTPPC_Deprivation_Breakdown",
+  "HRTPPC_ICB_Breakdown",
+  
+  "TAX_Outcomes",
+  "TAX_Age_Breakdown",
+  "TAX_Age_Profile",
+  "TAX_Deprivation_Breakdown",
+  "TAX_ICB_Breakdown"
 )
 
 wb <- accessibleTables::create_wb(sheetNames)
 
 # create metadata tab (will need to open file and auto row heights once ran)
 meta_fields <- c(
+  "HwHC Service",
   "Financial Year",
   "Country",
-  "Number of applications",
-  "HC2 certificates issued",
-  "HC3 certificates issued",
-  "No certificate issued",
-  "Total decisions issued",
-  "Total certificates issued",
-  "Active HC2 certificates",
-  "Active HC3 certificates",
-  "Total active certificates",
-  "Certificate Duration",
-  "Age Band",
-  "IMD Quintile",
-  "ICB",
-  "Population",
-  "HC2 Certificates issued per 10,000 population",
-  "HC3 Certificates issued per 10,000 population",
-  "Certificates issued per 10,000 population"
+  "Number of applications received",
+  "Certificate Type",
+  "Certificate Type: HC2 (NHS Low Income Scheme)",
+  "Certificate Type: HC3 (NHS Low Income Scheme)",
+  "Certificate Type: No certificate issued (NHS Low Income Scheme)",
+  "IMD Quintile"
 )
 
 meta_descs <-
   c(
-    "Financial Year",
-    "Country",
-    "Number of applications",
-    "HC2 certificates issued",
-    "HC3 certificates issued",
-    "No certificate issued",
-    "Total decisions issued",
-    "Total certificates issued",
-    "Active HC2 certificates",
-    "Active HC3 certificates",
-    "Total active certificates",
-    "Certificate Duration",
-    "Age Band",
-    "IMD Quintile",
-    "ICB",
-    "Population",
-    "HC2 Certificates issued per 10,000 population",
-    "HC3 Certificates issued per 10,000 population",
-    "Certificates issued per 10,000 population"
+    "Name of NHS BSA administered service.",
+    "Financial year the activity can be assigned to.",
+    "Country based on the applicants residential address, using mapping via the National Statistics Postcode Lookup (NSPL). For certificates only applicable for England the country will show as 'n/a'. Where the applicants residential address cannot be aligned to a country via the NSPL, the country will be recorded as 'Unknown'.",
+    "Number of applications. Includes applications via any route. Includes all applications regardless of status or outcome.",
+    "Where distinct certificate types are available, this field will show which certificate was used.",
+    "HC2 certificates provide full help with health costs, including free NHS prescriptions.",
+    "HC3 certificates provide limited help with health costs. A HC3 certificate will show how much the holder has to pay towards health costs.",
+    "If following the assessment, no support is available the applicant will recieve a confirmation letter rather than a certificate.",
+    "The reported IMD quintile, where 1 is the most deprived and 5 the least deprived, is derived from the postcode held for an applicant. IMD quintiles are calculated by ranking census lower-layer super output areas (LSOAs) from most deprived to least deprived and dividing them into equal groups. Quintiles range from the most deprived 20% (quintile 1) of small areas nationally to the least deprived 20% (quintile 5) of small areas nationally."
   )
 
 accessibleTables::create_metadata(wb,
@@ -1083,679 +1108,619 @@ accessibleTables::create_metadata(wb,
                                   meta_descs)
 
 
-# 4.2 Applications --------------------------------------------------------
+# 4.2 Data Tables: NHS Low Income Scheme ----------------------------------
 
+# 4.2.1 LIS: Applications -------------------------------------------------
 
-# 4.2.1 Applications: Low Income Scheme -----------------------------------
-
-# create the sheet
+# Create the sheet
 accessibleTables::write_sheet(
-  wb,
-  "LIS_Applications",
-  paste0(
-    config$publication_table_title,
-    " - Number of applications to NHS Low Income Scheme split by financial year and country"
-  ),
-  c(
-    "A country classification of 'Other' will represent applications with a postcode for a country other than England.",
-    "A country classification of 'Unknown' will represent applications where the postcode could not be assigned to any country."
-  ),
-  lis_application_objs$support_data,
-  30
+  workbook = wb,
+  sheetname = "LIS_Applications",
+  title = paste0(config$publication_table_title, " - Number of applications to NHS Low Income Scheme split by financial year and country"),
+  notes = c(config$caveat_country_other, config$caveat_country_unknown),
+  dataset = lis_application_objs$support_data,
+  column_a_width = 30
 )
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "LIS_Applications", c("A","B","C"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "LIS_Applications", c("D"), "right", "#,###")
 
-# apply formatting
-# left align columns A to B
-accessibleTables::format_data(wb,
-                              "LIS_Applications",
-                              c("A", "B","C"),
-                              "left",
-                              "")
+# 4.2.2 LIS: Outcomes -----------------------------------------------------
 
-# right align columns
-accessibleTables::format_data(
-  wb,
-  "LIS_Applications",
-  c(
-    "D"
-  ),
-  "right",
-  "#,###"
-)
-
-
-# 4.2.2 Applications: MATEX ---------------------------------------------
-
-# create the sheet
+# Create the sheet
 accessibleTables::write_sheet(
-  wb,
-  "MAT_Applications",
-  paste0(
-    config$publication_table_title,
-    " - Number of applications for maternity exemption certificates split by financial year."
-  ),
-  c(
-    "Maternity exemption certificates are only available for people living in England."
-  ),
-  mat_application_objs$support_data,
-  30
+  workbook = wb,
+  sheetname = "LIS_Outcomes",
+  title = paste0(config$publication_table_title, " - Number of NHS Low Income Scheme assessment outcome decisions issued, split by financial year, country and outcome type"),
+  notes = c(config$caveat_lis_issued, config$caveat_lis_no_cert_fy, config$caveat_country_other, config$caveat_country_unknown),
+  dataset = lis_issued_objs$support_data,
+  column_a_width = 30
 )
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "LIS_Outcomes", c("A","B","C","D"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "LIS_Outcomes", c("E"), "right", "#,###")
 
-# apply formatting
-# left align columns
-accessibleTables::format_data(wb,
-                              "MAT_Applications",
-                              c("A","B"),
-                              "left",
-                              "")
+# 4.2.3 LIS: Active -------------------------------------------------------
 
-# right align columns
-accessibleTables::format_data(
-  wb,
-  "MAT_Applications",
-  "C",
-  "right",
-  "#,###"
-)
-
-# 4.2.3 Applications: MEDEX ---------------------------------------------
-
-# create the sheet
+# Create the sheet
 accessibleTables::write_sheet(
-  wb,
-  "MED_Applications",
-  paste0(
-    config$publication_table_title,
-    " - Number of applications for medical exemption certificates split by financial year."
-  ),
-  c(
-    "Medical exemption certificates are only available for people living in England."
-  ),
-  med_application_objs$support_data,
-  30
+  workbook = wb,
+  sheetname = "LIS_Active_Certificates",
+  title = paste0(config$publication_table_title, " - Number of active NHS Low Income Scheme HC2/HC3 certificates split by financial year and country"),
+  notes = c(config$caveat_lis_active_duration, config$caveat_active_coverage, config$caveat_country_other, config$caveat_country_unknown),
+  dataset = lis_active_objs$support_data,
+  column_a_width = 30
 )
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "LIS_Active_Certificates", c("A","B","C","D"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "LIS_Active_Certificates", c("E"), "right", "#,###")
 
-# apply formatting
-# left align columns A to B
-accessibleTables::format_data(wb,
-                              "MED_Applications",
-                              c("A","B"),
-                              "left",
-                              "")
+# 4.2.4 LIS: Duration -----------------------------------------------------
 
-# right align columns
-accessibleTables::format_data(
-  wb,
-  "MED_Applications",
-  "C",
-  "right",
-  "#,###"
-)
-
-
-# 4.2.4 Applications: PPC ---------------------------------------------
-
-# create the sheet
+# Create the sheet
 accessibleTables::write_sheet(
-  wb,
-  "PPC_Applications",
-  paste0(
-    config$publication_table_title,
-    " - Number of applications for prescription prepayment certificates split by financial year and certificate duration"
-  ),
-  c(
-    "Prescription prepayment certificates are only available for people living in England.",
-    "A certificate duration of 'unknown' has been used where the certificate duration cannot be identified as 3 or 12 months from the available application details."
-  ),
-  ppc_application_objs$support_data,
-  30
+  workbook = wb,
+  sheetname = "LIS_Certificate_Duration",
+  title = paste0(config$publication_table_title, " - Number of issued NHS Low Income Scheme HC2/HC3 certificates, split by financial year, country and certificate duration"),
+  notes = c(config$caveat_lis_issued, config$caveat_lis_duration_group, config$caveat_country_other, config$caveat_country_unknown),
+  dataset = lis_duration_objs$support_data,
+  column_a_width = 30
 )
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "LIS_Certificate_Duration", c("A","B","C","D","E"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "LIS_Certificate_Duration", c("F"), "right", "#,###")
 
-# apply formatting
-# left align columns A to B
-accessibleTables::format_data(wb,
-                              "PPC_Applications",
-                              c("A", "B", "C","D"),
-                              "left",
-                              "")
+# 4.2.5 LIS: Age ----------------------------------------------------------
 
-# right align columns
-accessibleTables::format_data(
-  wb,
-  "PPC_Applications",
-  c(
-    "E"
-  ),
-  "right",
-  "#,###"
-)
-
-
-# 4.3 Issued/Outcome ------------------------------------------------------
-
-# 4.3.1 Issued: Low Income Scheme -----------------------------------------
-
-# create the sheet
+# Create the sheet
 accessibleTables::write_sheet(
-  wb,
-  "LIS_Outcomes",
-  paste0(
-    config$publication_table_title,
-    " - Number of NHS Low Income Scheme assessment outcome decisions issued, split by financial year and country"
-  ),
-  c(
-    "Results limited to cases where the application has been fully completed, assessed and a decision issued to the applicant.",
-    "Where no certificate is issued, the financial year is based on the date of application in lieu of no available date of certificate being issued."
-  ),
-  lis_issued_objs$support_data,
-  30
+  workbook = wb,
+  sheetname = "LIS_Age_Breakdown",
+  title = paste0(config$publication_table_title, " - Number of issued NHS Low Income Scheme HC2/HC3 certificates, split by financial year, country and age of applicant"),
+  notes = c(config$caveat_lis_issued, config$caveat_lis_age_group, config$caveat_age_restriction, config$caveat_lis_no_cert_fy, config$caveat_country_other, config$caveat_country_unknown),
+  dataset = lis_age_objs$support_data,
+  column_a_width = 30
 )
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "LIS_Age_Breakdown", c("A","B","C","D","E"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "LIS_Age_Breakdown", c("F"), "right", "#,###")
 
-# apply formatting
-# left align columns A to B
-accessibleTables::format_data(wb,
-                              "LIS_Outcomes",
-                              c("A", "B"),
-                              "left",
-                              "")
+# 4.2.6 LIS: Deprivation --------------------------------------------------
 
-# right align columns
-accessibleTables::format_data(
-  wb,
-  "LIS_Outcomes",
-  c(
-    "C",
-    "D",
-    "E",
-    "F"
-  ),
-  "right",
-  "#,###"
-)
-
-# 4.3.2 Issued: MATEX -----------------------------------------------------
-
-# create the sheet
+# Create the sheet
 accessibleTables::write_sheet(
-  wb,
-  "MAT_Outcomes",
-  paste0(
-    config$publication_table_title,
-    " - Number of maternity exemption certificates issued, split by financial year and country"
-  ),
-  c(
-    "Results limited to cases where the application has been fully processed, and a certificate issued to the applicant.",
-    "Maternity exemption certificates are only available for people living in England."
-  ),
-  mat_issued_objs$support_data,
-  30
+  workbook = wb,
+  sheetname = "LIS_Deprivation_Breakdown",
+  title = paste0(config$publication_table_title, " - Number of issued NHS Low Income Scheme HC2/HC3 certificates, split by financial year, country and IMD quintile"),
+  notes = c(config$caveat_lis_issued, config$caveat_imd_restriction, config$caveat_country_other, config$caveat_country_unknown, config$caveat_lis_no_cert_fy),
+  dataset = lis_imd_objs$support_data,
+  column_a_width = 30
 )
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "LIS_Deprivation_Breakdown", c("A","B","C","D","E"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "LIS_Deprivation_Breakdown", c("F"), "right", "#,###")
 
-# apply formatting
-# left align columns A to B
-accessibleTables::format_data(wb,
-                              "MAT_Outcomes",
-                              c("A", "B"),
-                              "left",
-                              "")
+# 4.2.7 LIS: ICB ----------------------------------------------------------
 
-# right align columns
-accessibleTables::format_data(
-  wb,
-  "MAT_Outcomes",
-  c(
-    "C"
-  ),
-  "right",
-  "#,###"
-)
-
-# 4.3.2 Issued: MEDEX -----------------------------------------------------
-
-# create the sheet
+# Create the sheet
 accessibleTables::write_sheet(
-  wb,
-  "MED_Outcomes",
-  paste0(
-    config$publication_table_title,
-    " - Number of medical exemption certificates issued, split by financial year and country"
-  ),
-  c(
-    "Results limited to cases where the application has been fully processed, and a certificate issued to the applicant.",
-    "Medical exemption certificates are only available for people living in England."
-  ),
-  med_issued_objs$support_data,
-  30
+  workbook = wb,
+  sheetname = "LIS_ICB_Breakdown",
+  title = paste0(config$publication_table_title, " - Number of issued NHS Low Income Scheme HC2/HC3 certificates, split by financial year and ICB"),
+  notes = c(config$caveat_lis_issued, config$caveat_icb_method, config$caveat_icb_restriction, config$caveat_lis_base_population, config$caveat_country_other, config$caveat_country_unknown, config$caveat_lis_no_cert_fy),
+  dataset = lis_icb_objs$support_data,
+  column_a_width = 30
 )
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "LIS_ICB_Breakdown", c("A","B","C","D","E"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "LIS_ICB_Breakdown", c("F","G","H","I","J","K"), "right", "#,###")
 
-# apply formatting
-# left align columns A to B
-accessibleTables::format_data(wb,
-                              "MED_Outcomes",
-                              c("A", "B"),
-                              "left",
-                              "")
 
-# right align columns
-accessibleTables::format_data(
-  wb,
-  "MED_Outcomes",
-  c(
-    "C"
-  ),
-  "right",
-  "#,###"
-)
+# 4.3 Data Tables: Maternity exemption certificate ----------------------------------
 
-# 4.2.4 Issued: PPC ---------------------------------------------
+# 4.3.1 MATEX: Applications -------------------------------------------------
 
-# create the sheet
+# Create the sheet
 accessibleTables::write_sheet(
-  wb,
-  "PPC_Outcomes",
-  paste0(
-    config$publication_table_title,
-    " - Number of prescription prepayment certificates issued, split by financial year and certificate duration"
-  ),
-  c(
-    "Prescription prepayment certificates are only available for people living in England.",
-    "A certificate duration of 'unknown' has been used where the certificate duration cannot be identified as 3 or 12 months from the available application details.",
-    "Includes the number of certificates that were issued to customers, regardless if the certificate was ever cancelled or revoked."
-  ),
-  ppc_issued_objs$support_data,
-  30
+  workbook = wb,
+  sheetname = "MATEX_Applications",
+  title = paste0(config$publication_table_title, " - Number of applications for maternity exemption certificates split by financial year"),
+  notes = c(config$caveat_mat_country),
+  dataset = mat_application_objs$support_data,
+  column_a_width = 30
 )
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "MATEX_Applications", c("A","B","C"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "MATEX_Applications", c("D"), "right", "#,###")
 
-# apply formatting
-# left align columns A to B
-accessibleTables::format_data(wb,
-                              "PPC_Outcomes",
-                              c("A", "B", "C","D"),
-                              "left",
-                              "")
+# 4.3.2 MATEX: Outcomes -----------------------------------------------------
 
-# right align columns
-accessibleTables::format_data(
-  wb,
-  "PPC_Outcomes",
-  c(
-    "E"
-  ),
-  "right",
-  "#,###"
-)
-
-# 4.2.5 Issued: Tax Credit ---------------------------------------------
-
-# create the sheet
+# Create the sheet
 accessibleTables::write_sheet(
-  wb,
-  "TAX_Outcomes",
-  paste0(
-    config$publication_table_title,
-    " - Number of Tax Credit Exemption Certificates issued, split by financial year and country"
-  ),
-  c(
-    "Certificates issued to residents of Scotland, Wales and Northern Ireland have been reported as 'Other'.",
-    "Country is reported as 'Unknown' if the postcode for the certificate holder cannot be mapped to the National Statistics Postcode Lookup (NSPL)."
-  ),
-  tax_issued_objs$support_data,
-  30
+  workbook = wb,
+  sheetname = "MATEX_Outcomes",
+  title = paste0(config$publication_table_title, " - Number of maternity exemption certificates issued, split by financial year"),
+  notes = c(config$caveat_cert_issued, config$caveat_mat_country),
+  dataset = mat_issued_objs$support_data,
+  column_a_width = 30
 )
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "MATEX_Outcomes", c("A","B","C"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "MATEX_Outcomes", c("D"), "right", "#,###")
 
-# apply formatting
-# left align columns A to B
-accessibleTables::format_data(wb,
-                              "TAX_Outcomes",
-                              c("A", "B"),
-                              "left",
-                              "")
+# 4.3.3 MATEX: Active -------------------------------------------------------
 
-# right align columns
-accessibleTables::format_data(
-  wb,
-  "TAX_Outcomes",
-  c(
-    "C"
-  ),
-  "right",
-  "#,###"
-)
-
-# 4.4 Active --------------------------------------------------------------
-
-# 4.4.1 Active: LIS -------------------------------------------------------
-
-# create the sheet
+# Create the sheet
 accessibleTables::write_sheet(
-  wb,
-  "LIS_Active_Certificates",
-  paste0(
-    config$publication_table_title,
-    " - Number of active NHS Low Income Scheme HC2/HC3 certificates split by financial year and country"
-  ),
-  c(
-    "Certificates can be valid for upto 5 years and therefore some certificates may be represented in figures for multiple years."
-  ),
-  lis_active_objs$support_data,
-  30
+  workbook = wb,
+  sheetname = "MATEX_Active_Certificates",
+  title = paste0(config$publication_table_title, " - Number of active maternity exemption certificates split by financial year"),
+  notes = c(config$caveat_mat_active_duration, config$caveat_active_coverage, config$caveat_mat_country),
+  dataset = mat_active_objs$support_data,
+  column_a_width = 30
 )
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "MATEX_Active_Certificates", c("A","B","C"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "MATEX_Active_Certificates", c("D"), "right", "#,###")
 
-# apply formatting
-# left align columns A to B
-accessibleTables::format_data(wb,
-                              "LIS_Active_Certificates",
-                              c("A", "B"),
-                              "left",
-                              "")
+# 4.3.4 MATEX: Duration -----------------------------------------------------
 
-# right align columns
-accessibleTables::format_data(
-  wb,
-  "LIS_Active_Certificates",
-  c(
-    "C",
-    "D",
-    "E"
-  ),
-  "right",
-  "#,###"
-)
-
-# 4.4.2 Active: MAT -------------------------------------------------------
-
-# create the sheet
+# Create the sheet
 accessibleTables::write_sheet(
-  wb,
-  "MAT_Active_Certificates",
-  paste0(
-    config$publication_table_title,
-    " - Number of active maternity exemption certificates split by financial year"
-  ),
-  c(
-    "Certificates can be valid during pregnancy and upto one year following birth. Therefore some certificates may be represented in figures for multiple years.",
-    "Maternity exemption certificates are only available for people living in England."
-  ),
-  mat_active_objs$support_data,
-  30
+  workbook = wb,
+  sheetname = "MATEX_Certificate_Duration",
+  title = paste0(config$publication_table_title, " - Proportion of maternity exemption certificates issued relative to expected due date"),
+  notes = c(config$caveat_cert_issued, config$caveat_mat_duration_method, config$caveat_mat_due_date, config$caveat_mat_duration_restriction, config$caveat_mat_country),
+  dataset = sd_mat_duration,
+  column_a_width = 30
 )
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "MATEX_Certificate_Duration", c("A","B","C"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "MATEX_Certificate_Duration", c("D","E","F"), "right", "#,###")
+# Proportion: right align * 1 decimal place
+accessibleTables::format_data(wb, "MATEX_Certificate_Duration", c("G"), "right", "#,###.#")
 
-# apply formatting
-# left align columns A to B
-accessibleTables::format_data(wb,
-                              "MAT_Active_Certificates",
-                              c("A", "B"),
-                              "left",
-                              "")
+# 4.3.5 MATEX: Age ----------------------------------------------------------
 
-# right align columns
-accessibleTables::format_data(
-  wb,
-  "MAT_Active_Certificates",
-  c(
-    "C"
-  ),
-  "right",
-  "#,###"
-)
-
-# 4.4.3 Active: MED -------------------------------------------------------
-
-# create the sheet
+# Create the sheet
 accessibleTables::write_sheet(
-  wb,
-  "MED_Active_Certificates",
-  paste0(
-    config$publication_table_title,
-    " - Number of active medical exemption certificates split by financial year"
-  ),
-  c(
-    "Certificates are usually valid for five years and therefore certificates may be represented in figures for multiple years.",
-    "Medical exemption certificates are only available for people living in England."
-  ),
-  med_active_objs$support_data,
-  30
+  workbook = wb,
+  sheetname = "MATEX_Age_Breakdown",
+  title = paste0(config$publication_table_title, " - Number of issued maternity exemption certificates, split by age of applicant"),
+  notes = c(config$caveat_cert_issued, config$caveat_mat_age_group, config$caveat_age_restriction, config$caveat_mat_live_births, config$caveat_mat_country),
+  dataset = mat_age_objs$support_data,
+  column_a_width = 30
 )
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "MATEX_Age_Breakdown", c("A","B","C","D"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "MATEX_Age_Breakdown", c("E","F"), "right", "#,###")
 
-# apply formatting
-# left align columns A to B
-accessibleTables::format_data(wb,
-                              "MED_Active_Certificates",
-                              c("A", "B"),
-                              "left",
-                              "")
+# 4.3.6 MATEX: Deprivation --------------------------------------------------
 
-# right align columns
-accessibleTables::format_data(
-  wb,
-  "MED_Active_Certificates",
-  c(
-    "C"
-  ),
-  "right",
-  "#,###"
-)
-
-# 4.5 Duration --------------------------------------------------------------
-
-# 4.5.1 Duration: LIS -----------------------------------------------------
-
-# create the sheet
+# Create the sheet
 accessibleTables::write_sheet(
-  wb,
-  "LIS_Certificate_Duration",
-  paste0(
-    config$publication_table_title,
-    " - Number of issued NHS Low Income Scheme HC2/HC3 certificates, split by financial year, country and certificate duration"
-  ),
-  c(
-    "Certificate duration has been grouped into categories based on certificate duration rounded to nearest number of months."
-  ),
-  lis_duration_objs$support_data,
-  30
+  workbook = wb,
+  sheetname = "MATEX_Deprivation_Breakdown",
+  title = paste0(config$publication_table_title, " - Number of issued maternity exemption certificates, split by IMD quintile"),
+  notes = c(config$caveat_cert_issued, config$caveat_imd_restriction, config$caveat_mat_live_births, config$caveat_mat_country),
+  dataset = mat_imd_objs$support_data,
+  column_a_width = 30
 )
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "MATEX_Deprivation_Breakdown", c("A","B","C","D"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "MATEX_Deprivation_Breakdown", c("E","F"), "right", "#,###")
 
-# apply formatting
-# left align columns A to B
-accessibleTables::format_data(wb,
-                              "LIS_Certificate_Duration",
-                              c("A", "B","C"),
-                              "left",
-                              "")
+# 4.3.7 MATEX: ICB ----------------------------------------------------------
 
-# right align columns
-accessibleTables::format_data(
-  wb,
-  "LIS_Certificate_Duration",
-  c(
-    "D",
-    "E",
-    "F"
-  ),
-  "right",
-  "#,###"
-)
-
-# 4.5.2 Duration: MAT -----------------------------------------------------
-
-# create the sheet
+# Create the sheet
 accessibleTables::write_sheet(
-  wb,
-  "MAT_Certificate_Duration",
-  paste0(
-    config$publication_table_title,
-    " - proportion of maternity exemption certificates issued relative to expected due date, split by financial year and country"
-  ),
-  c(
-    "Results limited to cases where the application has been fully processed, and a certificate issued to the applicant.",
-    "Number of months based on difference between due date and date of certificate issue, rounded to the nearest number of months.",
-    "Due date will be supplied during application and therefore may not exactly match delivery date.",
-    "Number of months reported as 'NA' where captured due date would produce a value outside of the expected range." 
-  ),
-  sd_mat_duration,
-  30
+  workbook = wb,
+  sheetname = "MATEX_ICB_Breakdown",
+  title = paste0(config$publication_table_title, " - Number of issued maternity exemption certificates, split by ICB"),
+  notes = c(config$caveat_cert_issued, config$caveat_icb_method, config$caveat_icb_restriction, config$caveat_mat_base_population),
+  dataset = mat_icb_objs$support_data,
+  column_a_width = 30
 )
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "MATEX_ICB_Breakdown", c("A","B","C","D"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "MATEX_ICB_Breakdown", c("E","F","G"), "right", "#,###")
 
-# apply formatting
-# left align columns A to B
-accessibleTables::format_data(wb,
-                              "MAT_Certificate_Duration",
-                              c("A", "B"),
-                              "left",
-                              "")
+# 4.4 Data Tables: Medical exemption certificate ----------------------------------
 
-# right align columns
-accessibleTables::format_data(
-  wb,
-  "MAT_Certificate_Duration",
-  c(
-    "C",
-    "D",
-    "E"
-  ),
-  "right",
-  "#,###"
-)
+# 4.4.1 MEDEX: Applications -------------------------------------------------
 
-# right align columns
-accessibleTables::format_data(
-  wb,
-  "MAT_Certificate_Duration",
-  c(
-    "F"
-  ),
-  "right",
-  "#,###.0"
-)
-
-
-# 4.6 Age --------------------------------------------------------------
-
-# 4.6.1 Age: LIS ----------------------------------------------------------
-
-# create the sheet
+# Create the sheet
 accessibleTables::write_sheet(
-  wb,
-  "LIS_Age_Breakdown",
-  paste0(
-    config$publication_table_title,
-    " - Number of issued NHS Low Income Scheme HC2/HC3 certificates, split by financial year, country and age of applicant"
-  ),
-  c(
-    "Age is calculated at the point of application, with applicants aged 65 and over grouped as 65+.",
-    "An age band of 'unknown' has been used where the applicants age could not be confidently assigned from the available data."
-  ),
-  lis_age_objs$support_data,
-  30
+  workbook = wb,
+  sheetname = "MEDEX_Applications",
+  title = paste0(config$publication_table_title, " - Number of applications for medical exemption certificates split by financial year"),
+  notes = c(config$caveat_med_country),
+  dataset = med_application_objs$support_data,
+  column_a_width = 30
 )
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "MEDEX_Applications", c("A","B","C"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "MEDEX_Applications", c("D"), "right", "#,###")
 
-# apply formatting
-# left align columns A to B
-accessibleTables::format_data(wb,
-                              "LIS_Age_Breakdown",
-                              c("A", "B","C"),
-                              "left",
-                              "")
+# 4.4.2 MEDEX: Outcomes -----------------------------------------------------
 
-# right align columns
-accessibleTables::format_data(
-  wb,
-  "LIS_Age_Breakdown",
-  c(
-    "D",
-    "E",
-    "F"
-  ),
-  "right",
-  "#,###"
-)
-
-# 4.7 Deprivation --------------------------------------------------------------
-
-# create the sheet
+# Create the sheet
 accessibleTables::write_sheet(
-  wb,
-  "LIS_Deprivation_Breakdown",
-  paste0(
-    config$publication_table_title,
-    " - Number of issued NHS Low Income Scheme HC2/HC3 certificates, split by financial year, country and IMD quintile"
-  ),
-  c(
-    "The reported IMD quintile, where 1 is the most deprived and 5 the least deprived, is derived from the postcode held for an applicant.",
-    "IMD quintiles cannot be assigned to applicants that can not be associated to an English postcode.",
-    "IMD quintiles are calculated by ranking census lower-layer super output areas (LSOAs) from most deprived to least deprived and dividing them into equal groups.",
-    "Quintiles range from the most deprived 20% (quintile 1) of small areas nationally to the least deprived 20% (quintile 5) of small areas nationally."
-  ),
-  lis_imd_objs$support_data,
-  30
+  workbook = wb,
+  sheetname = "MEDEX_Outcomes",
+  title = paste0(config$publication_table_title, " - Number of medical exemption certificates issued, split by financial year"),
+  notes = c(config$caveat_cert_issued, config$caveat_med_country),
+  dataset = med_issued_objs$support_data,
+  column_a_width = 30
 )
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "MEDEX_Outcomes", c("A","B","C"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "MEDEX_Outcomes", c("D"), "right", "#,###")
 
-# apply formatting
-# left align columns A to B
-accessibleTables::format_data(wb,
-                              "LIS_Deprivation_Breakdown",
-                              c("A", "B","C"),
-                              "left",
-                              "")
+# 4.4.3 MEDEX: Active -------------------------------------------------------
 
-# right align columns
-accessibleTables::format_data(
-  wb,
-  "LIS_Deprivation_Breakdown",
-  c(
-    "D",
-    "E",
-    "F"
-  ),
-  "right",
-  "#,###"
-)
-
-# 4.8 ICB --------------------------------------------------------------
-
-# create the sheet
+# Create the sheet
 accessibleTables::write_sheet(
-  wb,
-  "LIS_ICB_Breakdown",
-  paste0(
-    config$publication_table_title,
-    " - Number of issued NHS Low Income Scheme HC2/HC3 certificates, split by financial year, country and ICB"
-  ),
-  c(
-    "The reported ICB is derived from the postcode held for an applicant.",
-    "ICBs cannot be assigned to applicants that can not be associated to an English postcode.",
-    "Population figures are based on mid-year estimates published by ONS for the population aged 16+ to align with age groups who could benefit from the NHS Low Income Scheme."
-  ),
-  lis_icb_objs$support_data,
-  50
+  workbook = wb,
+  sheetname = "MEDEX_Active_Certificates",
+  title = paste0(config$publication_table_title, " - Number of active medical exemption certificates split by financial year"),
+  notes = c(config$caveat_med_active_duration, config$caveat_active_coverage, config$caveat_med_country),
+  dataset = med_active_objs$support_data,
+  column_a_width = 30
 )
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "MEDEX_Active_Certificates", c("A","B","C"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "MEDEX_Active_Certificates", c("D"), "right", "#,###")
 
-# apply formatting
-# left align columns A to B
-accessibleTables::format_data(wb,
-                              "LIS_ICB_Breakdown",
-                              c("A", "B","C"),
-                              "left",
-                              "")
+# 4.4.4 MEDEX: Age ----------------------------------------------------------
 
-# right align columns
-accessibleTables::format_data(
-  wb,
-  "LIS_ICB_Breakdown",
-  c(
-    "D",
-    "E",
-    "F",
-    "G",
-    "H",
-    "I",
-    "J"
-  ),
-  "right",
-  "#,###"
+# Create the sheet
+accessibleTables::write_sheet(
+  workbook = wb,
+  sheetname = "MEDEX_Age_Breakdown",
+  title = paste0(config$publication_table_title, " - Number of issued medical exemption certificates, split by age of applicant"),
+  notes = c(config$caveat_cert_issued, config$caveat_med_age_group, config$caveat_age_restriction, config$caveat_med_country),
+  dataset = med_age_objs$support_data,
+  column_a_width = 30
 )
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "MEDEX_Age_Breakdown", c("A","B","C","D"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "MEDEX_Age_Breakdown", c("E"), "right", "#,###")
 
-# 4.X Cover Sheet ---------------------------------------------------------
+# 4.4.5 MEDEX: Deprivation --------------------------------------------------
+
+# Create the sheet
+accessibleTables::write_sheet(
+  workbook = wb,
+  sheetname = "MEDEX_Deprivation_Breakdown",
+  title = paste0(config$publication_table_title, " - Number of issued medical exemption certificates, split by IMD quintile"),
+  notes = c(config$caveat_cert_issued, config$caveat_imd_restriction, config$caveat_med_country),
+  dataset = med_imd_objs$support_data,
+  column_a_width = 30
+)
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "MEDEX_Deprivation_Breakdown", c("A","B","C","D"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "MEDEX_Deprivation_Breakdown", c("E"), "right", "#,###")
+
+# 4.4.6 MEDEX: ICB ----------------------------------------------------------
+
+# Create the sheet
+accessibleTables::write_sheet(
+  workbook = wb,
+  sheetname = "MEDEX_ICB_Breakdown",
+  title = paste0(config$publication_table_title, " - Number of issued maternity exemption certificates, split by ICB"),
+  notes = c(config$caveat_cert_issued, config$caveat_icb_method, config$caveat_icb_restriction, config$caveat_med_base_population),
+  dataset = med_icb_objs$support_data,
+  column_a_width = 30
+)
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "MEDEX_ICB_Breakdown", c("A","B","C","D"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "MEDEX_ICB_Breakdown", c("E","F","G"), "right", "#,###")
+
+# 4.5 Data Tables: PPC certificate ----------------------------------
+
+# 4.5.1 PPC: Applications -------------------------------------------------
+
+# Create the sheet
+accessibleTables::write_sheet(
+  workbook = wb,
+  sheetname = "PPC_Applications",
+  title = paste0(config$publication_table_title, " - Number of applications for prescription prepayment certificates split by financial year and certificate type"),
+  notes = c(config$caveat_ppc_type_unknown, config$caveat_ppc_country),
+  dataset = ppc_application_objs$support_data,
+  column_a_width = 30
+)
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "PPC_Applications", c("A","B","C","D"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "PPC_Applications", c("E"), "right", "#,###")
+
+# 4.5.2 PPC: Outcomes -----------------------------------------------------
+
+# Create the sheet
+accessibleTables::write_sheet(
+  workbook = wb,
+  sheetname = "PPC_Outcomes",
+  title = paste0(config$publication_table_title, " - Number of prescription prepayment certificates issued, split by financial year and certificate type"),
+  notes = c(config$caveat_cert_issued, config$caveat_ppc_type_unknown, config$caveat_ppc_country),
+  dataset = ppc_issued_objs$support_data,
+  column_a_width = 30
+)
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "PPC_Outcomes", c("A","B","C","D"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "PPC_Outcomes", c("E"), "right", "#,###")
+
+# 4.5.3 PPC: Age ----------------------------------------------------------
+
+# Create the sheet
+accessibleTables::write_sheet(
+  workbook = wb,
+  sheetname = "PPC_Age_Breakdown",
+  title = paste0(config$publication_table_title, " - Number of issued prescription prepayment certificates, split by certificate type and age of applicant"),
+  notes = c(config$caveat_cert_issued, config$caveat_ppc_age_group, config$caveat_age_restriction, config$caveat_ppc_country),
+  dataset = ppc_age_objs$support_data,
+  column_a_width = 30
+)
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "PPC_Age_Breakdown", c("A","B","C","D","E"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "PPC_Age_Breakdown", c("F"), "right", "#,###")
+
+# 4.5.4 PPC: Deprivation --------------------------------------------------
+
+# Create the sheet
+accessibleTables::write_sheet(
+  workbook = wb,
+  sheetname = "PPC_Deprivation_Breakdown",
+  title = paste0(config$publication_table_title, " - Number of issued prescription prepayment certificates, split by certificate type and IMD quintile"),
+  notes = c(config$caveat_cert_issued, config$caveat_imd_restriction, config$caveat_ppc_country),
+  dataset = ppc_imd_objs$support_data,
+  column_a_width = 30
+)
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "PPC_Deprivation_Breakdown", c("A","B","C","D","E"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "PPC_Deprivation_Breakdown", c("F"), "right", "#,###")
+
+# 4.5.5 PPC: ICB ----------------------------------------------------------
+
+# Create the sheet
+accessibleTables::write_sheet(
+  workbook = wb,
+  sheetname = "PPC_ICB_Breakdown",
+  title = paste0(config$publication_table_title, " - Number of issued prescription prepayment certificates, split by ICB"),
+  notes = c(config$caveat_cert_issued, config$caveat_icb_method, config$caveat_icb_restriction, config$caveat_ppc_base_population),
+  dataset = ppc_icb_objs$support_data,
+  column_a_width = 30
+)
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "PPC_ICB_Breakdown", c("A","B","C","D"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "PPC_ICB_Breakdown", c("E","F","G","H","I"), "right", "#,###")
+
+# 4.6 Data Tables: HRT PPC certificate ----------------------------------
+
+# 4.6.1 HRT PPC: Applications -------------------------------------------------
+
+# Create the sheet
+accessibleTables::write_sheet(
+  workbook = wb,
+  sheetname = "HRTPPC_Applications",
+  title = paste0(config$publication_table_title, " - Number of applications for NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT PPC) split by month"),
+  notes = c(),
+  dataset = hrt_application_objs$support_data,
+  column_a_width = 30
+)
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "HRTPPC_Applications", c("A","B","C"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "HRTPPC_Applications", c("D"), "right", "#,###")
+
+# 4.6.2 HRT PPC: Outcomes -----------------------------------------------------
+
+# Create the sheet
+accessibleTables::write_sheet(
+  workbook = wb,
+  sheetname = "HRTPPC_Outcomes",
+  title = paste0(config$publication_table_title, " - Number of NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT PPC) issued, split by month"),
+  notes = c(config$caveat_hrtppc_start, config$caveat_cert_issued, config$caveat_hrtppc_postdate, config$caveat_hrtppc_country),
+  dataset = hrt_issued_objs$support_data,
+  column_a_width = 30
+)
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "HRTPPC_Outcomes", c("A","B","C"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "HRTPPC_Outcomes", c("D","E"), "right", "#,###")
+# Proportion: right align * thousand seperator to 1 decimal place
+accessibleTables::format_data(wb, "HRTPPC_Outcomes", c("F"), "right", "#,###.#")
+
+# 4.6.3 HRT PPC: Age ----------------------------------------------------------
+
+# Create the sheet
+accessibleTables::write_sheet(
+  workbook = wb,
+  sheetname = "HRTPPC_Age_Breakdown",
+  title = paste0(config$publication_table_title, " - Number of issued NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT PPC), split by age of applicant"),
+  notes = c(config$caveat_cert_issued, config$caveat_hrtppc_age_group, config$caveat_age_restriction, config$caveat_hrtppc_px_data, config$caveat_hrtppc_country),
+  dataset = hrt_age_objs$support_data,
+  column_a_width = 30
+)
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "HRTPPC_Age_Breakdown", c("A","B","C","D"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "HRTPPC_Age_Breakdown", c("E","F"), "right", "#,###")
+
+# 4.6.4 HRT PPC: Deprivation --------------------------------------------------
+
+# Create the sheet
+accessibleTables::write_sheet(
+  workbook = wb,
+  sheetname = "HRTPPC_Deprivation_Breakdown",
+  title = paste0(config$publication_table_title, " - Number of issued NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT PPC), split by IMD quintile"),
+  notes = c(config$caveat_cert_issued, config$caveat_imd_restriction, config$caveat_hrtppc_px_data, config$caveat_hrtppc_country),
+  dataset = hrt_imd_objs$support_data,
+  column_a_width = 30
+)
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "HRTPPC_Deprivation_Breakdown", c("A","B","C","D"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "HRTPPC_Deprivation_Breakdown", c("E","F"), "right", "#,###")
+
+# 4.6.5 HRT PPC: ICB ----------------------------------------------------------
+
+# Create the sheet
+accessibleTables::write_sheet(
+  workbook = wb,
+  sheetname = "HRTPPC_ICB_Breakdown",
+  title = paste0(config$publication_table_title, " - Number of issued NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT PPC), split by ICB"),
+  notes = c(config$caveat_cert_issued, config$caveat_icb_method, config$caveat_icb_restriction, config$caveat_hrtppc_base_population),
+  dataset = hrt_icb_objs$support_data,
+  column_a_width = 30
+)
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "HRTPPC_ICB_Breakdown", c("A","B","C","D"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "HRTPPC_ICB_Breakdown", c("E","F","G"), "right", "#,###")
+
+# 4.7 Data Tables: NHS tax credit exemption certificates ----------------------------------
+
+# 4.7.1 TAX: Outcomes -----------------------------------------------------
+
+# Create the sheet
+accessibleTables::write_sheet(
+  workbook = wb,
+  sheetname = "TAX_Outcomes",
+  title = paste0(config$publication_table_title, " - Number of NHS tax credit exemption certificates issued, split by financial year and country"),
+  notes = c(config$caveat_tax_issued, config$caveat_country_other, config$caveat_country_unknown),
+  dataset = tax_issued_objs$support_data,
+  column_a_width = 30
+)
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "TAX_Outcomes", c("A","B","C"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "TAX_Outcomes", c("D"), "right", "#,###")
+
+# 4.7.2 TAX: Age ----------------------------------------------------------
+
+# Create the sheet
+accessibleTables::write_sheet(
+  workbook = wb,
+  sheetname = "TAX_Age_Breakdown",
+  title = paste0(config$publication_table_title, " - Number of issued NHS tax credit exemption certificates, split by country and age of applicant"),
+  notes = c(config$caveat_tax_age_band, config$caveat_age_restriction, config$caveat_country_other, config$caveat_country_unknown),
+  dataset = tax_age_objs$support_data,
+  column_a_width = 30
+)
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "TAX_Age_Breakdown", c("A","B","C","D"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "TAX_Age_Breakdown", c("E"), "right", "#,###")
+
+# 4.7.3 TAX: Age Profile ----------------------------------------------------------
+
+# Create the sheet
+accessibleTables::write_sheet(
+  workbook = wb,
+  sheetname = "TAX_Age_Profile",
+  title = paste0(config$publication_table_title, " - Number of issued NHS tax credit exemption certificates, split by country, financial year and age group"),
+  notes = c(config$caveat_tax_age_group, config$caveat_age_restriction, config$caveat_country_other, config$caveat_country_unknown),
+  dataset = sd_tax_age_trend,
+  column_a_width = 30
+)
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "TAX_Age_Profile", c("A","B","C","D"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "TAX_Age_Profile", c("E"), "right", "#,###")
+
+# 4.7.4 TAX: Deprivation --------------------------------------------------
+
+# Create the sheet
+accessibleTables::write_sheet(
+  workbook = wb,
+  sheetname = "TAX_Deprivation_Breakdown",
+  title = paste0(config$publication_table_title, " - Number of issued NHS tax credit exemption certificates, split by country and IMD quintile"),
+  notes = c(config$caveat_imd_restriction, config$caveat_country_other, config$caveat_country_unknown),
+  dataset = tax_imd_objs$support_data,
+  column_a_width = 30
+)
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "TAX_Deprivation_Breakdown", c("A","B","C","D"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "TAX_Deprivation_Breakdown", c("E"), "right", "#,###")
+
+# 4.7.5 TAX: ICB ----------------------------------------------------------
+
+# Create the sheet
+accessibleTables::write_sheet(
+  workbook = wb,
+  sheetname = "TAX_ICB_Breakdown",
+  title = paste0(config$publication_table_title, " - Number of issued NHS tax credit exemption certificates, split by ICB"),
+  notes = c(config$caveat_icb_method, config$caveat_icb_restriction, config$caveat_tax_base_population),
+  dataset = tax_icb_objs$support_data,
+  column_a_width = 30
+)
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "TAX_ICB_Breakdown", c("A","B","C","D","E"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "TAX_ICB_Breakdown", c("F","G","H"), "right", "#,###")
+
+# 4.8 Cover Sheet ---------------------------------------------------------
 
 # create cover sheet
 accessibleTables::makeCoverSheet(
@@ -1766,19 +1731,41 @@ accessibleTables::makeCoverSheet(
   sheetNames,
   c(
     "Metadata",
-    "Table 1: LIS Applications",
-    "Table 2: LIS Outcomes",
-    "Table 3: LIS Active Certificates",
-    "Table 4: LIS Certificate Duration",
-    "Table 5: LIS Age Breakdown",
-    "Table 6: LIS Deprivation Breakdown",
-    "Table 7: LIS ICB Breakdown",
-    "Table 8: Maternity exemption certificate - Applications",
-    "Table 9: Maternity exemption certificate - Issued certificates",
-    "Table 10: Maternity exemption certificate - Certificate duration",
-    "Table 10: Medical exemption certificate - Applications",
-    "Table 11: Medical exemption certificate - Issued certificates",
-    "Table 12: PPC - Applications"
+    "Table 1:  LIS_Applications",
+    "Table 2:  LIS_Outcomes",
+    "Table 3:  LIS_Active_Certificates",
+    "Table 4:  LIS_Certificate_Duration",
+    "Table 5:  LIS_Age_Breakdown",
+    "Table 6:  LIS_Deprivation_Breakdown",
+    "Table 7:  LIS_ICB_Breakdown",
+    "Table 8:  MATEX_Applications",
+    "Table 9:  MATEX_Outcomes",
+    "Table 10:  MATEX_Active_Certificates",
+    "Table 11:  MATEX_Certificate_Duration",
+    "Table 12:  MATEX_Age_Breakdown",
+    "Table 13:  MATEX_Deprivation_Breakdown",
+    "Table 14:  MATEX_ICB_Breakdown",
+    "Table 15:  MEDEX_Applications",
+    "Table 16:  MEDEX_Outcomes",
+    "Table 17:  MEDEX_Active_Certificates",
+    "Table 18:  MEDEX_Age_Breakdown",
+    "Table 19:  MEDEX_Deprivation_Breakdown",
+    "Table 20:  MEDEX_ICB_Breakdown",
+    "Table 21:  PPC_Applications",
+    "Table 22:  PPC_Outcomes",
+    "Table 23:  PPC_Age_Breakdown",
+    "Table 24:  PPC_Deprivation_Breakdown",
+    "Table 25:  PPC_ICB_Breakdown",
+    "Table 26:  HRTPPC_Applications",
+    "Table 27:  HRTPPC_Outcomes",
+    "Table 28:  HRTPPC_Age_Breakdown",
+    "Table 29:  HRTPPC_Deprivation_Breakdown",
+    "Table 30:  HRTPPC_ICB_Breakdown",
+    "Table 31:  TAX_Outcomes",
+    "Table 32:  TAX_Age_Breakdown",
+    "Table 33:  TAX_Age_Profile",
+    "Table 34:  TAX_Deprivation_Breakdown",
+    "Table 35:  TAX_ICB_Breakdown"
   ),
   c("Metadata", sheetNames)
 )

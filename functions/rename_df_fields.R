@@ -18,6 +18,7 @@ rename_df_fields <- function(df) {
     `Month` = "ISSUE_YM",
     `Financial Year` = "FINANCIAL_YEAR",
     `Country` = "COUNTRY",
+    `Certificate Duration` = "CERTIFICATE_DURATION",
     `Age Band` = "CUSTOM_AGE_BAND",
     `Age Group` = "AGE_GROUP",
     `IMD Quintile` = "IMD_QUINTILE",

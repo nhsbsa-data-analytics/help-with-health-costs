@@ -120,3 +120,15 @@ caveat_tax_issued: "Certificates are issued automatically to eligible individual
 caveat_tax_age_band: "Age is calculated at the point certificate issue, in 5 year age bands, with applicants aged 65 and over grouped as 65+."
 caveat_tax_age_group: "Age is calculated at the point certificate issue, with applicants grouped as either 'Under 40' or '40 and over'."
 caveat_tax_base_population: "Base population figures represent mid-year population estimates published by ONS for people aged 16 and over."
+
+# PowerBI criteria
+rebuild_powerbi_data: TRUE
+powerbi_min_ym_lis: "201804"
+powerbi_max_ym_lis: "202403"
+powerbi_min_ym_hes: "201804"
+powerbi_max_ym_hes: "202403"
+powerbi_min_ym_hrtppc: "202304"
+powerbi_max_ym_hrtppc: "202403"
+px_pop_data_fy_list: "18_19,19_20,20_21,21_22,22_23,23_24" # provide as comma seperated list
+px_pop_data_fy_min_ym: "201804,201904,202004,202104,202204,202304" # provide as comma seperated list
+px_pop_data_fy_max_ym: "201903,202003,202103,202203,202303,202403" # provide as comma seperated list

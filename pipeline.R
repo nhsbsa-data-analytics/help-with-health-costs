@@ -1803,4 +1803,179 @@ rmarkdown::render(
   )
 )
 
+# 6. Build PowerBI support tables------------------------------------------
+
+# establish connection to database
+con <- nhsbsaR::con_nhsbsa(
+  dsn = "FBS_8192k",
+  driver = "Oracle in OraClient19Home1",
+  "DWCP"
+)
+
+
+# 6.1 Summarise service area data -----------------------------------------
+# data from each dataset will be aggregate to only the required groupings
+# individual SQL scripts will create intermediate tables that can be dropped once combined
+
+if(config$rebuild_powerbi_data == TRUE){
+
+  # LIS data
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/HWHC_BI_LIS.sql",
+    db_table_name = "HWHC_BI_LIS",
+    ls_variables = list(
+      var = c("p_min_ym", "p_max_ym"),
+      val = c(config$powerbi_min_ym_lis, config$powerbi_max_ym_lis)
+    )
+  )
+  
+  # HES data
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/HWHC_BI_HES.sql",
+    db_table_name = "HWHC_BI_HES",
+    ls_variables = list(
+      var = c("p_min_ym", "p_max_ym"),
+      val = c(config$powerbi_min_ym_hes, config$powerbi_max_ym_hes)
+    )
+  )
+  
+  # HRT PPC data
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/HWHC_BI_HRTPPC.sql",
+    db_table_name = "HWHC_BI_HRTPPC",
+    ls_variables = list(
+      var = c("p_min_ym", "p_max_ym"),
+      val = c(config$powerbi_min_ym_hrtppc, config$powerbi_max_ym_hrtppc)
+    )
+  )
+  
+  # Combine datasets
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/HWHC_BI_OUTPUT.sql",
+    db_table_name = "HWHC_BI_OUTPUT"
+  )
+  
+  # remove the intermediate tables
+  DBI::dbRemoveTable(conn = con, name = DBI::Id(schema = toupper(con@info$username), table = "HWHC_BI_LIS"))
+  DBI::dbRemoveTable(conn = con, name = DBI::Id(schema = toupper(con@info$username), table = "HWHC_BI_HES"))
+  DBI::dbRemoveTable(conn = con, name = DBI::Id(schema = toupper(con@info$username), table = "HWHC_BI_HRTPPC"))
+  
+  # Secondary ICB dataset
+  # this data is aggregated just to ICB and certificate level and is to allow highlighting on charts via a child table
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/HWHC_BI_ICB_OUTPUT.sql",
+    db_table_name = "HWHC_BI_ICB_OUTPUT"
+  ) 
+
+
+  # 6.2 Create dimension tables ---------------------------------------------
+  
+  # Dimension table : Service Area list
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/HWHC_BI_DIM_SERVICE_AREA_NAME.sql",
+    db_table_name = "HWHC_BI_DIM_SERVICE_AREA_NAME"
+  )
+  
+  # Dimension table : Geographic Location list
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/HWHC_BI_DIM_GEO_CLASSIFICATION.sql",
+    db_table_name = "HWHC_BI_DIM_GEO_CLASSIFICATION"
+  )
+  
+  # Dimension table : Financial Year list
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/HWHC_BI_DIM_FY.sql",
+    db_table_name = "HWHC_BI_DIM_FY"
+  )
+  
+  # Dimension table : Certificate Type list
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/HWHC_BI_DIM_CERT_TYPE.sql",
+    db_table_name = "HWHC_BI_DIM_CERT_TYPE"
+  )
+  
+
+  # 6.3 Create base population datasets -------------------------------------
+  
+  # for population figures based on patient estimates the script struggles to run for multiple years
+  # to improve performance the script can be run for individual years with results combined
+  # intermediate tables can be dropped following execution
+  
+  # create a list of periods to loop for prescription data
+  # values will have been supplied as comma seperated lists in the pipeline
+  px_fy_list <- list(
+    fy = unlist(strsplit(config$px_pop_data_fy_list,",")),
+    min_ym = unlist(strsplit(config$px_pop_data_fy_min_ym,",")),
+    max_ym = unlist(strsplit(config$px_pop_data_fy_max_ym,","))
+  )
+
+  if(length(px_fy_list$fy) > 0){
+    
+    # build the intermediate tables
+    for(v in 1:num_var){
+      
+      db_table_name = paste0("HWHC_PX_PAT_FY_ICB_",px_fy_list$fy[v])
+      
+      # update statement to combine intermediate tables
+      if(v==1){
+        sql_stmt = paste0("create table HWHC_PX_PAT_FY_ICB as select * from ", db_table_name)
+      } else {
+        sql_stmt = paste0(sql_stmt, " union all select * from ", db_table_name)
+      }
+      
+      create_dataset_from_sql(
+        db_connection = con,
+        path_to_sql_file = "./SQL/HWHC_PX_PAT_FY_ICB.sql",
+        db_table_name = db_table_name,
+        ls_variables = list(
+          var = c("p_min_ym","p_max_ym"),
+          val = c(px_fy_list$min_ym[v], px_fy_list$max_ym[v])
+        )
+      )
+      
+    }
+    
+    # create the combined data
+    # execute script to create database table
+    DBI::dbExecute(conn = con, statement = sql_stmt)
+    
+    # delete the intermediate tables
+    for(v in 1:num_var){
+      DBI::dbRemoveTable(conn = con, name = DBI::Id(schema = toupper(con@info$username), table = paste0("HWHC_PX_PAT_FY_ICB_",px_fy_list$fy[v])))
+    }
+    
+  }
+  
+  # create the ICB population reference table
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/HWHC_BI_ICB_POPULATION.sql",
+    db_table_name = "HWHC_BI_ICB_POPULATION",
+    ls_variables = list(
+      var = c("p_min_ym","p_max_ym"),
+      val = c(config$powerbi_min_ym_lis, config$powerbi_max_ym_lis)
+    )
+  )
+  
+}
+
+
+# 6.4 Close database connection -------------------------------------------
+
+# close connection to database
+DBI::dbDisconnect(con)
+
+
+
+  
+
 logr::log_close()

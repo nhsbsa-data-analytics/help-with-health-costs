@@ -84,7 +84,7 @@ select  /*+ materialize */
             CUSTOM_AGE_BAND,
             0                                               as APPLICATION_COUNT,
             sum(1)                                          as ISSUED_COUNT
-from        HES_FACT
+from        HRTPPC_FACT
 where       1=1
     and     ISSUE_YM >= &&p_min_ym
     and     ISSUE_YM <= &&p_max_ym

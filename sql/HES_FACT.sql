@@ -43,6 +43,9 @@ DEPENDENCIES:
 --------------------SCRIPT START----------------------------------------------------------------------------------------------------------------------
 
 create table HES_FACT compress for query high as
+with 
+base as
+(
 select      standard_hash(hcd.CERTIFICATE_NUMBER, 'SHA256')                                                                                     as ID,
             hcd.CERTIFICATE_TYPE                                                                                                                as SERVICE_AREA,
             hcd.CERTIFICATE_TYPE,
@@ -54,8 +57,8 @@ select      standard_hash(hcd.CERTIFICATE_NUMBER, 'SHA256')                     
             end                                                                                                                                 as SERVICE_AREA_NAME,
             case
                 when hcd.CERTIFICATE_TYPE != 'PPC'  then 'N/A'
-                when CERTIFICATE_DURATION = 3       then '3-month'
-                when CERTIFICATE_DURATION = 12      then '12-month'
+                when hcd.CERTIFICATE_DURATION = 3   then '3-month'
+                when hcd.CERTIFICATE_DURATION = 12  then '12-month'
                                                     else 'N/A'
             end                                                                                                                                 as CERTIFICATE_SUBTYPE,
             hcd.CERTIFICATE_DURATION,
@@ -114,19 +117,7 @@ select      standard_hash(hcd.CERTIFICATE_NUMBER, 'SHA256')                     
             substr(hapf.CERTIFICATE_START_DATE_WID, 1,6)                                                                                        as CERTIFICATE_START_YM,
             to_date(hapf.CERTIFICATE_EXPIRY_DATE_WID default null on conversion error, 'YYYYMMDD')                                              as CERTIFICATE_EXPIRY_DATE,
             substr(hapf.CERTIFICATE_EXPIRY_DATE_WID, 1,6)                                                                                       as CERTIFICATE_EXPIRY_YM,
-            --certificate duration (only capture where a certificate has been issued)
-            case
-                when hapf.CERTIFICATE_ISSUED_DATE_WID = 19000101 
-                then null
-                else hcd.CERTIFICATE_DURATION
-            end                                                                                                                                 as CERTIFICATE_DURATION_MONTHS,
-            case
-                when        hcd.CERTIFICATE_TYPE != 'MAT'                 
-                    then    null
-                when        hapf.CERTIFICATE_ISSUED_DATE_WID = 19000101 
-                    then null
-                else        round(months_between(to_date(CERTIFICATE_ISSUED_DATE_WID,'YYYYMMDD'), BABY_DUE_DATE),0)
-            end                                                                                                                                 as MONTHS_BETWEEN_DUE_DATE_AND_ISSUE
+            hcd.BABY_DUE_DATE
 from        DIM.HES_CERTIFICATE_DIM             hcd
 inner join  AML.HES_APPLICATION_PROCESS_FACT    hapf    on  hcd.CERTIFICATE_NUMBER                              =   hapf.CERTIFICATE_NUMBER
 inner join  DIM.HES_CERTIFICATE_STATUS_DIM      hcsd    on  hapf.CERTIFICATE_STATUS                             =   hcsd.CERTIFICATE_STATUS
@@ -136,6 +127,62 @@ where       1=1
     --limit to records as of a set date supplied at runtime
     and     hapf.DW_DATE_CREATED <= to_date(&&p_extract_date,'YYYYMMDD')
     and     nvl(hapf.DW_DATE_UPDATED,to_date(99991231,'YYYYMMDD')) > to_date(&&p_extract_date,'YYYYMMDD')
+)
+
+select      ID,
+            SERVICE_AREA,
+            CERTIFICATE_TYPE,
+            SERVICE_AREA_NAME,
+            CERTIFICATE_SUBTYPE,
+            CERTIFICATE_ISSUED_FLAG,
+            CERTIFICATE_STATUS,
+            CERTIFICATE_STATUS_DESC,
+            CERTIFICATE_CANCELLED_FLAG,
+            CERTIFICATE_HOLDER_AGE,
+            BAND_5YEARS,
+            BAND_10YEARS,
+            CUSTOM_AGE_BAND,
+            LSOA,
+            ICB,
+            ICB_CODE,
+            ICB_NAME,
+            IMD_DECILE,
+            IMD_QUINTILE,
+            COUNTRY,
+            APPLICATION_DATE,
+            APPLICATION_YM,
+            APPLICATION_FY,
+            ISSUE_DATE,
+            ISSUE_YM,
+            ISSUE_FY,
+            CERTIFICATE_START_DATE,
+            CERTIFICATE_START_YM,
+            CERTIFICATE_EXPIRY_DATE,
+            CERTIFICATE_EXPIRY_YM,
+            --certificate duration (only capture where a certificate has been issued)
+            --for MEDEX and PPC these can default based on set lengths
+            --for MATEX, recode any where the dates would be less than 0 or greater than 22 as outside of feasible range and probably data error
+            case
+                when    ISSUE_YM = 190001                                                               then null
+                when    CERTIFICATE_TYPE = 'MED'                                                        then 60
+                when    CERTIFICATE_TYPE = 'PPC' 
+                    and CERTIFICATE_DURATION in (3,12)                                                  then CERTIFICATE_DURATION
+                when    CERTIFICATE_TYPE = 'PPC' 
+                    and CERTIFICATE_DURATION not in (3,12)                                              then null
+                when    CERTIFICATE_TYPE = 'MAT' 
+                    and round(months_between(CERTIFICATE_EXPIRY_DATE, CERTIFICATE_START_DATE),0) < 0    then null
+                when    CERTIFICATE_TYPE = 'MAT' 
+                    and round(months_between(CERTIFICATE_EXPIRY_DATE, CERTIFICATE_START_DATE),0) > 22   then null
+                else    round(months_between(CERTIFICATE_EXPIRY_DATE, CERTIFICATE_START_DATE),0)
+            end                                                                                                                                 as CERTIFICATE_DURATION_MONTHS,
+            --months between issue and due date
+            --to replace with duration
+            case
+                when CERTIFICATE_TYPE != 'MAT'  then null
+                when ISSUE_YM = 190001          then null
+                else round(months_between(ISSUE_DATE, BABY_DUE_DATE),0)
+            end                                                                                                                                 as MONTHS_BETWEEN_DUE_DATE_AND_ISSUE
+from        base
 ;
 
 ---------------------SCRIPT END-----------------------------------------------------------------------------------------------------------------------

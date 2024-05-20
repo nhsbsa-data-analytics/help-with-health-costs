@@ -54,20 +54,13 @@ get_matex_duration_data <- function(db_connection, db_table_name, min_ym, max_ym
       ISSUE_YM <= max_ym,
       CERTIFICATE_ISSUED_FLAG == 1 
     ) |>
-    # apply formatting to reclassify anything beyond -9 months and +12 months
-    dplyr::mutate(MONTHS_BETWEEN_DUE_DATE_AND_ISSUE = dplyr::case_when(
-      MONTHS_BETWEEN_DUE_DATE_AND_ISSUE < -9 ~ NA,
-      MONTHS_BETWEEN_DUE_DATE_AND_ISSUE > 12 ~ NA,
-      TRUE ~ MONTHS_BETWEEN_DUE_DATE_AND_ISSUE
-    )) |> 
-    # summarise, splitting by month/fy and country of applicant
-    dplyr::group_by(SERVICE_AREA_NAME, ISSUE_FY, MONTHS_BETWEEN_DUE_DATE_AND_ISSUE) |> 
+    dplyr::group_by(SERVICE_AREA_NAME, ISSUE_FY, CERTIFICATE_DURATION_MONTHS) |> 
     dplyr::summarise(ISSUED_CERTS = n(), .groups = "keep") |> 
     dplyr::collect()
   
   # format to calculate rolling sums
   df_issue <- df_issue |> 
-    dplyr::arrange(MONTHS_BETWEEN_DUE_DATE_AND_ISSUE) |> 
+    dplyr::arrange(desc(CERTIFICATE_DURATION_MONTHS)) |> 
     dplyr::ungroup() |> 
     dplyr::mutate(
       CUM_SUM_ISSUED_CERTS = cumsum(ISSUED_CERTS),

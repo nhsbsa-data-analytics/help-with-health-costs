@@ -337,10 +337,10 @@ mat_active_objs <- create_hes_active_objects(
 # Chart:
 ch_mat_duration <- get_matex_duration_data(con, 'HES_FACT', config$min_focus_ym_mat, config$max_focus_ym_mat) |>
   nhsbsaVis::basic_chart_hc(
-    x = MONTHS_BETWEEN_DUE_DATE_AND_ISSUE,
+    x = CERTIFICATE_DURATION_MONTHS,
     y = PROP_CUM_SUM_ISSUED_CERTS,
     type = "line",
-    xLab = "Number of months between due date and certificate issue date",
+    xLab = "Duration of certificate (months)",
     yLab = "Proportion of certificates issued (%)",
     seriesName = "Proportion of certificates issued (%)",
     title = "",
@@ -364,18 +364,20 @@ ch_mat_duration <- get_matex_duration_data(con, 'HES_FACT', config$min_focus_ym_
       ),
       color = "#000000",
       width = 2,
-      value = 0
+      value = 12
     )
-  ))
+  ),
+  reversed = TRUE
+  )
 
 # Chart Data Download:
 dl_mat_duration <- get_matex_duration_data(con, 'HES_FACT', config$min_focus_ym_mat, config$max_focus_ym_mat) |> 
-  dplyr::mutate(MONTHS_BETWEEN_DUE_DATE_AND_ISSUE = ifelse(is.na(MONTHS_BETWEEN_DUE_DATE_AND_ISSUE ),"N/A",MONTHS_BETWEEN_DUE_DATE_AND_ISSUE)) |> 
+  dplyr::mutate(CERTIFICATE_DURATION_MONTHS = ifelse(is.na(CERTIFICATE_DURATION_MONTHS ),"N/A",CERTIFICATE_DURATION_MONTHS)) |> 
   rename_df_fields()
 
 # Support Data:
 sd_mat_duration <- get_matex_duration_data(con, 'HES_FACT', config$min_focus_ym_mat, config$max_focus_ym_mat) |>
-  dplyr::mutate(MONTHS_BETWEEN_DUE_DATE_AND_ISSUE = ifelse(is.na(MONTHS_BETWEEN_DUE_DATE_AND_ISSUE ),"N/A",MONTHS_BETWEEN_DUE_DATE_AND_ISSUE)) |> 
+  dplyr::mutate(CERTIFICATE_DURATION_MONTHS = ifelse(is.na(CERTIFICATE_DURATION_MONTHS ),"N/A",CERTIFICATE_DURATION_MONTHS)) |> 
   dplyr::mutate(COUNTRY = "N/A") |> 
   dplyr::relocate(COUNTRY, .after = ISSUE_FY) |> 
   rename_df_fields()

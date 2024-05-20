@@ -150,10 +150,10 @@ group by    tpm.FINANCIAL_YEAR,
 medex_population as
 (
 select      tpm.FINANCIAL_YEAR,
-            'Medical exemption certificate'                             as SERVICE_AREA_NAME,
-            'Estimated patients (aged 16-59) receiving NHS prescribing' as POP_TYPE,
-            pop.ICB                                                     as GEO_CODE,
-            pop.PATIENT_COUNT_16_59                                     as BASE_POPULATION
+            'Medical exemption certificate'                                                         as SERVICE_AREA_NAME,
+            'Estimated patients (aged 16-59) receiving NHS prescribing ('||tpm.FINANCIAL_YEAR||')'  as POP_TYPE,
+            pop.ICB                                                                                 as GEO_CODE,
+            pop.PATIENT_COUNT_16_59                                                                 as BASE_POPULATION
 from        time_period_mapping     tpm
 inner join  HWHC_PX_PAT_FY_ICB      pop on  tpm.FINANCIAL_YEAR = pop.FINANCIAL_YEAR
 where       1=1
@@ -169,10 +169,10 @@ where       1=1
 ppc_population as
 (
 select      tpm.FINANCIAL_YEAR,
-            'NHS Prescription Prepayment Certificate'                   as SERVICE_AREA_NAME,
-            'Estimated patients (aged 16-59) receiving NHS prescribing' as POP_TYPE,
-            pop.ICB                                                     as GEO_CODE,
-            pop.PATIENT_COUNT_16_59                                     as BASE_POPULATION
+            'NHS Prescription Prepayment Certificate'                                               as SERVICE_AREA_NAME,
+            'Estimated patients (aged 16-59) receiving NHS prescribing ('||tpm.FINANCIAL_YEAR||')'  as POP_TYPE,
+            pop.ICB                                                                                 as GEO_CODE,
+            pop.PATIENT_COUNT_16_59                                                                 as BASE_POPULATION
 from        time_period_mapping     tpm
 inner join  HWHC_PX_PAT_FY_ICB      pop on  tpm.FINANCIAL_YEAR = pop.FINANCIAL_YEAR
 where       1=1
@@ -188,10 +188,10 @@ where       1=1
 hrtppc_population as
 (
 select      tpm.FINANCIAL_YEAR,
-            'NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT PPC)'             as SERVICE_AREA_NAME,
-            'Estimated patients (aged 16-59) receiving NHS prescribing of HRT PPC eligible medicines'   as POP_TYPE,
-            pop.ICB                                                                                     as GEO_CODE,
-            pop.HRT_PATIENT_COUNT_16_59                                                                 as BASE_POPULATION
+            'NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT PPC)'                                         as SERVICE_AREA_NAME,
+            'Estimated patients (aged 16-59) receiving NHS prescribing of HRT PPC eligible medicines ('||tpm.FINANCIAL_YEAR||')'    as POP_TYPE,
+            pop.ICB                                                                                                                 as GEO_CODE,
+            pop.HRT_PATIENT_COUNT_16_59                                                                                             as BASE_POPULATION
 from        time_period_mapping     tpm
 inner join  HWHC_PX_PAT_FY_ICB      pop on  tpm.FINANCIAL_YEAR = pop.FINANCIAL_YEAR
 where       1=1

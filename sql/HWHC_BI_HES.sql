@@ -86,7 +86,18 @@ select  /*+ materialize */
             substr(ISSUE_YM,1,4)||'-'||substr(ISSUE_YM,5,2) as YEAR_MONTH,
             SERVICE_AREA_NAME,
             CERTIFICATE_SUBTYPE,
-            CERTIFICATE_SUBTYPE                             as CERTIFICATE_DURATION,
+            case
+                when SERVICE_AREA != 'MAT'              
+                    then CERTIFICATE_SUBTYPE
+                when CERTIFICATE_DURATION_MONTHS < 12   
+                    then '11 months or less'
+                when CERTIFICATE_DURATION_MONTHS >= 19
+                    then '19 to 22 months'
+                when CERTIFICATE_DURATION_MONTHS >= 16
+                    then '16 to 18 months'
+                when CERTIFICATE_DURATION_MONTHS >= 12
+                    then '12 to 15 months'
+                else 'N/A'                                  as CERTIFICATE_DURATION,
             case 
                 when SERVICE_AREA = 'TAX'
                 then COUNTRY

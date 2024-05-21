@@ -422,15 +422,15 @@ There have been over 1,100,000 maternity certificates active in each of the past
 
 Some certificates may be active in multiple financial years, and the number of years a certificate will cover depends on how early on during pregnancy the certificate is issued.
 
-#### Figure X: Proportion of certificates issued relative to expected due date (2023/24) {.toc-ignore}
+#### Figure X: Proportion of certificates issued based on certificate duration (2023/24) {.toc-ignore}
 
 ::: {.row style="display: flex; padding-bottom: 15px;"}
 ::: col-md-6
-`r infoBox_no_border("", text = "<b>Over 60% of certificates were issued by 7 months before the expected due date</b>", width = "100%")`
+`r infoBox_no_border("", text = "<b>Over 60% of certificates were valid for up to 20 months</b>", width = "100%")`
 :::
 
 ::: col-md-6
-`r infoBox_no_border("", text = "<b>Only 5% of certificates were issued after the expected due date.</b>", width = "100%")`
+`r infoBox_no_border("", text = "<b>Less than 5% of certificates were issued after the birth and valid for less than a year.</b>", width = "100%")`
 :::
 :::
 
@@ -441,9 +441,9 @@ get_download_button(title = "Download chart data", data = dl_mat_duration, filen
 
 Maternity exemption certificates can be issued from the date the pregnancy is confirmed up to one year after the birth. Applications are submitted by a healthcare professional on the applicants behalf. Any delays in this process will impact the length of support available with some women not receiving a certificate until later in the pregnancy or until after the birth.
 
-Over 60% of certificates issued in 2023/24 had been issued 7 months prior to the expected delivery date. This period would align with the stage in pregnancy that women start to interact with NHS maternity services. 
+Over 60% of certificates issued in 2023/24 were valid for 20 months or more. This period would align with the stage in pregnancy that women start to interact with NHS maternity services. 
 
-In almost 95% of cases, the certificate had been issued by the expected due date. Although only a small proportion of certificates were issued after the due date, this still represents 29,500 certificates where the mother did not have the maternity exemption certificate until after giving birth.
+In over 95% of cases, the certificate had been issued by the expected due date, with certificates valid for 12 months or longer. Although only a small proportion of certificates were issued after the due date, this still represents 25,200 certificates where the mother did not have the maternity exemption certificate until after giving birth.
 
 #### Figure X: Number of maternity exemption certificates issued, split by age band of recipient (2023/24) {.toc-ignore}
 

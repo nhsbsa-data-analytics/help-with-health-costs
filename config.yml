@@ -122,7 +122,7 @@ caveat_tax_age_group: "Age is calculated at the point certificate issue, with ap
 caveat_tax_base_population: "Base population figures represent mid-year population estimates published by ONS for people aged 16 and over."
 
 # PowerBI criteria
-rebuild_powerbi_data: TRUE
+rebuild_powerbi_data: FALSE
 powerbi_min_ym_lis: "201804"
 powerbi_max_ym_lis: "202403"
 powerbi_min_ym_hes: "201804"

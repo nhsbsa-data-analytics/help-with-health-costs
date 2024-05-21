@@ -89,6 +89,10 @@ Some certificates may also provide support for partners and dependent children. 
 
 It may not be possible to calculate an age if the applicant's date of birth was not supplied or was incorrect. If the captured date of birth looks incorrect, the age will classified as "unknown". Age restrictions will differ between services, as defined in the relevant "methodology" sections.
 
+Due to the method used to calculate age using the applicants date of birth, some data may change between releases. Historic age data may change:
+
+* if a person updates their data to correct inaccuracies with their date of birth
+
 #### 2.1.2  Location (Country/ICB)
 These statistics use the National Statistics Postcode lookup (NSPL) to identify ICB and country for each individual. This uses the captured postcode information supplied for the application/certificate.
 
@@ -197,20 +201,18 @@ The age reported will represent the age of the applicant at the time of applicat
 
 To limit risk of inaccurate reporting, a classification of "unknown" represents data with confidence issues. For maternity exemption data this includes where the calculated age would be less than 15 or greater than 60.
 
-##### 2.3.2.3 Proportion of certificates issued relative to expected due date
-This measure shows the relationship between the date the certificate was issued to the applicant and the expected due date. Proportion figures are cumulative and therefore by 12 months after the due date all certificates must have been issued.
+##### 2.3.2.3 Proportion of certificates issued based on certificate duration
+Maternity exemption certificates are valid until a year after the birth of the child. The overall duration of the certificate will depend on how early the application is submitted. Certificates issued very early during pregnancy could be valid for up to a total of 22 months. Certificates only issued after the birth would be valid for less than 12 months.
 
-The expected due date will typically be supplied when the application is submitted and therefore may not always represent the actual date of delivery.
+This measure shows the relationship between the date the certificate was issued to the applicant and the certificate duration. This will identify the pattern of how early in pregnancy certificates are being issued. Proportion figures are cumulative and therefore by 12 months after the birth of the child all certificates must have been issued.
 
-Figures have been reported by number of months, with figures rounded to the nearest number of months. For example, using an expected due date of 10 January 2024:
+Duration is calculated as the number of months, rounded to the nearest month, between the certificate start and expiration date. If the calculated duration would suggest potential data issues, figures will be reported as N/A.
 
-* certificates issued on 26 June 2023 would show as -7 months
-* certificates issued on 25 December 2023 would show as -1 months
-* certificates issued on 26 December 2023 would show as 0 months
-* certificates issued on 25 January 2024 would show as 0 months
-* certificates issued on 26 January 2024 would show as 1 months
-* certificates issued on 30 March 2024 would show as 3 months
-* if no expected due date is available, or the captured due date appears invalid, figures will be reported as N/A
+When applications are received during pregnancy the expiration date will be calculated as one year after the expected due date. If a baby is born late, the certificate holder can apply for an extension to have the expiration date revised to reflect the actual date of birth. 
+
+Due to the method used to calculate certificate duration, some data may change between releases. Historic data may change: 
+
+* if an applicant applies for an extension when a baby is born late to extend the certificate duration to 12 months after the birth
 
 ##### 2.3.2.4 ICB base population
 For ICB reporting, rates have been calculated per 10,000 base population. This base population is based on mid-year population estimates published by ONS for 2022, limited to female population aged 16 to 45.

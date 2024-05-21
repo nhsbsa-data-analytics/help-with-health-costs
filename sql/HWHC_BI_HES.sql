@@ -91,13 +91,18 @@ select  /*+ materialize */
                     then CERTIFICATE_SUBTYPE
                 when CERTIFICATE_DURATION_MONTHS < 12   
                     then '11 months or less'
-                when CERTIFICATE_DURATION_MONTHS >= 19
-                    then '19 to 22 months'
+                when CERTIFICATE_DURATION_MONTHS >= 20
+                    then '20 to 22 months'
+                when CERTIFICATE_DURATION_MONTHS >= 18
+                    then '18 to 19 months'
                 when CERTIFICATE_DURATION_MONTHS >= 16
-                    then '16 to 18 months'
+                    then '16 to 17 months'
+                when CERTIFICATE_DURATION_MONTHS >= 14
+                    then '14 to 15 months'
                 when CERTIFICATE_DURATION_MONTHS >= 12
-                    then '12 to 15 months'
-                else 'N/A'                                  as CERTIFICATE_DURATION,
+                    then '12 to 13 months'
+                else 'N/A'
+            end                                             as CERTIFICATE_DURATION,
             case 
                 when SERVICE_AREA = 'TAX'
                 then COUNTRY
@@ -118,6 +123,23 @@ group by    ISSUE_FY,
             ISSUE_YM,
             SERVICE_AREA_NAME,
             CERTIFICATE_SUBTYPE,
+            case
+                when SERVICE_AREA != 'MAT'              
+                    then CERTIFICATE_SUBTYPE
+                when CERTIFICATE_DURATION_MONTHS < 12   
+                    then '11 months or less'
+                when CERTIFICATE_DURATION_MONTHS >= 20
+                    then '20 to 22 months'
+                when CERTIFICATE_DURATION_MONTHS >= 18
+                    then '18 to 19 months'
+                when CERTIFICATE_DURATION_MONTHS >= 16
+                    then '16 to 17 months'
+                when CERTIFICATE_DURATION_MONTHS >= 14
+                    then '14 to 15 months'
+                when CERTIFICATE_DURATION_MONTHS >= 12
+                    then '12 to 13 months'
+                else 'N/A'
+            end,
             case 
                 when SERVICE_AREA = 'TAX'
                 then COUNTRY

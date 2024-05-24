@@ -1866,51 +1866,10 @@ if(config$rebuild_powerbi_data == TRUE){
   DBI::dbRemoveTable(conn = con, name = DBI::Id(schema = toupper(con@info$username), table = "HWHC_BI_HES"))
   DBI::dbRemoveTable(conn = con, name = DBI::Id(schema = toupper(con@info$username), table = "HWHC_BI_HRTPPC"))
   
-  # Secondary ICB dataset
-  # this data is aggregated just to ICB and certificate level and is to allow highlighting on charts via a child table
-  create_dataset_from_sql(
-    db_connection = con,
-    path_to_sql_file = "./SQL/HWHC_BI_ICB_OUTPUT.sql",
-    db_table_name = "HWHC_BI_ICB_OUTPUT"
-  ) 
-
-
-  # 6.2 Create dimension tables ---------------------------------------------
-  
-  # Dimension table : Service Area list
-  create_dataset_from_sql(
-    db_connection = con,
-    path_to_sql_file = "./SQL/HWHC_BI_DIM_SERVICE_AREA_NAME.sql",
-    db_table_name = "HWHC_BI_DIM_SERVICE_AREA_NAME"
-  )
-  
-  # Dimension table : Geographic Location list
-  create_dataset_from_sql(
-    db_connection = con,
-    path_to_sql_file = "./SQL/HWHC_BI_DIM_GEO_CLASSIFICATION.sql",
-    db_table_name = "HWHC_BI_DIM_GEO_CLASSIFICATION"
-  )
-  
-  # Dimension table : Financial Year list
-  create_dataset_from_sql(
-    db_connection = con,
-    path_to_sql_file = "./SQL/HWHC_BI_DIM_FY.sql",
-    db_table_name = "HWHC_BI_DIM_FY"
-  )
-  
-  # Dimension table : Certificate Type list
-  create_dataset_from_sql(
-    db_connection = con,
-    path_to_sql_file = "./SQL/HWHC_BI_DIM_CERT_TYPE.sql",
-    db_table_name = "HWHC_BI_DIM_CERT_TYPE"
-  )
-  
-
-  # 6.3 Create base population datasets -------------------------------------
-  
-  # for population figures based on patient estimates the script struggles to run for multiple years
-  # to improve performance the script can be run for individual years with results combined
-  # intermediate tables can be dropped following execution
+# 6.2 Create base population datasets -------------------------------------
+# for population figures based on patient estimates the script struggles to run for multiple years
+# to improve performance the script can be run for individual years with results combined
+# intermediate tables can be dropped following execution
   
   # create a list of periods to loop for prescription data
   # values will have been supplied as comma seperated lists in the pipeline
@@ -1919,7 +1878,7 @@ if(config$rebuild_powerbi_data == TRUE){
     min_ym = unlist(strsplit(config$px_pop_data_fy_min_ym,",")),
     max_ym = unlist(strsplit(config$px_pop_data_fy_max_ym,","))
   )
-
+  
   if(length(px_fy_list$fy) > 0){
     
     # build the intermediate tables
@@ -1970,8 +1929,159 @@ if(config$rebuild_powerbi_data == TRUE){
   
 }
 
+# 6.3 Create aggregated summary tables ------------------------------------
+# these aggregated tables will be the base for the analyses
+# data is pre-aggregated to the required levels with disclosure controls applied
+# after creating table a csv extract should be produced to load to PowerBI
+  
 
-# 6.4 Close database connection -------------------------------------------
+# 6.3.1 Financial year trend data -----------------------------------------
+
+  # Combine datasets
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/HWHC_BI_AGG_FY_SERVICE_GEO_CERT.sql",
+    db_table_name = "HWHC_BI_AGG_FY_SERVICE_GEO_CERT"
+  )
+  # export to csv
+  export_db_table_to_csv(
+    db_connection = con,
+    db_table_name = "HWHC_BI_AGG_FY_SERVICE_GEO_CERT",
+    output_path = "outputs/HWHC_BI_AGG_FY_SERVICE_GEO_CERT.csv"
+  )
+
+# 6.3.2 ICB summary data --------------------------------------------------
+
+  # Combine datasets
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/HWHC_BI_AGG_FY_SERVICE_ICB_CERT.sql",
+    db_table_name = "HWHC_BI_AGG_FY_SERVICE_ICB_CERT"
+  )
+  # export to csv
+  export_db_table_to_csv(
+    db_connection = con,
+    db_table_name = "HWHC_BI_AGG_FY_SERVICE_ICB_CERT",
+    output_path = "outputs/HWHC_BI_AGG_FY_SERVICE_ICB_CERT.csv"
+  )
+
+# 6.3.3 Age summary data --------------------------------------------------
+  
+  # Combine datasets
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/HWHC_BI_AGG_FY_SERVICE_GEO_CERT_AGE.sql",
+    db_table_name = "HWHC_BI_AGG_FY_SERVICE_GEO_CERT_AGE"
+  )
+  # export to csv
+  export_db_table_to_csv(
+    db_connection = con,
+    db_table_name = "HWHC_BI_AGG_FY_SERVICE_GEO_CERT_AGE",
+    output_path = "outputs/HWHC_BI_AGG_FY_SERVICE_GEO_CERT_AGE.csv"
+  )
+
+# 6.3.4 IMD summary data --------------------------------------------------
+  
+  # Combine datasets
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/HWHC_BI_AGG_FY_SERVICE_GEO_CERT_IMD.sql",
+    db_table_name = "HWHC_BI_AGG_FY_SERVICE_GEO_CERT_IMD"
+  )
+  # export to csv
+  export_db_table_to_csv(
+    db_connection = con,
+    db_table_name = "HWHC_BI_AGG_FY_SERVICE_GEO_CERT_IMD",
+    output_path = "outputs/HWHC_BI_AGG_FY_SERVICE_GEO_CERT_IMD.csv"
+  )
+
+# 6.3.5 Duration summary data ---------------------------------------------
+  
+  # Combine datasets
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/HWHC_BI_AGG_FY_SERVICE_GEO_CERT_DURATION.sql",
+    db_table_name = "HWHC_BI_AGG_FY_SERVICE_GEO_CERT_DURATION"
+  )
+  # export to csv
+  export_db_table_to_csv(
+    db_connection = con,
+    db_table_name = "HWHC_BI_AGG_FY_SERVICE_GEO_CERT_DURATION",
+    output_path = "outputs/HWHC_BI_AGG_FY_SERVICE_GEO_CERT_DURATION.csv"
+  )
+
+# 6.3.6 Month trend data -----------------------------------------
+  
+  # Combine datasets
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/HWHC_BI_AGG_MONTH_SERVICE_GEO_CERT.sql",
+    db_table_name = "HWHC_BI_AGG_MONTH_SERVICE_GEO_CERT"
+  )
+  # export to csv
+  export_db_table_to_csv(
+    db_connection = con,
+    db_table_name = "HWHC_BI_AGG_MONTH_SERVICE_GEO_CERT",
+    output_path = "outputs/HWHC_BI_AGG_MONTH_SERVICE_GEO_CERT.csv"
+  )
+  
+
+
+# 6.4 Create dimension tables ---------------------------------------------
+  
+  # Dimension table : Service Area list
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/HWHC_BI_DIM_SERVICE_AREA_NAME.sql",
+    db_table_name = "HWHC_BI_DIM_SERVICE_AREA_NAME"
+  )
+  # export to csv
+  export_db_table_to_csv(
+    db_connection = con,
+    db_table_name = "HWHC_BI_DIM_SERVICE_AREA_NAME",
+    output_path = "outputs/HWHC_BI_DIM_SERVICE_AREA_NAME.csv"
+  )
+  
+  # Dimension table : Geographic Location list
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/HWHC_BI_DIM_GEO_CLASSIFICATION.sql",
+    db_table_name = "HWHC_BI_DIM_GEO_CLASSIFICATION"
+  )
+  # export to csv
+  export_db_table_to_csv(
+    db_connection = con,
+    db_table_name = "HWHC_BI_DIM_GEO_CLASSIFICATION",
+    output_path = "outputs/HWHC_BI_DIM_GEO_CLASSIFICATION.csv"
+  )
+  
+  # Dimension table : Financial Year list
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/HWHC_BI_DIM_FY.sql",
+    db_table_name = "HWHC_BI_DIM_FY"
+  )
+  # export to csv
+  export_db_table_to_csv(
+    db_connection = con,
+    db_table_name = "HWHC_BI_DIM_FY",
+    output_path = "outputs/HWHC_BI_DIM_FY.csv"
+  )
+  
+  # Dimension table : Certificate Type list
+  create_dataset_from_sql(
+    db_connection = con,
+    path_to_sql_file = "./SQL/HWHC_BI_DIM_CERT_TYPE.sql",
+    db_table_name = "HWHC_BI_DIM_CERT_TYPE"
+  )
+  # export to csv
+  export_db_table_to_csv(
+    db_connection = con,
+    db_table_name = "HWHC_BI_DIM_CERT_TYPE",
+    output_path = "outputs/HWHC_BI_DIM_CERT_TYPE.csv"
+  )
+
+# 6.5 Close database connection -------------------------------------------
 
 # close connection to database
 DBI::dbDisconnect(con)

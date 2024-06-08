@@ -20,11 +20,11 @@ create table HWHC_BI_DIM_GEO_CLASSIFICATION compress for query high as
 select  distinct
             GEO_CLASSIFICATION,
             case
-                when GEO_CLASSIFICATION like 'OVERALL:%'    then '1:'||GEO_CLASSIFICATION
-                when GEO_CLASSIFICATION like 'COUNTRY:%'    then '2:'||GEO_CLASSIFICATION
-                when GEO_CLASSIFICATION like 'ICB: NHS%'    then '3:'||GEO_CLASSIFICATION
-                when GEO_CLASSIFICATION like 'ICB: N/A%'    then '4:'||GEO_CLASSIFICATION
-                                                            else '9'
+                when GEO_CLASSIFICATION like 'OVERALL:%'            then '1:'||GEO_CLASSIFICATION
+                when GEO_CLASSIFICATION like 'COUNTRY:%'            then '2:'||GEO_CLASSIFICATION
+                when GEO_CLASSIFICATION like 'ICB: NHS%'            then '3:'||GEO_CLASSIFICATION
+                when GEO_CLASSIFICATION like 'ICB: Not Available'   then '4:'||GEO_CLASSIFICATION
+                                                                    else '9'
             end as SORTORDER
 from        HWHC_BI_OUTPUT
 where       1=1

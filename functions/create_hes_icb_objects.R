@@ -1,7 +1,7 @@
 #' create_hes_icb_objects
 #'
 #' Create objects to summarise the HES data by ICB geography
-#' Output will include a column chart by custom age bands, supporting download data and data for supplementary datasets
+#' Output will include a map, column chart and table by ICB, supporting download data and data for supplementary datasets
 #' As ICB areas can vary substantially in size, a population denominator will be used to standardise results for reporting
 #' 
 #' Data will be based on issued certificates using the get_hes_issue_data function to extract data
@@ -110,7 +110,7 @@ create_hes_icb_objects <- function(
       max_age = population_max_age,
       group_list = c("ICB")
     ) |> 
-      filter(ICB != 'N/A') |> 
+      dplyr::filter(ICB != 'Not Available') |> 
       dplyr::rename(BASE_POPULATION := {{ px_population_type }}) |> 
       dplyr::select(ICB, BASE_POPULATION)
     
@@ -160,7 +160,7 @@ create_hes_icb_objects <- function(
   # Create output objects ---------------------------------------------------
 
   # create a custom label for metric figure
-  metric_text = paste0("Number of issued certificates per ",config$ons_pop_rate_denominator," population")
+  metric_text = paste0("Number of issued certificates per ", format(config$ons_pop_rate_denominator,big.mark=","), " population")
   
   # define data grouping based on service area
   if(service_area %in% c("LIS","TAX")){
@@ -177,7 +177,7 @@ create_hes_icb_objects <- function(
   # the map/chart will be limited to only certificates issued to the applicant (excluding other outcome responses for services like LIS)
   # create a single dataset based on issued certificates combined to population data
   # all figures can be aggregated to country and ICB
-  df <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, aggCols, TRUE) |> 
+  df <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, aggCols) |> 
     dplyr::left_join(
       y = population_data,
       by = "ICB"
@@ -191,7 +191,7 @@ create_hes_icb_objects <- function(
   
   # create chart object
   obj_chart <- df |>
-    dplyr::filter(ICB != 'N/A') |> 
+    dplyr::filter(ICB != 'Not Available') |> 
     dplyr::arrange(desc(ISSUED_CERTS_PER_POP)) |> 
     nhsbsaVis::basic_chart_hc(
       x = ICB_NAME,
@@ -207,9 +207,9 @@ create_hes_icb_objects <- function(
       shared = T,
       sort = T,
       pointFormat = paste0(
-        metric_text,": {point.ISSUED_CERTS_PER_POP_SF} <br>",
-        "Certificates issued: {point.ISSUED_CERTS_SF} <br>",
-        population_text,": {point.BASE_POPULATION_SF}"
+        metric_text,": {point.ISSUED_CERTS_PER_POP_SF:,.0f} <br>",
+        "Certificates issued: {point.ISSUED_CERTS_SF:,.0f} <br>",
+        population_text,": {point.BASE_POPULATION_SF:,.0f}"
       )
     ) |> 
     highcharter::hc_xAxis(labels = list(enabled = FALSE)) |> 
@@ -228,11 +228,27 @@ create_hes_icb_objects <- function(
     order_of_magnitude = "",
     custom_tooltip = paste0(
       "<b>ICB:</b> {point.ICB_NAME}<br>",
-      "<b>",metric_text,":</b> {point.ISSUED_CERTS_PER_POP_SF}<br>",
-      "<b>Certificates issued:</b> {point.ISSUED_CERTS_SF}<br>",
-      "<b>",population_text,":</b> {point.BASE_POPULATION_SF}"
+      "<b>",metric_text,":</b> {point.ISSUED_CERTS_PER_POP_SF:,.0f}<br>",
+      "<b>Certificates issued:</b> {point.ISSUED_CERTS_SF:,.0f}<br>",
+      "<b>",population_text,":</b> {point.BASE_POPULATION_SF:,.0f}"
     )
   )
+  
+  # create the table object
+  obj_table <- df |> 
+    dplyr::filter(ICB != 'Not Available') |> 
+    dplyr::select(ICB_NAME, ISSUED_CERTS_PER_POP_SF,ISSUED_CERTS,BASE_POPULATION) |> 
+    dplyr::arrange(ICB_NAME) |> 
+    # apply custom naming that could change based on parameters
+    dplyr::rename(
+      {{metric_text}} := ISSUED_CERTS_PER_POP_SF,
+      {{population_text}} := BASE_POPULATION
+    ) |> 
+    rename_df_fields() |> 
+    knitr::kable(
+      align = "lrrr",
+      format.args = list(big.mark = ",")
+    )
   
   # create support data
   obj_chData <- df
@@ -242,7 +258,7 @@ create_hes_icb_objects <- function(
     # for split certificate types additional columns should show the breakdown by certificate subtype
     obj_chData <- df |>
       dplyr::left_join(
-        y = get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c(aggCols, "CERTIFICATE_SUBTYPE"), FALSE) |>
+        y = get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c(aggCols, "CERTIFICATE_SUBTYPE")) |>
           dplyr::select(all_of(c(pvtJoinCols,"CERTIFICATE_SUBTYPE","ISSUED_CERTS"))) |> 
           dplyr::arrange(CERTIFICATE_SUBTYPE) |> 
           tidyr::pivot_wider(
@@ -266,6 +282,6 @@ create_hes_icb_objects <- function(
     rename_df_fields()
     
   # return output
-  return(list("chart" = obj_chart, "map" = obj_map, "chart_data" = obj_chData, "support_data" = obj_chData))
+  return(list("chart" = obj_chart, "map" = obj_map, "table" = obj_table, "chart_data" = obj_chData, "support_data" = obj_chData))
 
 }

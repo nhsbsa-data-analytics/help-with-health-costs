@@ -6,18 +6,20 @@ Version 1.0
 
 AMENDMENTS:
 	2024-05-15  : Steven Buckley    : Initial script created
+    2024-06-03  : Steven Buckley    : Adjusted script to remove country aggregation for services without distinct country splits
 
 DESCRIPTION:
     Identify a base dataset for PowerBI based on NHS Low Income Scheme data.
     
     Aggregating data for HRT PPC to only the fields required for PowerBI.
     
-    The different geography levels (Overall, Country and ICB will be captured as seperate records so no aggregation is required in PowerBI.
+    The different geography levels (Overall, Country and ICB) will be captured as seperate records so no aggregation is required in PowerBI.
+        Country is excluded at this point in time as service is England only by design
     
     For each month the number of applications and issued certificates will be calcualted (based on different attribute groups)
 
 DEPENDENCIES:
-	HRTPPC_FACT    :   Prebuilt dataset to application/certificate level for all HRT PPC cases 
+	HWHC_HRTPPC_FACT    :   Prebuilt dataset to application/certificate level for all HRT PPC cases 
 */
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -43,11 +45,11 @@ select  /*+ materialize */
             'England'                                                   as COUNTRY,
             ICB_NAME,
             ICB,
-            nvl(to_char(IMD_QUINTILE),'N/A')                            as IMD_QUINTILE,
+            nvl(to_char(IMD_QUINTILE),'Not Available')                  as IMD_QUINTILE,
             CUSTOM_AGE_BAND,
             sum(1)                                                      as APPLICATION_COUNT,
             0                                                           as ISSUED_COUNT
-from        HRTPPC_FACT
+from        HWHC_HRTPPC_FACT
 where       1=1
     and     APPLICATION_YM >= &&p_min_ym
     and     APPLICATION_YM <= &&p_max_ym
@@ -80,11 +82,11 @@ select  /*+ materialize */
             'England'                                       as COUNTRY,
             ICB_NAME,
             ICB,
-            nvl(to_char(IMD_QUINTILE),'N/A')                as IMD_QUINTILE,
+            nvl(to_char(IMD_QUINTILE),'Not Available')      as IMD_QUINTILE,
             CUSTOM_AGE_BAND,
             0                                               as APPLICATION_COUNT,
             sum(1)                                          as ISSUED_COUNT
-from        HRTPPC_FACT
+from        HWHC_HRTPPC_FACT
 where       1=1
     and     ISSUE_YM >= &&p_min_ym
     and     ISSUE_YM <= &&p_max_ym
@@ -121,7 +123,7 @@ select * from outcome_data
 output_overall_data as
 (
 select      'OVERALL: All activity'     as GEO_CLASSIFICATION,
-            'N/A'                       as GEO_CODE,
+            'Not Available'             as GEO_CODE,
             FY,
             YM,
             YEAR_MONTH,
@@ -153,7 +155,7 @@ group by    FY,
 output_country_data as
 (
 select      'COUNTRY: '||COUNTRY        as GEO_CLASSIFICATION,
-            'N/A'                       as GEO_CODE,
+            'Not Available'             as GEO_CODE,
             FY,
             YM,
             YEAR_MONTH,
@@ -215,7 +217,7 @@ group by    'ICB: '||ICB_NAME,
 
 -----OUTPUT-------------------------------------------------------------------------------------------------------------------------------------------
             select * from output_overall_data
-union all   select * from output_country_data
+--union all   select * from output_country_data
 union all   select * from output_icb_data
 ;
 

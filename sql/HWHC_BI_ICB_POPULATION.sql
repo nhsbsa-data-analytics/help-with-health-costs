@@ -19,17 +19,15 @@ DESCRIPTION:
 
 
 DEPENDENCIES:
-    DIM.YEAR_MONTH_DIM  :   "Dimension" table containing time period classifications
+    DIM.YEAR_MONTH_DIM      :   "Dimension" table containing time period classifications
     
-    HWHC_PX_PAT_FY_ICB  :   Reference table produced from scripts to aggregate patient counts from prescription data
-                            Includes patient counts aggregated by financial year and ICB
+    HWHC_PX_PAT_FY_ICB      :   Reference table produced from scripts to aggregate patient counts from prescription data
+                                Includes patient counts aggregated by financial year and ICB
     
-    ONS_POPULATION      :   Reference table sourced from ONS published population statistics
-                            Includes population figures for ICB (GEOGRAPHY_TYPE = 'ICB2023')
-                            Include population split by single year of age and gender
-                            Population is mid-calendar-year estimates so needs to be aligned with financial years
-                            
-    
+    HWHC_ONS_ICB_POPULATION :   Reference table sourced from ONS published population statistics
+                                Includes population figures for ICB (GEOGRAPHY_TYPE = 'ICB2023')
+                                Include population aggregated to relevant age bands
+                                Population is mid-calendar-year estimates so needs to be aligned with financial years
 */
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------SCRIPT START----------------------------------------------------------------------------------------------------------------------
@@ -53,7 +51,7 @@ from        (
             from        (
                         select  distinct
                                     POPULATION_YEAR
-                        from        ONS_POPULATION pop
+                        from        HWHC_ONS_ICB_POPULATION pop
                         where       1=1
                             and     GEOGRAPHY_TYPE = 'ICB2023'
                         )   py,
@@ -84,15 +82,11 @@ select      tpm.FINANCIAL_YEAR,
             'NHS Low Income Scheme'                                         as SERVICE_AREA_NAME,
             'ONS mid-year estimate '||pop.POPULATION_YEAR||' (aged 16+)'    as POP_TYPE,
             pop.GEOGRAPHY_ONS_CODE                                          as GEO_CODE,
-            sum(pop.TOTAL_POPULATION)                                       as BASE_POPULATION
-from        ONS_POPULATION          pop
+            pop.POPULATION_16PLUS                                           as BASE_POPULATION
+from        HWHC_ONS_ICB_POPULATION pop
 inner join  time_period_mapping     tpm on  pop.POPULATION_YEAR = tpm.POPULATION_YEAR
 where       1=1
     and     pop.GEOGRAPHY_TYPE = 'ICB2023'
-    and     pop.AGE >= 16
-group by    tpm.FINANCIAL_YEAR,
-            pop.POPULATION_YEAR,
-            pop.GEOGRAPHY_ONS_CODE
 )
 --select * from lis_population;
 -----SECTION END: BASE POPULATION: NHS Low Income Scheme----------------------------------------------------------------------------------------------
@@ -107,15 +101,11 @@ select      tpm.FINANCIAL_YEAR,
             'Maternity exemption certificate'                                       as SERVICE_AREA_NAME,
             'ONS mid-year estimate '||pop.POPULATION_YEAR||' (females aged 15-45)'  as POP_TYPE,
             pop.GEOGRAPHY_ONS_CODE                                                  as GEO_CODE,
-            sum(pop.FEMALE_POPULATION)                                              as BASE_POPULATION
-from        ONS_POPULATION          pop
+            pop.FEMALE_POPULATION_15_TO_45                                          as BASE_POPULATION
+from        HWHC_ONS_ICB_POPULATION pop
 inner join  time_period_mapping     tpm on  pop.POPULATION_YEAR = tpm.POPULATION_YEAR
 where       1=1
     and     pop.GEOGRAPHY_TYPE = 'ICB2023'
-    and     pop.AGE between 15 and 45
-group by    tpm.FINANCIAL_YEAR,
-            pop.POPULATION_YEAR,
-            pop.GEOGRAPHY_ONS_CODE
 )
 --select * from matex_population;
 -----SECTION END: BASE POPULATION: NHS Low Income Scheme----------------------------------------------------------------------------------------------
@@ -123,22 +113,18 @@ group by    tpm.FINANCIAL_YEAR,
 ,
 
 -----SECTION START: BASE POPULATION: NHS tax credit exemption-----------------------------------------------------------------------------------------
---For Maternity Exemption the population is based on ONS population estimates for females aged 15-45
+--For NHS tax credit exemption the population is based on ONS population estimates for people aged 16+
 tax_population as
 (
 select      tpm.FINANCIAL_YEAR,
             'NHS tax credit exemption certificate'                          as SERVICE_AREA_NAME,
             'ONS mid-year estimate '||pop.POPULATION_YEAR||' (aged 16+)'    as POP_TYPE,
             pop.GEOGRAPHY_ONS_CODE                                          as GEO_CODE,
-            sum(pop.TOTAL_POPULATION)                                       as BASE_POPULATION
-from        ONS_POPULATION          pop
+            pop.POPULATION_16PLUS                                           as BASE_POPULATION
+from        HWHC_ONS_ICB_POPULATION pop
 inner join  time_period_mapping     tpm on  pop.POPULATION_YEAR = tpm.POPULATION_YEAR
 where       1=1
     and     pop.GEOGRAPHY_TYPE = 'ICB2023'
-    and     pop.AGE >= 16
-group by    tpm.FINANCIAL_YEAR,
-            pop.POPULATION_YEAR,
-            pop.GEOGRAPHY_ONS_CODE
 )
 --select * from tax_population;
 -----SECTION END: BASE POPULATION: NHS tax credit exemption-------------------------------------------------------------------------------------------
@@ -157,6 +143,7 @@ select      tpm.FINANCIAL_YEAR,
 from        time_period_mapping     tpm
 inner join  HWHC_PX_PAT_FY_ICB      pop on  tpm.FINANCIAL_YEAR = pop.FINANCIAL_YEAR
 where       1=1
+    and     pop.ICB != 'Not Available'
 
 )
 --select * from medex_population;
@@ -176,6 +163,7 @@ select      tpm.FINANCIAL_YEAR,
 from        time_period_mapping     tpm
 inner join  HWHC_PX_PAT_FY_ICB      pop on  tpm.FINANCIAL_YEAR = pop.FINANCIAL_YEAR
 where       1=1
+    and     pop.ICB != 'Not Available'
 
 )
 --select * from ppc_population;
@@ -195,6 +183,7 @@ select      tpm.FINANCIAL_YEAR,
 from        time_period_mapping     tpm
 inner join  HWHC_PX_PAT_FY_ICB      pop on  tpm.FINANCIAL_YEAR = pop.FINANCIAL_YEAR
 where       1=1
+    and     pop.ICB != 'Not Available'
 
 )
 --select * from hrtppc_population;

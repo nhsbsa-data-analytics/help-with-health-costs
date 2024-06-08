@@ -26,10 +26,14 @@ rename_df_fields <- function(df) {
     `ICB Code` = "ICB_CODE",
     `ICB Name` = "ICB_NAME",
     `Number of certificates issued` = "ISSUED_CERTS",
+    `Number of certificates issued` = "ISSUED_CERTS_SF",
     `Number of applications received` = "APPLICATIONS",
     `Number of active certificates` = "ACTIVE_CERTS",
     `Number of HC2 certificates issued` = "pvt_issue_HC2",
     `Number of HC3 certificates issued` = "pvt_issue_HC3",
+    `Number of HC3 certificates issued` = "ISSUED_HC3",
+    `Number of HC3 certificates including HBD11 letter` = "ISSUED_HBD11",
+    `Proportion of HC3 certificates including HBD11 letter (%)` = "PROP_HC3_HBD11",
     `Number of 12-month certificates issued` = "pvt_issue_12-month",
     `Number of 3-month certificates issued` = "pvt_issue_3-month",
     `Number of outcomes with no certificate issued` = "pvt_issue_No certificate issued",
@@ -37,7 +41,7 @@ rename_df_fields <- function(df) {
     `Number of certificates issued (cumulative)` = "CUM_SUM_ISSUED_CERTS",
     `Proportion of certificates issued (cumulative %)` = "PROP_CUM_SUM_ISSUED_CERTS",
     `Number of issued certificates post-dated to start the following month` = 'POST_DATE_CERTS',
-    `Proportion of issued certificates post-dated to start the following month` = 'PROP_CERTS_POSTDATE'
+    `Issued certificates post-dated to start the following month (%)` = 'PROP_CERTS_POSTDATE'
   )
   
   # apply renaming if columns exist

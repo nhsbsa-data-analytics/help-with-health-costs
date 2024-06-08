@@ -123,11 +123,11 @@ con <- nhsbsaR::con_nhsbsa(
 
 # create the base dataset for NHS Low Income Scheme
 # data at individual case level (ID) for all applications/certificates
-if(config$rebuild_base_data == TRUE){
+if(config$rebuild_base_lis_data == TRUE){
   create_dataset_from_sql(
     db_connection = con,
-    path_to_sql_file = "./SQL/LIS_FACT.sql",
-    db_table_name = "LIS_FACT",
+    path_to_sql_file = "./SQL/HWHC_LIS_FACT.sql",
+    db_table_name = "HWHC_LIS_FACT",
     ls_variables = list(
       var = c("p_extract_date"),
       val = c(config$extract_date_lis)
@@ -139,14 +139,14 @@ if(config$rebuild_base_data == TRUE){
 
 # create the base dataset for HES areas (PPC, MATEX, MEDEX and Tax Credit)
 # data at individual case level (ID) for all applications/certificates
-if(config$rebuild_base_data == TRUE){
+if(config$rebuild_base_hes_data == TRUE){
   create_dataset_from_sql(
     db_connection = con,
-    path_to_sql_file = "./SQL/HES_FACT.sql",
-    db_table_name = "HES_FACT",
+    path_to_sql_file = "./SQL/HWHC_HES_FACT.sql",
+    db_table_name = "HWHC_HES_FACT",
     ls_variables = list(
       var = c("p_extract_date"),
-      val = c(config$extract_date_hrt)
+      val = c(config$extract_date_hes)
     )
   )
 }
@@ -155,14 +155,14 @@ if(config$rebuild_base_data == TRUE){
 
 # create the base dataset for HRT PPC
 # data at individual case level (ID) for all applications/certificates
-if(config$rebuild_base_data == TRUE){
+if(config$rebuild_base_hrt_data == TRUE){
   create_dataset_from_sql(
     db_connection = con,
-    path_to_sql_file = "./SQL/HRTPPC_FACT.sql",
-    db_table_name = "HRTPPC_FACT",
+    path_to_sql_file = "./SQL/HWHC_HRTPPC_FACT.sql",
+    db_table_name = "HWHC_HRTPPC_FACT",
     ls_variables = list(
       var = c("p_extract_date"),
-      val = c(config$extract_date_hes)
+      val = c(config$extract_date_hrt)
     )
   )
 }
@@ -171,11 +171,11 @@ if(config$rebuild_base_data == TRUE){
 
 # create the base dataset for prescription patient counts
 # data at aggregated level showing counts of patients from the NHS prescription data
-if(config$rebuild_base_data == TRUE){
+if(config$rebuild_base_px_data == TRUE){
   create_dataset_from_sql(
     db_connection = con,
-    path_to_sql_file = "./SQL/PX_PAT_FACT.sql",
-    db_table_name = "PX_PAT_FACT",
+    path_to_sql_file = "./SQL/HWHC_PX_PAT_FACT.sql",
+    db_table_name = "HWHC_PX_PAT_FACT",
     ls_variables = list(
       var = c("p_min_ym","p_max_ym","p_age_date"),
       val = c(config$extract_px_min_ym, config$extract_px_max_ym, config$extract_px_age_dt)
@@ -194,28 +194,57 @@ if(config$rebuild_base_data == TRUE){
 
 lis_application_objs <- create_hes_application_objects(
   db_connection = con,
-  db_table_name = 'LIS_FACT',
+  db_table_name = 'HWHC_LIS_FACT',
   service_area = 'LIS',
   min_ym = config$min_trend_ym_lis,
   max_ym = config$max_trend_ym_lis,
   subtype_split = FALSE
 )
 
-# 3.1.2 LIS: Outcome type (trend)-------------------------------------------------
-# An "outcome/decision" will only be reached when the application is completed and assessed
+
+# 3.1.2 LIS: Certificates issued (trend)-------------------------------------------------
+# A certificate will only be issued when the application is completed and assessed
 # If applicants qualify for support they will be issued a HC2/HC3 certificate
-# All other outcomes have simply been captured under the group "No certificate issued"
-# Where no certificate is issued the ISSUE date will actually represent the APPLICATION date
 # Not all applications will reach the "outcome/decision" stage as applicants may drop out during the application/assessment process
+# For HC3 this will include cases where a HBD11 was issued to the applicant
 
 lis_issued_objs <- create_hes_issued_objects(
   db_connection = con,
-  db_table_name = 'LIS_FACT',
+  db_table_name = 'HWHC_LIS_FACT',
   service_area = 'LIS',
   min_ym = config$min_trend_ym_lis,
   max_ym = config$max_trend_ym_lis,
   subtype_split = TRUE
 )
+
+# identify the split of HC3 that were HBD11
+# this will only be included in the supporting data document
+hbd11_support_data <- dplyr::tbl(
+  con, 
+  from = dbplyr::in_schema(toupper(con@info$username), "HWHC_LIS_FACT")
+) |> 
+  # filter to service area and time periods
+  dplyr::filter(
+    SERVICE_AREA == 'LIS',
+    ISSUE_YM >= config$min_trend_ym_lis,
+    ISSUE_YM <= config$max_trend_ym_lis,
+    CERTIFICATE_ISSUED_FLAG == 1,
+    CERTIFICATE_TYPE == 'HC3'
+  ) |> 
+  dplyr::mutate(HBD11_FLAG = ifelse(LETTER_TYPE_CODE == 'HBD11',1,0)) |> 
+  # summarise, splitting by supplied field list
+  dplyr::group_by(SERVICE_AREA_NAME, ISSUE_FY, COUNTRY) |> 
+  dplyr::summarise(
+    ISSUED_HC3 = sum(CERTIFICATE_ISSUED_FLAG), 
+    ISSUED_HBD11 = sum(HBD11_FLAG),
+    .groups = "keep"
+  ) |> 
+  dplyr::ungroup() |> 
+  dplyr::mutate(PROP_HC3_HBD11 = round((ISSUED_HBD11 / ISSUED_HC3) * 100, 1)) |> 
+  dplyr::arrange(COUNTRY, ISSUE_FY) |> 
+  dplyr::collect() |> 
+  rename_df_fields()
+
 
 # 3.1.3 LIS: Active certificates (trend)-------------------------------------------
 # Only issued HC2/HC3 certificates should be considered in "active" counts
@@ -224,7 +253,7 @@ lis_issued_objs <- create_hes_issued_objects(
 
 lis_active_objs <- create_hes_active_objects(
   db_connection = con,
-  db_table_name = 'LIS_FACT',
+  db_table_name = 'HWHC_LIS_FACT',
   service_area = 'LIS',
   min_ym = config$min_trend_active_ym_lis,
   max_ym = config$max_trend_ym_lis,
@@ -238,7 +267,7 @@ lis_active_objs <- create_hes_active_objects(
 
 lis_duration_objs <- create_hes_duration_objects(
   db_connection = con,
-  db_table_name = 'LIS_FACT',
+  db_table_name = 'HWHC_LIS_FACT',
   service_area = 'LIS',
   min_ym = config$min_focus_ym_lis,
   max_ym = config$max_focus_ym_lis,
@@ -251,7 +280,7 @@ lis_duration_objs <- create_hes_duration_objects(
 
 lis_age_objs <- create_hes_age_objects(
   db_connection = con,
-  db_table_name = 'LIS_FACT',
+  db_table_name = 'HWHC_LIS_FACT',
   service_area = 'LIS',
   min_ym = config$min_focus_ym_lis,
   max_ym = config$max_focus_ym_lis,
@@ -263,7 +292,7 @@ lis_age_objs <- create_hes_age_objects(
 
 lis_imd_objs <- create_hes_imd_objects(
   db_connection = con,
-  db_table_name = 'LIS_FACT',
+  db_table_name = 'HWHC_LIS_FACT',
   service_area = 'LIS',
   min_ym = config$min_focus_ym_lis,
   max_ym = config$max_focus_ym_lis,
@@ -278,7 +307,7 @@ lis_imd_objs <- create_hes_imd_objects(
 
 lis_icb_objs <- create_hes_icb_objects(
   db_connection = con,
-  db_table_name = 'LIS_FACT',
+  db_table_name = 'HWHC_LIS_FACT',
   service_area = 'LIS',
   min_ym = config$min_focus_ym_lis,
   max_ym = config$max_focus_ym_lis,
@@ -298,7 +327,7 @@ lis_icb_objs <- create_hes_icb_objects(
 
 mat_application_objs <- create_hes_application_objects(
   db_connection = con,
-  db_table_name = 'HES_FACT',
+  db_table_name = 'HWHC_HES_FACT',
   service_area = 'MAT',
   min_ym = config$min_trend_ym_mat,
   max_ym = config$max_trend_ym_mat,
@@ -310,7 +339,7 @@ mat_application_objs <- create_hes_application_objects(
 
 mat_issued_objs <- create_hes_issued_objects(
   db_connection = con,
-  db_table_name = 'HES_FACT',
+  db_table_name = 'HWHC_HES_FACT',
   service_area = 'MAT',
   min_ym = config$min_trend_ym_mat,
   max_ym = config$max_trend_ym_mat,
@@ -323,7 +352,7 @@ mat_issued_objs <- create_hes_issued_objects(
 
 mat_active_objs <- create_hes_active_objects(
   db_connection = con,
-  db_table_name = 'HES_FACT',
+  db_table_name = 'HWHC_HES_FACT',
   service_area = 'MAT',
   min_ym = config$min_trend_active_ym_mat,
   max_ym = config$max_trend_ym_mat,
@@ -334,53 +363,11 @@ mat_active_objs <- create_hes_active_objects(
 # Looking at certificates issued in the latest FY
 # Split by time between due date and certificate issue
 
-# Chart:
-ch_mat_duration <- get_matex_duration_data(con, 'HES_FACT', config$min_focus_ym_mat, config$max_focus_ym_mat) |>
-  nhsbsaVis::basic_chart_hc(
-    x = CERTIFICATE_DURATION_MONTHS,
-    y = PROP_CUM_SUM_ISSUED_CERTS,
-    type = "line",
-    xLab = "Duration of certificate (months)",
-    yLab = "Proportion of certificates issued (%)",
-    seriesName = "Proportion of certificates issued (%)",
-    title = "",
-    dlOn = FALSE
-  ) |> 
-  highcharter::hc_tooltip(
-    enabled = T,
-    shared = T,
-    sort = T
-  ) |> 
-  highcharter::hc_yAxis(max = 100) |> 
-  highcharter::hc_xAxis(plotLines = list(
-    list(
-      label = list(
-        text = "Expected due date",
-        verticalAlign = "bottom",
-        textAlign = "left",
-        rotation = 270,
-        x = -5,
-        y = -5
-      ),
-      color = "#000000",
-      width = 2,
-      value = 12
-    )
-  ),
-  reversed = TRUE
-  )
-
-# Chart Data Download:
-dl_mat_duration <- get_matex_duration_data(con, 'HES_FACT', config$min_focus_ym_mat, config$max_focus_ym_mat) |> 
-  dplyr::mutate(CERTIFICATE_DURATION_MONTHS = ifelse(is.na(CERTIFICATE_DURATION_MONTHS ),"N/A",CERTIFICATE_DURATION_MONTHS)) |> 
-  rename_df_fields()
-
-# Support Data:
-sd_mat_duration <- get_matex_duration_data(con, 'HES_FACT', config$min_focus_ym_mat, config$max_focus_ym_mat) |>
-  dplyr::mutate(CERTIFICATE_DURATION_MONTHS = ifelse(is.na(CERTIFICATE_DURATION_MONTHS ),"N/A",CERTIFICATE_DURATION_MONTHS)) |> 
-  dplyr::mutate(COUNTRY = "N/A") |> 
-  dplyr::relocate(COUNTRY, .after = ISSUE_FY) |> 
-  rename_df_fields()
+mat_duration_objs <- create_matex_duration_objects(
+  db_connection = con,
+  min_ym = config$min_focus_ym_mat,
+  max_ym = config$max_focus_ym_mat
+)
 
 # 3.2.5 MATEX: Age profile (latest year)------------------------------------------------
 # Issued certificates will only include cases where a certificate was issued to the customer
@@ -388,7 +375,7 @@ sd_mat_duration <- get_matex_duration_data(con, 'HES_FACT', config$min_focus_ym_
 
 mat_age_objs <- create_hes_age_objects(
   db_connection = con,
-  db_table_name = 'HES_FACT',
+  db_table_name = 'HWHC_HES_FACT',
   service_area = 'MAT',
   min_ym = config$min_focus_ym_mat,
   max_ym = config$max_focus_ym_mat,
@@ -418,7 +405,22 @@ ch_births_age <- df_births_age |>
     sort = T
   )
 
-# add ONS data to chart and supporting data
+# add ONS data to table, chart data and supporting data
+
+# kable table needs rebuilding
+mat_age_objs$table <- mat_age_objs$chart_data |> 
+  dplyr::select(-"HwHC Service",-"Financial Year") |> 
+  dplyr::inner_join(
+    y = df_births_age,
+    by = c(`Age Band` = "AGE_BAND")
+  ) |> 
+  dplyr::rename(!!paste0("ONS Live Births (", config$ons_births_year, ")") := LIVE_BIRTHS) |> 
+  knitr::kable(
+    align = "lrr",
+    format.args = list(big.mark = ",")
+  )
+
+# update the chart_data
 mat_age_objs$chart_data <- mat_age_objs$chart_data |> 
   dplyr::left_join(
     y = df_births_age,
@@ -426,6 +428,7 @@ mat_age_objs$chart_data <- mat_age_objs$chart_data |>
   ) |> 
   dplyr::rename(!!paste0("ONS Live Births (", config$ons_births_year, ")") := LIVE_BIRTHS)
 
+# update the support_data
 mat_age_objs$support_data <- mat_age_objs$support_data |> 
   dplyr::left_join(
     y = df_births_age,
@@ -439,7 +442,7 @@ mat_age_objs$support_data <- mat_age_objs$support_data |>
 
 mat_imd_objs <- create_hes_imd_objects(
   db_connection = con,
-  db_table_name = 'HES_FACT',
+  db_table_name = 'HWHC_HES_FACT',
   service_area = 'MAT',
   min_ym = config$min_focus_ym_mat,
   max_ym = config$max_focus_ym_mat,
@@ -470,7 +473,22 @@ ch_births_imd  = df_births_imd |>
     sort = T
   )
 
-# add ONS data to chart and supporting data
+# add ONS data to table, chart data and supporting data
+
+# kable table needs rebuilding
+mat_imd_objs$table <- mat_imd_objs$chart_data |> 
+  dplyr::select(-"HwHC Service",-"Financial Year") |> 
+  dplyr::inner_join(
+    y = df_births_imd |> dplyr::mutate(IMD_QUINTILE = as.character(IMD_QUINTILE)),
+    by = c(`IMD Quintile` = "IMD_QUINTILE")
+  ) |> 
+  dplyr::rename(!!paste0("ONS Live Births (", config$ons_births_year, ")") := LIVE_BIRTHS) |> 
+  knitr::kable(
+    align = "lrr",
+    format.args = list(big.mark = ",")
+  )
+
+# update the chart_data
 mat_imd_objs$chart_data <- mat_imd_objs$chart_data |> 
   dplyr::left_join(
     y = df_births_imd |> dplyr::mutate(IMD_QUINTILE = as.character(IMD_QUINTILE)),
@@ -478,6 +496,7 @@ mat_imd_objs$chart_data <- mat_imd_objs$chart_data |>
   ) |> 
   dplyr::rename(!!paste0("ONS Live Births (", config$ons_births_year, ")") := LIVE_BIRTHS)
 
+# update the support_data
 mat_imd_objs$support_data <- mat_imd_objs$support_data |> 
   dplyr::left_join(
     y = df_births_imd |> dplyr::mutate(IMD_QUINTILE = as.character(IMD_QUINTILE)),
@@ -493,7 +512,7 @@ mat_imd_objs$support_data <- mat_imd_objs$support_data |>
 
 mat_icb_objs <- create_hes_icb_objects(
   db_connection = con,
-  db_table_name = 'HES_FACT',
+  db_table_name = 'HWHC_HES_FACT',
   service_area = 'MAT',
   min_ym = config$min_focus_ym_mat,
   max_ym = config$max_focus_ym_mat,
@@ -513,7 +532,7 @@ mat_icb_objs <- create_hes_icb_objects(
 
 med_application_objs <- create_hes_application_objects(
   db_connection = con,
-  db_table_name = 'HES_FACT',
+  db_table_name = 'HWHC_HES_FACT',
   service_area = 'MED',
   min_ym = config$min_trend_ym_med,
   max_ym = config$max_trend_ym_med,
@@ -525,7 +544,7 @@ med_application_objs <- create_hes_application_objects(
 
 med_issued_objs <- create_hes_issued_objects(
   db_connection = con,
-  db_table_name = 'HES_FACT',
+  db_table_name = 'HWHC_HES_FACT',
   service_area = 'MED',
   min_ym = config$min_trend_ym_med,
   max_ym = config$max_trend_ym_med,
@@ -538,7 +557,7 @@ med_issued_objs <- create_hes_issued_objects(
 
 med_active_objs <- create_hes_active_objects(
   db_connection = con,
-  db_table_name = 'HES_FACT',
+  db_table_name = 'HWHC_HES_FACT',
   service_area = 'MED',
   min_ym = config$min_trend_active_ym_med,
   max_ym = config$max_trend_ym_med,
@@ -550,7 +569,7 @@ med_active_objs <- create_hes_active_objects(
 
 med_age_objs <- create_hes_age_objects(
   db_connection = con,
-  db_table_name = 'HES_FACT',
+  db_table_name = 'HWHC_HES_FACT',
   service_area = 'MED',
   min_ym = config$min_focus_ym_med,
   max_ym = config$max_focus_ym_med,
@@ -562,7 +581,7 @@ med_age_objs <- create_hes_age_objects(
 
 med_imd_objs <- create_hes_imd_objects(
   db_connection = con,
-  db_table_name = 'HES_FACT',
+  db_table_name = 'HWHC_HES_FACT',
   service_area = 'MED',
   min_ym = config$min_focus_ym_med,
   max_ym = config$max_focus_ym_med,
@@ -580,7 +599,7 @@ med_imd_objs <- create_hes_imd_objects(
 
 # med_icb_objs <- create_hes_icb_objects(
 #   db_connection = con,
-#   db_table_name = 'HES_FACT',
+#   db_table_name = 'HWHC_HES_FACT',
 #   service_area = 'MED',
 #   min_ym = config$min_focus_ym_med,
 #   max_ym = config$max_focus_ym_med,
@@ -597,7 +616,7 @@ med_imd_objs <- create_hes_imd_objects(
 # Based on all patients in relevant year receiving any prescribing
 med_icb_objs <- create_hes_icb_objects(
   db_connection = con,
-  db_table_name = 'HES_FACT',
+  db_table_name = 'HWHC_HES_FACT',
   service_area = 'MED',
   min_ym = config$min_focus_ym_med,
   max_ym = config$max_focus_ym_med,
@@ -605,7 +624,7 @@ med_icb_objs <- create_hes_icb_objects(
   base_population_source = 'PX',
   population_min_age = config$med_min_pop_age, 
   population_max_age = config$med_max_pop_age,
-  db_px_patient_table = 'PX_PAT_FACT',
+  db_px_patient_table = 'HWHC_PX_PAT_FACT',
   px_population_type = 'PATIENT_COUNT'
 )
 
@@ -619,7 +638,7 @@ med_icb_objs <- create_hes_icb_objects(
 
 ppc_application_objs <- create_hes_application_objects(
   db_connection = con,
-  db_table_name = 'HES_FACT',
+  db_table_name = 'HWHC_HES_FACT',
   service_area = 'PPC',
   min_ym = config$min_trend_ym_ppc,
   max_ym = config$max_trend_ym_ppc,
@@ -631,7 +650,7 @@ ppc_application_objs <- create_hes_application_objects(
 
 ppc_issued_objs <- create_hes_issued_objects(
   db_connection = con,
-  db_table_name = 'HES_FACT',
+  db_table_name = 'HWHC_HES_FACT',
   service_area = 'PPC',
   min_ym = config$min_trend_ym_ppc,
   max_ym = config$max_trend_ym_ppc,
@@ -643,7 +662,7 @@ ppc_issued_objs <- create_hes_issued_objects(
 
 ppc_age_objs <- create_hes_age_objects(
   db_connection = con,
-  db_table_name = 'HES_FACT',
+  db_table_name = 'HWHC_HES_FACT',
   service_area = 'PPC',
   min_ym = config$min_focus_ym_ppc,
   max_ym = config$max_focus_ym_ppc,
@@ -655,7 +674,7 @@ ppc_age_objs <- create_hes_age_objects(
 
 ppc_imd_objs <- create_hes_imd_objects(
   db_connection = con,
-  db_table_name = 'HES_FACT',
+  db_table_name = 'HWHC_HES_FACT',
   service_area = 'PPC',
   min_ym = config$min_focus_ym_ppc,
   max_ym = config$max_focus_ym_ppc,
@@ -671,7 +690,7 @@ ppc_imd_objs <- create_hes_imd_objects(
 # latest available population year should be defined in the config file
 # ppc_icb_objs <- create_hes_icb_objects(
 #   db_connection = con,
-#   db_table_name = 'HES_FACT',
+#   db_table_name = 'HWHC_HES_FACT',
 #   service_area = 'PPC',
 #   min_ym = config$min_focus_ym_ppc,
 #   max_ym = config$max_focus_ym_ppc,
@@ -688,7 +707,7 @@ ppc_imd_objs <- create_hes_imd_objects(
 # Based on all patients in relevant year receiving any prescribing
 ppc_icb_objs <- create_hes_icb_objects(
   db_connection = con,
-  db_table_name = 'HES_FACT',
+  db_table_name = 'HWHC_HES_FACT',
   service_area = 'PPC',
   min_ym = config$min_focus_ym_ppc,
   max_ym = config$max_focus_ym_ppc,
@@ -696,7 +715,7 @@ ppc_icb_objs <- create_hes_icb_objects(
   base_population_source = 'PX',
   population_min_age = config$ppc_min_pop_age, 
   population_max_age = config$ppc_max_pop_age,
-  db_px_patient_table = 'PX_PAT_FACT',
+  db_px_patient_table = 'HWHC_PX_PAT_FACT',
   px_population_type = 'PATIENT_COUNT'
 )
 
@@ -707,7 +726,7 @@ ppc_icb_objs <- create_hes_icb_objects(
 
 hrt_application_objs <- create_hes_application_month_objects(
   db_connection = con,
-  db_table_name = 'HRTPPC_FACT',
+  db_table_name = 'HWHC_HRTPPC_FACT',
   service_area = 'HRTPPC',
   min_ym = config$min_focus_ym_hrt,
   max_ym = config$max_focus_ym_hrt,
@@ -719,7 +738,7 @@ hrt_application_objs <- create_hes_application_month_objects(
 
 hrt_issued_objs <- create_hes_issued_month_objects(
   db_connection = con,
-  db_table_name = 'HRTPPC_FACT',
+  db_table_name = 'HWHC_HRTPPC_FACT',
   service_area = 'HRTPPC',
   min_ym = config$min_focus_ym_hrt,
   max_ym = config$max_focus_ym_hrt,
@@ -729,7 +748,7 @@ hrt_issued_objs <- create_hes_issued_month_objects(
 # identify the proportion of issued certificates post-dated to the next month
 df_hrt_issued_postdate <- dplyr::tbl(
   con, 
-  from = dbplyr::in_schema(toupper(con@info$username), 'HRTPPC_FACT')
+  from = dbplyr::in_schema(toupper(con@info$username), 'HWHC_HRTPPC_FACT')
 ) |> 
   # filter to service area and time periods
   dplyr::filter(
@@ -745,28 +764,37 @@ df_hrt_issued_postdate <- dplyr::tbl(
   ) |> 
   dplyr::ungroup() |> 
   dplyr::mutate(PROP_CERTS_POSTDATE = round(POST_DATE_CERTS/ISSUED_CERTS*100,1)) |> 
-  dplyr::mutate(ISSUE_YM = paste0(substr(ISSUE_YM,1,4),'-',substr(ISSUE_YM,5,6))) |> 
+  dplyr::collect() |> 
   dplyr::arrange(ISSUE_YM) |> 
-  dplyr::collect()
+  dplyr::mutate(ISSUE_YM = format(as.Date(paste0(ISSUE_YM,'01'), '%Y%m%d'), '%b-%y'))
 
 # create a column chart
 ch_hrt_issued_postdate <- df_hrt_issued_postdate |> 
-nhsbsaVis::basic_chart_hc(
-  x = ISSUE_YM,
-  y = PROP_CERTS_POSTDATE,
-  type = "column",
-  xLab = "Month",
-  yLab = "Proportion of issued certificates post-dated to start the following month",
-  seriesName = "Proportion of issued certificates",
-  title = "",
-  dlOn = FALSE
-) |> 
+  nhsbsaVis::basic_chart_hc(
+    x = ISSUE_YM,
+    y = PROP_CERTS_POSTDATE,
+    type = "column",
+    xLab = "Month",
+    yLab = "Certificates post-dated to start the following month (%)",
+    seriesName = "Proportion of issued certificates",
+    title = "",
+    dlOn = FALSE
+  ) |> 
   highcharter::hc_tooltip(
     enabled = T,
     shared = T,
     sort = T
   ) |>
   highcharter::hc_yAxis(labels = list(enabled = TRUE))
+
+# update the table object
+hrt_issued_objs$table <- df_hrt_issued_postdate |>
+  dplyr::select(-POST_DATE_CERTS) |> 
+  rename_df_fields() |> 
+  knitr::kable(
+    align = "lrr",
+    format.args = list(big.mark = ",")
+  )
 
 # update the chart data object
 hrt_issued_objs$chart_data <- hrt_issued_objs$chart_data |> 
@@ -788,58 +816,88 @@ hrt_issued_objs$support_data <- hrt_issued_objs$support_data |>
 # 3.5.3 HRTPPC: Age profile (latest year)------------------------------------------------
 # Some processing applied to base dataset to reclassify ages that are outside of expected ranges as these may be errors
 
+# create the age objects
 hrt_age_objs <- create_hes_age_objects(
   db_connection = con,
-  db_table_name = 'HRTPPC_FACT',
+  db_table_name = 'HWHC_HRTPPC_FACT',
   service_area = 'HRTPPC',
   min_ym = config$min_focus_ym_hrt,
   max_ym = config$max_focus_ym_hrt,
   subtype_split = FALSE
 )
 
+# identify the base population figures
 hrt_age_base_pop_objs <- create_px_patient_age_objects(
   db_connection = con,
-  db_table_name = 'PX_PAT_FACT',
-  
+  db_table_name = 'HWHC_PX_PAT_FACT',
   patient_group = 'HRT_PATIENT_COUNT'
 )
 
+# update the table (need to rebuild from chart data)
+hrt_age_objs$table <- hrt_age_objs$chart_data |> 
+  dplyr::select(-"HwHC Service", -"Financial Year") |> 
+  dplyr::inner_join(
+    y = hrt_age_base_pop_objs$chart_data,
+    by = c('Age Band')
+  ) |> 
+  dplyr::rename(`Estimated patients receiving HRT PPC qualifying medication` = BASE_POPULATION) |> 
+  knitr::kable(
+    align = "lrr",
+    format.args = list(big.mark = ",")
+  )
+
+# update the chart_data
 hrt_age_objs$chart_data <- hrt_age_objs$chart_data |> 
   dplyr::left_join(
     y = hrt_age_base_pop_objs$chart_data,
     by = c('Age Band')
   ) |> 
-  dplyr::rename(`Estimated patients receiving HRT PPC qualifying medication (aged 16-59)` = BASE_POPULATION)
+  dplyr::rename(`Estimated patients receiving HRT PPC qualifying medication` = BASE_POPULATION)
 
+# update the support_data
 hrt_age_objs$support_data <- hrt_age_objs$support_data |> 
   dplyr::left_join(
     y = hrt_age_base_pop_objs$chart_data,
     by = c('Age Band')
   ) |> 
   dplyr::rename(`Estimated patients receiving HRT PPC qualifying medication (aged 16-59)` = BASE_POPULATION)
-  
-
 
 # 3.4.4 HRTPPC: Deprivation profile (latest year)------------------------------------------------
 # IMD may not be available if the postcode cannot be mapped to NSPL
 
+# create the IMD objects
 hrt_imd_objs <- create_hes_imd_objects(
   db_connection = con,
-  db_table_name = 'HRTPPC_FACT',
+  db_table_name = 'HWHC_HRTPPC_FACT',
   service_area = 'HRTPPC',
   min_ym = config$min_focus_ym_hrt,
   max_ym = config$max_focus_ym_hrt,
   subtype_split = FALSE
 )
 
+# identify the base population figures
 hrt_imd_base_pop_objs <- create_px_patient_imd_objects(
   db_connection = con,
-  db_table_name = 'PX_PAT_FACT',
+  db_table_name = 'HWHC_PX_PAT_FACT',
   patient_group = 'HRT_PATIENT_COUNT',
   min_age = config$hrt_min_pop_age,
   max_age = config$hrt_max_pop_age
 )
 
+# update the table (need to rebuild from chart data)
+hrt_imd_objs$table <- hrt_imd_objs$chart_data |> 
+  dplyr::select(-"HwHC Service", -"Financial Year") |> 
+  dplyr::inner_join(
+    y = hrt_imd_base_pop_objs$chart_data |> dplyr::mutate(`IMD Quintile` = as.character(`IMD Quintile`)),
+    by = c('IMD Quintile')
+  ) |> 
+  dplyr::rename(`Estimated patients receiving HRT PPC qualifying medication (aged 16-59)` = BASE_POPULATION) |> 
+  knitr::kable(
+    align = "lrr",
+    format.args = list(big.mark = ",")
+  )
+
+# update the chart_data
 hrt_imd_objs$chart_data <- hrt_imd_objs$chart_data |> 
   dplyr::left_join(
     y = hrt_imd_base_pop_objs$chart_data |> dplyr::mutate(`IMD Quintile` = as.character(`IMD Quintile`)),
@@ -847,6 +905,7 @@ hrt_imd_objs$chart_data <- hrt_imd_objs$chart_data |>
   ) |> 
   dplyr::rename(`Estimated patients receiving HRT PPC qualifying medication (aged 16-59)` = BASE_POPULATION)
 
+# update the support_data
 hrt_imd_objs$support_data <- hrt_imd_objs$support_data |> 
   dplyr::left_join(
     y = hrt_imd_base_pop_objs$chart_data |> dplyr::mutate(`IMD Quintile` = as.character(`IMD Quintile`)),
@@ -862,7 +921,7 @@ hrt_imd_objs$support_data <- hrt_imd_objs$support_data |>
 # latest available population year should be defined in the config file
 # hrt_icb_objs <- create_hes_icb_objects(
 #   db_connection = con,
-#   db_table_name = 'HRTPPC_FACT',
+#   db_table_name = 'HWHC_HRTPPC_FACT',
 #   service_area = 'HRTPPC',
 #   min_ym = config$min_focus_ym_hrt,
 #   max_ym = config$max_focus_ym_hrt,
@@ -879,7 +938,7 @@ hrt_imd_objs$support_data <- hrt_imd_objs$support_data |>
 # Based on all patients in relevant year receiving any prescribing of HRT PPC medicines
 hrt_icb_objs <- create_hes_icb_objects(
   db_connection = con,
-  db_table_name = 'HRTPPC_FACT',
+  db_table_name = 'HWHC_HRTPPC_FACT',
   service_area = 'HRTPPC',
   min_ym = config$min_focus_ym_hrt,
   max_ym = config$max_focus_ym_hrt,
@@ -887,7 +946,7 @@ hrt_icb_objs <- create_hes_icb_objects(
   base_population_source = 'PX',
   population_min_age = config$hrt_min_pop_age, 
   population_max_age = config$hrt_max_pop_age,
-  db_px_patient_table = 'PX_PAT_FACT',
+  db_px_patient_table = 'HWHC_PX_PAT_FACT',
   px_population_type = 'HRT_PATIENT_COUNT'
 )
 
@@ -899,7 +958,7 @@ hrt_icb_objs <- create_hes_icb_objects(
 
 tax_issued_objs <- create_hes_issued_objects(
   db_connection = con,
-  db_table_name = 'HES_FACT',
+  db_table_name = 'HWHC_HES_FACT',
   service_area = 'TAX',
   min_ym = config$min_trend_ym_tax,
   max_ym = config$max_trend_ym_tax,
@@ -912,7 +971,7 @@ tax_issued_objs <- create_hes_issued_objects(
 
 tax_age_objs <- create_hes_age_objects(
   db_connection = con,
-  db_table_name = 'HES_FACT',
+  db_table_name = 'HWHC_HES_FACT',
   service_area = 'TAX',
   min_ym = config$min_focus_ym_tax,
   max_ym = config$max_focus_ym_tax,
@@ -920,9 +979,9 @@ tax_age_objs <- create_hes_age_objects(
 )
 
 # create dataframe to look at age group profile
-df_tax_age_trend <- get_hes_issue_data(con, 'HES_FACT', 'TAX', config$min_trend_ym_tax, config$max_trend_ym_tax, c('SERVICE_AREA_NAME','ISSUE_FY','CUSTOM_AGE_BAND')) |>
+df_tax_age_trend <- get_hes_issue_data(con, 'HWHC_HES_FACT', 'TAX', config$min_trend_ym_tax, config$max_trend_ym_tax, c('SERVICE_AREA_NAME','ISSUE_FY','CUSTOM_AGE_BAND')) |>
   dplyr::mutate(AGE_GROUP = dplyr::case_when(
-    CUSTOM_AGE_BAND == 'N/A' ~ 'N/A',
+    CUSTOM_AGE_BAND == 'Not Available' ~ 'Not Available',
     CUSTOM_AGE_BAND %in% c('15-19','20-24','25-29','30-34','35-39') ~ 'Under 40',
     TRUE ~ '40 and over'
   )) |> 
@@ -931,12 +990,12 @@ df_tax_age_trend <- get_hes_issue_data(con, 'HES_FACT', 'TAX', config$min_trend_
   dplyr::mutate(SORT_ORDER = dplyr::case_when(
     AGE_GROUP == 'Under 40' ~ 1,
     AGE_GROUP == '40 and over' ~ 2,
-    AGE_GROUP == 'N/A' ~ 3
+    AGE_GROUP == 'Not Available' ~ 3
   ))
 
 # produce stacked chart
 ch_tax_age_trend <- df_tax_age_trend |> 
-  dplyr::filter(AGE_GROUP != 'N/A') |> 
+  dplyr::filter(AGE_GROUP != 'Not Available') |> 
   dplyr::arrange(desc(SORT_ORDER)) |> 
   dplyr::mutate(ISSUED_CERTS_SF = signif(ISSUED_CERTS,3)) |> 
   nhsbsaVis::group_chart_hc(
@@ -960,6 +1019,18 @@ ch_tax_age_trend <- df_tax_age_trend |>
     }"))) |> 
   highcharter::hc_plotOptions(series = list(stacking = "normal"))
 
+# produce table
+tbl_tax_age_trend <- df_tax_age_trend |> 
+  dplyr::ungroup() |> 
+  dplyr::filter(AGE_GROUP != 'Not Available') |> 
+  dplyr::select(ISSUE_FY,AGE_GROUP, ISSUED_CERTS) |> 
+  dplyr::arrange(AGE_GROUP, ISSUE_FY) |> 
+  rename_df_fields() |> 
+  knitr::kable(
+    align = "llr",
+    format.args = list(big.mark = ",")
+  )
+
 # data download
 dl_tax_age_trend <- df_tax_age_trend |> 
   dplyr::arrange(ISSUE_FY, SORT_ORDER) |> 
@@ -967,9 +1038,9 @@ dl_tax_age_trend <- df_tax_age_trend |>
   rename_df_fields()
 
 # supporting data
-sd_tax_age_trend <- get_hes_issue_data(con, 'HES_FACT', 'TAX', config$min_trend_ym_tax, config$max_trend_ym_tax, c('SERVICE_AREA_NAME','COUNTRY','ISSUE_FY','CUSTOM_AGE_BAND')) |>
+sd_tax_age_trend <- get_hes_issue_data(con, 'HWHC_HES_FACT', 'TAX', config$min_trend_ym_tax, config$max_trend_ym_tax, c('SERVICE_AREA_NAME','COUNTRY','ISSUE_FY','CUSTOM_AGE_BAND')) |>
   dplyr::mutate(AGE_GROUP = dplyr::case_when(
-    CUSTOM_AGE_BAND == 'N/A' ~ 'N/A',
+    CUSTOM_AGE_BAND == 'Not Available' ~ 'Not Available',
     CUSTOM_AGE_BAND %in% c('15-19','20-24','25-29','30-34','35-39') ~ 'Under 40',
     TRUE ~ '40 and over'
   )) |> 
@@ -978,7 +1049,7 @@ sd_tax_age_trend <- get_hes_issue_data(con, 'HES_FACT', 'TAX', config$min_trend_
   dplyr::mutate(SORT_ORDER = dplyr::case_when(
     AGE_GROUP == 'Under 40' ~ 1,
     AGE_GROUP == '40 and over' ~ 2,
-    AGE_GROUP == 'N/A' ~ 3
+    AGE_GROUP == 'Not Available' ~ 3
   )) |> 
   dplyr::arrange(ISSUE_FY, COUNTRY, SORT_ORDER) |> 
   dplyr::select(-SORT_ORDER) |> 
@@ -989,7 +1060,7 @@ sd_tax_age_trend <- get_hes_issue_data(con, 'HES_FACT', 'TAX', config$min_trend_
 
 tax_imd_objs <- create_hes_imd_objects(
   db_connection = con,
-  db_table_name = 'HES_FACT',
+  db_table_name = 'HWHC_HES_FACT',
   service_area = 'TAX',
   min_ym = config$min_focus_ym_tax,
   max_ym = config$max_focus_ym_tax,
@@ -1004,7 +1075,7 @@ tax_imd_objs <- create_hes_imd_objects(
 
 tax_icb_objs <- create_hes_icb_objects(
   db_connection = con,
-  db_table_name = 'HES_FACT',
+  db_table_name = 'HWHC_HES_FACT',
   service_area = 'TAX',
   min_ym = config$min_focus_ym_tax,
   max_ym = config$max_focus_ym_tax,
@@ -1036,7 +1107,8 @@ DBI::dbDisconnect(con)
 sheetNames <- c(
   # "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" # 31 character limit
   "LIS_Applications",
-  "LIS_Outcomes",
+  "LIS_Issued",
+  "LIS_Issued_HC3_Breakdown",
   "LIS_Active_Certificates",
   "LIS_Certificate_Duration",
   "LIS_Age_Breakdown",
@@ -1044,7 +1116,7 @@ sheetNames <- c(
   "LIS_ICB_Breakdown",
   
   "MATEX_Applications",
-  "MATEX_Outcomes",
+  "MATEX_Issued",
   "MATEX_Active_Certificates",
   "MATEX_Certificate_Duration",
   "MATEX_Age_Breakdown",
@@ -1052,25 +1124,25 @@ sheetNames <- c(
   "MATEX_ICB_Breakdown",
   
   "MEDEX_Applications",
-  "MEDEX_Outcomes",
+  "MEDEX_Issued",
   "MEDEX_Active_Certificates",
   "MEDEX_Age_Breakdown",
   "MEDEX_Deprivation_Breakdown",
   "MEDEX_ICB_Breakdown",
   
   "PPC_Applications",
-  "PPC_Outcomes",
+  "PPC_Issued",
   "PPC_Age_Breakdown",
   "PPC_Deprivation_Breakdown",
   "PPC_ICB_Breakdown",
   
   "HRTPPC_Applications",
-  "HRTPPC_Outcomes",
+  "HRTPPC_Issued",
   "HRTPPC_Age_Breakdown",
   "HRTPPC_Deprivation_Breakdown",
   "HRTPPC_ICB_Breakdown",
   
-  "TAX_Outcomes",
+  "TAX_Issued",
   "TAX_Age_Breakdown",
   "TAX_Age_Profile",
   "TAX_Deprivation_Breakdown",
@@ -1084,25 +1156,72 @@ meta_fields <- c(
   "HwHC Service",
   "Financial Year",
   "Country",
-  "Number of applications received",
+  "Country: England",
+  "Country: Other",
+  "Country: Unknown",
   "Certificate Type",
   "Certificate Type: HC2 (NHS Low Income Scheme)",
   "Certificate Type: HC3 (NHS Low Income Scheme)",
   "Certificate Type: No certificate issued (NHS Low Income Scheme)",
-  "IMD Quintile"
+  "Certificate Type: 12-month (PPC)",
+  "Certificate Type: 3-month (PPC)",
+  "Certificate Duration",
+  "Age Band",
+  "IMD Quintile",
+  "ICB Code",
+  "ICB Name",
+  "Number of applications received",
+  "Number of certificates issued",
+  "Number of active certificates",
+  "ONS population estimate (...)",
+  "Population estimate (...)",
+  "Number of issued certificates per 10,000 population",
+  "Number of certificates issued (cumulative)",
+  "Proportion of certificates issued (cumulative %)",
+  "ONS Live Births (...)",
+  "Number of issued certificates post-dated to start the following month",
+  "Issued certificates post-dated to start the following month (%)",
+  "Estimated patients receiving HRT PPC qualifying medication (aged 16-59)",
+  "Number of Number of HC3 certificates issued",
+  "Number of HC3 certificates including HBD11 letter",
+  "Proportion of HC3 certificates including HBD11 letter (%)"
+  
 )
 
 meta_descs <-
   c(
     "Name of NHS BSA administered service.",
     "Financial year the activity can be assigned to.",
-    "Country based on the applicants residential address, using mapping via the National Statistics Postcode Lookup (NSPL). For certificates only applicable for England the country will show as 'n/a'. Where the applicants residential address cannot be aligned to a country via the NSPL, the country will be recorded as 'Unknown'.",
-    "Number of applications. Includes applications via any route. Includes all applications regardless of status or outcome.",
+    "Country classification based on the applicants residential address, using mapping via the National Statistics Postcode Lookup (NSPL). Not included for services typically available to English residents only.",
+    "Where the applicants residential address can be aligned to an English postcode via the NSPL",
+    "Where the applicants residential address can be assigned to a country other than England via the NSPL, the country will be recorded as 'Other'.",
+    "Where the applicants residential address cannot be assigned to any country via the NSPL, the country will be recorded as 'Unknown'.",
     "Where distinct certificate types are available, this field will show which certificate was used.",
     "HC2 certificates provide full help with health costs, including free NHS prescriptions.",
     "HC3 certificates provide limited help with health costs. A HC3 certificate will show how much the holder has to pay towards health costs.",
     "If following the assessment, no support is available the applicant will recieve a confirmation letter rather than a certificate.",
-    "The reported IMD quintile, where 1 is the most deprived and 5 the least deprived, is derived from the postcode held for an applicant. IMD quintiles are calculated by ranking census lower-layer super output areas (LSOAs) from most deprived to least deprived and dividing them into equal groups. Quintiles range from the most deprived 20% (quintile 1) of small areas nationally to the least deprived 20% (quintile 5) of small areas nationally."
+    "A 12-month PPC will cover all of a patients NHS prescription charges for a period of 12-months for a set cost.",
+    "A 3-month PPC will cover all of a patients NHS prescription charges for a period of 3-months for a set cost.",
+    "The length of the certificate, rounded to nearest month based on the certificate start and end dates. For reporting purposes, duration will be grouped based on common scenarios for each service area.",
+    "The age band of the applicant, based on the age at the time the application was received and processed. Age will be rounded to the nearest year and reported in 5 year age bands.",
+    "The reported IMD quintile, where 1 is the most deprived and 5 the least deprived, is derived from the postcode held for an applicant. IMD quintiles are calculated by ranking census lower-layer super output areas (LSOAs) from most deprived to least deprived and dividing them into equal groups. Quintiles range from the most deprived 20% (quintile 1) of small areas nationally to the least deprived 20% (quintile 5) of small areas nationally.",
+    "Three character code unique to an ICB.",
+    "Full name for each ICB.",
+    "Number of applications received by NHS BSA. Includes applications via any route. Includes all applications regardless of status or outcome.",
+    "Number of certificates issued to applicants following processing of applications. Will exclude ongoing or incomplete applications.",
+    "Number of certificates that were valid for one or more days during the reported period. The term 'active certifice' refers to the start and end date of the certificate and does not consider if the certificate is being used.",
+    "For ICB level reporting population baselines are included for context. Based on mid-year population estimates published by Office for National Statistics. Column header will include definition for which year and age range are included in population aggregations.",
+    "For ICB level reporting population baselines are included for context. Based on the estimated number of patients receiving appicable NHS prescribing. Column header will include definition for the age range of patients included in the population aggregation.",
+    "For ICB level reporting data is presented as rates per 10,000 population to prevent ICB size unfairly impacting results. Figures calculated using the number of issued certificates and the appropriate population denominator, with rates reported per 10,000 population.",
+    "Maternity exemption only. Cumulative total number of maternity certificates issued by certificate duration. Certificate duration has been reported as a cumulutive figure to show the number of certificates issued based on the potential timeframe. The smaller the duration of the certificate, the later in pregnancy the application will have been received. A durations less than 12 months would represent a certificate only issued after the birth of the child.",
+    "Maternity exemption only. Cumulative proportion of maternity certificates issued by certificate duration. Certificate duration has been reported as a cumulutive figure to show the number of certificates issued based on the potential timeframe. The smaller the duration of the certificate, the later in pregnancy the application will have been received. A durations less than 12 months would represent a certificate only issued after the birth of the child.",
+    "Maternity exemption only. Figures sourced from Office for National Statistics to provide additional context. The time period for the live birth figures will be included in the column header.",
+    "HRT PPC only. Showing the number of certificates where the applicant requested the certificate to start the following month. Applicants can specify when they would like their certificate to start, up to one month after the application date. This can help applicants apply for a new certificate to start as soon as their existing certificate expires.",
+    "HRT PPC only. Showing the proportion of certificates issed where the applicant requested the certificate to start the following month. Applicants can specify when they would like their certificate to start, up to one month after the application date. This can help applicants apply for a new certificate to start as soon as their existing certificate expires.",
+    "HRT PPC only. Showing the estimated number of patients who could be identified receiving NHS prescriptions for medication that is eligilbe for support via a HRT PPC.",
+    "NHS Low Income Scheme only. The number of HC3 certificates issued to applicants.",
+    "NHS Low Income Scheme only. The number of HC3 certificates were a HBD11 letter was supplied to the applicant. This letter states that the certificate holders required contribution to health costs is above the maximum cost for NHS dental treatment and therefore the HC3 does not provide support with dental treatment costs.",
+    "NHS Low Income Scheme only. The proportion of HC3 certificates issued that included a HBD11, and therefore would not provided any support with NHS dental treatment costs."
   )
 
 accessibleTables::create_metadata(wb,
@@ -1129,24 +1248,43 @@ accessibleTables::format_data(wb, "LIS_Applications", c("A","B","C"), "left", ""
 # Values: right align * thousand seperator
 accessibleTables::format_data(wb, "LIS_Applications", c("D"), "right", "#,###")
 
-# 4.2.2 LIS: Outcomes -----------------------------------------------------
+# 4.2.2 LIS: Issued -----------------------------------------------------
 
 # Create the sheet
 accessibleTables::write_sheet(
   workbook = wb,
-  sheetname = "LIS_Outcomes",
-  title = paste0(config$publication_table_title, " - Number of NHS Low Income Scheme assessment outcome decisions issued, split by financial year, country and outcome type"),
-  notes = c(config$caveat_lis_issued, config$caveat_lis_no_cert_fy, config$caveat_country_other, config$caveat_country_unknown),
+  sheetname = "LIS_Issued",
+  title = paste0(config$publication_table_title, " - Number of NHS Low Income Scheme HC2/HC3 certificates issued, split by financial year, country and certificate type"),
+  notes = c(config$caveat_lis_issued, config$caveat_country_other, config$caveat_country_unknown),
   dataset = lis_issued_objs$support_data,
   column_a_width = 30
 )
 # Apply formatting
 # Text: left align
-accessibleTables::format_data(wb, "LIS_Outcomes", c("A","B","C","D"), "left", "")
+accessibleTables::format_data(wb, "LIS_Issued", c("A","B","C","D"), "left", "")
 # Values: right align * thousand seperator
-accessibleTables::format_data(wb, "LIS_Outcomes", c("E"), "right", "#,###")
+accessibleTables::format_data(wb, "LIS_Issued", c("E"), "right", "#,###")
 
-# 4.2.3 LIS: Active -------------------------------------------------------
+# 4.2.3 LIS: HC3 - HBD11 -----------------------------------------------------
+
+# Create the sheet
+accessibleTables::write_sheet(
+  workbook = wb,
+  sheetname = "LIS_Issued_HC3_Breakdown",
+  title = paste0(config$publication_table_title, " - Number of NHS Low Income Scheme HC3 certificates issued (including HBD11 subset), split by financial year, country and certificate type"),
+  notes = c(config$caveat_lis_hbd11, config$caveat_lis_issued, config$caveat_country_other, config$caveat_country_unknown),
+  dataset = hbd11_support_data,
+  column_a_width = 30
+)
+# Apply formatting
+# Text: left align
+accessibleTables::format_data(wb, "LIS_Issued_HC3_Breakdown", c("A","B","C"), "left", "")
+# Values: right align * thousand seperator
+accessibleTables::format_data(wb, "LIS_Issued_HC3_Breakdown", c("D","E"), "right", "#,###")
+# Proportion: right align * thousand seperator and 1 decimal place
+accessibleTables::format_data(wb, "LIS_Issued_HC3_Breakdown", c("F"), "right", "#,###.0")
+
+# 4.2.4 LIS: Active -------------------------------------------------------
 
 # Create the sheet
 accessibleTables::write_sheet(
@@ -1163,7 +1301,7 @@ accessibleTables::format_data(wb, "LIS_Active_Certificates", c("A","B","C","D"),
 # Values: right align * thousand seperator
 accessibleTables::format_data(wb, "LIS_Active_Certificates", c("E"), "right", "#,###")
 
-# 4.2.4 LIS: Duration -----------------------------------------------------
+# 4.2.5 LIS: Duration -----------------------------------------------------
 
 # Create the sheet
 accessibleTables::write_sheet(
@@ -1180,14 +1318,14 @@ accessibleTables::format_data(wb, "LIS_Certificate_Duration", c("A","B","C","D",
 # Values: right align * thousand seperator
 accessibleTables::format_data(wb, "LIS_Certificate_Duration", c("F"), "right", "#,###")
 
-# 4.2.5 LIS: Age ----------------------------------------------------------
+# 4.2.6 LIS: Age ----------------------------------------------------------
 
 # Create the sheet
 accessibleTables::write_sheet(
   workbook = wb,
   sheetname = "LIS_Age_Breakdown",
   title = paste0(config$publication_table_title, " - Number of issued NHS Low Income Scheme HC2/HC3 certificates, split by financial year, country and age of applicant"),
-  notes = c(config$caveat_lis_issued, config$caveat_lis_age_group, config$caveat_age_restriction, config$caveat_lis_no_cert_fy, config$caveat_country_other, config$caveat_country_unknown),
+  notes = c(config$caveat_lis_issued, config$caveat_lis_age_group, config$caveat_age_restriction, config$caveat_country_other, config$caveat_country_unknown),
   dataset = lis_age_objs$support_data,
   column_a_width = 30
 )
@@ -1197,14 +1335,14 @@ accessibleTables::format_data(wb, "LIS_Age_Breakdown", c("A","B","C","D","E"), "
 # Values: right align * thousand seperator
 accessibleTables::format_data(wb, "LIS_Age_Breakdown", c("F"), "right", "#,###")
 
-# 4.2.6 LIS: Deprivation --------------------------------------------------
+# 4.2.7 LIS: Deprivation --------------------------------------------------
 
 # Create the sheet
 accessibleTables::write_sheet(
   workbook = wb,
   sheetname = "LIS_Deprivation_Breakdown",
   title = paste0(config$publication_table_title, " - Number of issued NHS Low Income Scheme HC2/HC3 certificates, split by financial year, country and IMD quintile"),
-  notes = c(config$caveat_lis_issued, config$caveat_imd_restriction, config$caveat_country_other, config$caveat_country_unknown, config$caveat_lis_no_cert_fy),
+  notes = c(config$caveat_lis_issued, config$caveat_imd_restriction, config$caveat_country_other, config$caveat_country_unknown),
   dataset = lis_imd_objs$support_data,
   column_a_width = 30
 )
@@ -1214,14 +1352,14 @@ accessibleTables::format_data(wb, "LIS_Deprivation_Breakdown", c("A","B","C","D"
 # Values: right align * thousand seperator
 accessibleTables::format_data(wb, "LIS_Deprivation_Breakdown", c("F"), "right", "#,###")
 
-# 4.2.7 LIS: ICB ----------------------------------------------------------
+# 4.2.8 LIS: ICB ----------------------------------------------------------
 
 # Create the sheet
 accessibleTables::write_sheet(
   workbook = wb,
   sheetname = "LIS_ICB_Breakdown",
   title = paste0(config$publication_table_title, " - Number of issued NHS Low Income Scheme HC2/HC3 certificates, split by financial year and ICB"),
-  notes = c(config$caveat_lis_issued, config$caveat_icb_method, config$caveat_icb_restriction, config$caveat_lis_base_population, config$caveat_country_other, config$caveat_country_unknown, config$caveat_lis_no_cert_fy),
+  notes = c(config$caveat_lis_issued, config$caveat_icb_method, config$caveat_icb_restriction, config$caveat_lis_base_population, config$caveat_country_other, config$caveat_country_unknown),
   dataset = lis_icb_objs$support_data,
   column_a_width = 30
 )
@@ -1229,7 +1367,7 @@ accessibleTables::write_sheet(
 # Text: left align
 accessibleTables::format_data(wb, "LIS_ICB_Breakdown", c("A","B","C","D","E"), "left", "")
 # Values: right align * thousand seperator
-accessibleTables::format_data(wb, "LIS_ICB_Breakdown", c("F","G","H","I","J","K"), "right", "#,###")
+accessibleTables::format_data(wb, "LIS_ICB_Breakdown", c("F","G","H","I","J"), "right", "#,###")
 
 
 # 4.3 Data Tables: Maternity exemption certificate ----------------------------------
@@ -1242,31 +1380,31 @@ accessibleTables::write_sheet(
   sheetname = "MATEX_Applications",
   title = paste0(config$publication_table_title, " - Number of applications for maternity exemption certificates split by financial year"),
   notes = c(config$caveat_mat_country),
-  dataset = mat_application_objs$support_data,
+  dataset = mat_application_objs$support_data |> dplyr::select(-Country),
   column_a_width = 30
 )
 # Apply formatting
 # Text: left align
-accessibleTables::format_data(wb, "MATEX_Applications", c("A","B","C"), "left", "")
+accessibleTables::format_data(wb, "MATEX_Applications", c("A","B"), "left", "")
 # Values: right align * thousand seperator
-accessibleTables::format_data(wb, "MATEX_Applications", c("D"), "right", "#,###")
+accessibleTables::format_data(wb, "MATEX_Applications", c("C"), "right", "#,###")
 
-# 4.3.2 MATEX: Outcomes -----------------------------------------------------
+# 4.3.2 MATEX: Issued -----------------------------------------------------
 
 # Create the sheet
 accessibleTables::write_sheet(
   workbook = wb,
-  sheetname = "MATEX_Outcomes",
+  sheetname = "MATEX_Issued",
   title = paste0(config$publication_table_title, " - Number of maternity exemption certificates issued, split by financial year"),
   notes = c(config$caveat_cert_issued, config$caveat_mat_country),
-  dataset = mat_issued_objs$support_data,
+  dataset = mat_issued_objs$support_data |> dplyr::select(-Country),
   column_a_width = 30
 )
 # Apply formatting
 # Text: left align
-accessibleTables::format_data(wb, "MATEX_Outcomes", c("A","B","C"), "left", "")
+accessibleTables::format_data(wb, "MATEX_Issued", c("A","B"), "left", "")
 # Values: right align * thousand seperator
-accessibleTables::format_data(wb, "MATEX_Outcomes", c("D"), "right", "#,###")
+accessibleTables::format_data(wb, "MATEX_Issued", c("C"), "right", "#,###")
 
 # 4.3.3 MATEX: Active -------------------------------------------------------
 
@@ -1276,14 +1414,14 @@ accessibleTables::write_sheet(
   sheetname = "MATEX_Active_Certificates",
   title = paste0(config$publication_table_title, " - Number of active maternity exemption certificates split by financial year"),
   notes = c(config$caveat_mat_active_duration, config$caveat_active_coverage, config$caveat_mat_country),
-  dataset = mat_active_objs$support_data,
+  dataset = mat_active_objs$support_data |> dplyr::select(-Country),
   column_a_width = 30
 )
 # Apply formatting
 # Text: left align
-accessibleTables::format_data(wb, "MATEX_Active_Certificates", c("A","B","C"), "left", "")
+accessibleTables::format_data(wb, "MATEX_Active_Certificates", c("A","B"), "left", "")
 # Values: right align * thousand seperator
-accessibleTables::format_data(wb, "MATEX_Active_Certificates", c("D"), "right", "#,###")
+accessibleTables::format_data(wb, "MATEX_Active_Certificates", c("C"), "right", "#,###")
 
 # 4.3.4 MATEX: Duration -----------------------------------------------------
 
@@ -1293,16 +1431,16 @@ accessibleTables::write_sheet(
   sheetname = "MATEX_Certificate_Duration",
   title = paste0(config$publication_table_title, " - Proportion of maternity exemption certificates issued relative to expected due date"),
   notes = c(config$caveat_cert_issued, config$caveat_mat_duration_method, config$caveat_mat_due_date, config$caveat_mat_duration_restriction, config$caveat_mat_country),
-  dataset = sd_mat_duration,
+  dataset = mat_duration_objs$support_data |> dplyr::select(-Country),
   column_a_width = 30
 )
 # Apply formatting
 # Text: left align
-accessibleTables::format_data(wb, "MATEX_Certificate_Duration", c("A","B","C"), "left", "")
+accessibleTables::format_data(wb, "MATEX_Certificate_Duration", c("A","B"), "left", "")
 # Values: right align * thousand seperator
-accessibleTables::format_data(wb, "MATEX_Certificate_Duration", c("D","E","F"), "right", "#,###")
+accessibleTables::format_data(wb, "MATEX_Certificate_Duration", c("C","D","E"), "right", "#,###")
 # Proportion: right align * 1 decimal place
-accessibleTables::format_data(wb, "MATEX_Certificate_Duration", c("G"), "right", "#,###.#")
+accessibleTables::format_data(wb, "MATEX_Certificate_Duration", c("F"), "right", "#,###.0")
 
 # 4.3.5 MATEX: Age ----------------------------------------------------------
 
@@ -1312,14 +1450,14 @@ accessibleTables::write_sheet(
   sheetname = "MATEX_Age_Breakdown",
   title = paste0(config$publication_table_title, " - Number of issued maternity exemption certificates, split by age of applicant"),
   notes = c(config$caveat_cert_issued, config$caveat_mat_age_group, config$caveat_age_restriction, config$caveat_mat_live_births, config$caveat_mat_country),
-  dataset = mat_age_objs$support_data,
+  dataset = mat_age_objs$support_data |> dplyr::select(-Country),
   column_a_width = 30
 )
 # Apply formatting
 # Text: left align
-accessibleTables::format_data(wb, "MATEX_Age_Breakdown", c("A","B","C","D"), "left", "")
+accessibleTables::format_data(wb, "MATEX_Age_Breakdown", c("A","B","C"), "left", "")
 # Values: right align * thousand seperator
-accessibleTables::format_data(wb, "MATEX_Age_Breakdown", c("E","F"), "right", "#,###")
+accessibleTables::format_data(wb, "MATEX_Age_Breakdown", c("D","E"), "right", "#,###")
 
 # 4.3.6 MATEX: Deprivation --------------------------------------------------
 
@@ -1329,14 +1467,14 @@ accessibleTables::write_sheet(
   sheetname = "MATEX_Deprivation_Breakdown",
   title = paste0(config$publication_table_title, " - Number of issued maternity exemption certificates, split by IMD quintile"),
   notes = c(config$caveat_cert_issued, config$caveat_imd_restriction, config$caveat_mat_live_births, config$caveat_mat_country),
-  dataset = mat_imd_objs$support_data,
+  dataset = mat_imd_objs$support_data |> dplyr::select(-Country),
   column_a_width = 30
 )
 # Apply formatting
 # Text: left align
-accessibleTables::format_data(wb, "MATEX_Deprivation_Breakdown", c("A","B","C","D"), "left", "")
+accessibleTables::format_data(wb, "MATEX_Deprivation_Breakdown", c("A","B","C"), "left", "")
 # Values: right align * thousand seperator
-accessibleTables::format_data(wb, "MATEX_Deprivation_Breakdown", c("E","F"), "right", "#,###")
+accessibleTables::format_data(wb, "MATEX_Deprivation_Breakdown", c("D","E"), "right", "#,###")
 
 # 4.3.7 MATEX: ICB ----------------------------------------------------------
 
@@ -1365,31 +1503,31 @@ accessibleTables::write_sheet(
   sheetname = "MEDEX_Applications",
   title = paste0(config$publication_table_title, " - Number of applications for medical exemption certificates split by financial year"),
   notes = c(config$caveat_med_country),
-  dataset = med_application_objs$support_data,
+  dataset = med_application_objs$support_data |> dplyr::select(-Country),
   column_a_width = 30
 )
 # Apply formatting
 # Text: left align
-accessibleTables::format_data(wb, "MEDEX_Applications", c("A","B","C"), "left", "")
+accessibleTables::format_data(wb, "MEDEX_Applications", c("A","B"), "left", "")
 # Values: right align * thousand seperator
-accessibleTables::format_data(wb, "MEDEX_Applications", c("D"), "right", "#,###")
+accessibleTables::format_data(wb, "MEDEX_Applications", c("C"), "right", "#,###")
 
-# 4.4.2 MEDEX: Outcomes -----------------------------------------------------
+# 4.4.2 MEDEX: Issued -----------------------------------------------------
 
 # Create the sheet
 accessibleTables::write_sheet(
   workbook = wb,
-  sheetname = "MEDEX_Outcomes",
+  sheetname = "MEDEX_Issued",
   title = paste0(config$publication_table_title, " - Number of medical exemption certificates issued, split by financial year"),
   notes = c(config$caveat_cert_issued, config$caveat_med_country),
-  dataset = med_issued_objs$support_data,
+  dataset = med_issued_objs$support_data |> dplyr::select(-Country),
   column_a_width = 30
 )
 # Apply formatting
 # Text: left align
-accessibleTables::format_data(wb, "MEDEX_Outcomes", c("A","B","C"), "left", "")
+accessibleTables::format_data(wb, "MEDEX_Issued", c("A","B"), "left", "")
 # Values: right align * thousand seperator
-accessibleTables::format_data(wb, "MEDEX_Outcomes", c("D"), "right", "#,###")
+accessibleTables::format_data(wb, "MEDEX_Issued", c("C"), "right", "#,###")
 
 # 4.4.3 MEDEX: Active -------------------------------------------------------
 
@@ -1399,14 +1537,14 @@ accessibleTables::write_sheet(
   sheetname = "MEDEX_Active_Certificates",
   title = paste0(config$publication_table_title, " - Number of active medical exemption certificates split by financial year"),
   notes = c(config$caveat_med_active_duration, config$caveat_active_coverage, config$caveat_med_country),
-  dataset = med_active_objs$support_data,
+  dataset = med_active_objs$support_data |> dplyr::select(-Country),
   column_a_width = 30
 )
 # Apply formatting
 # Text: left align
-accessibleTables::format_data(wb, "MEDEX_Active_Certificates", c("A","B","C"), "left", "")
+accessibleTables::format_data(wb, "MEDEX_Active_Certificates", c("A","B"), "left", "")
 # Values: right align * thousand seperator
-accessibleTables::format_data(wb, "MEDEX_Active_Certificates", c("D"), "right", "#,###")
+accessibleTables::format_data(wb, "MEDEX_Active_Certificates", c("C"), "right", "#,###")
 
 # 4.4.4 MEDEX: Age ----------------------------------------------------------
 
@@ -1416,14 +1554,14 @@ accessibleTables::write_sheet(
   sheetname = "MEDEX_Age_Breakdown",
   title = paste0(config$publication_table_title, " - Number of issued medical exemption certificates, split by age of applicant"),
   notes = c(config$caveat_cert_issued, config$caveat_med_age_group, config$caveat_age_restriction, config$caveat_med_country),
-  dataset = med_age_objs$support_data,
+  dataset = med_age_objs$support_data |> dplyr::select(-Country),
   column_a_width = 30
 )
 # Apply formatting
 # Text: left align
-accessibleTables::format_data(wb, "MEDEX_Age_Breakdown", c("A","B","C","D"), "left", "")
+accessibleTables::format_data(wb, "MEDEX_Age_Breakdown", c("A","B","C"), "left", "")
 # Values: right align * thousand seperator
-accessibleTables::format_data(wb, "MEDEX_Age_Breakdown", c("E"), "right", "#,###")
+accessibleTables::format_data(wb, "MEDEX_Age_Breakdown", c("D"), "right", "#,###")
 
 # 4.4.5 MEDEX: Deprivation --------------------------------------------------
 
@@ -1433,14 +1571,14 @@ accessibleTables::write_sheet(
   sheetname = "MEDEX_Deprivation_Breakdown",
   title = paste0(config$publication_table_title, " - Number of issued medical exemption certificates, split by IMD quintile"),
   notes = c(config$caveat_cert_issued, config$caveat_imd_restriction, config$caveat_med_country),
-  dataset = med_imd_objs$support_data,
+  dataset = med_imd_objs$support_data |> dplyr::select(-Country),
   column_a_width = 30
 )
 # Apply formatting
 # Text: left align
-accessibleTables::format_data(wb, "MEDEX_Deprivation_Breakdown", c("A","B","C","D"), "left", "")
+accessibleTables::format_data(wb, "MEDEX_Deprivation_Breakdown", c("A","B","C"), "left", "")
 # Values: right align * thousand seperator
-accessibleTables::format_data(wb, "MEDEX_Deprivation_Breakdown", c("E"), "right", "#,###")
+accessibleTables::format_data(wb, "MEDEX_Deprivation_Breakdown", c("D"), "right", "#,###")
 
 # 4.4.6 MEDEX: ICB ----------------------------------------------------------
 
@@ -1469,31 +1607,31 @@ accessibleTables::write_sheet(
   sheetname = "PPC_Applications",
   title = paste0(config$publication_table_title, " - Number of applications for prescription prepayment certificates split by financial year and certificate type"),
   notes = c(config$caveat_ppc_type_unknown, config$caveat_ppc_country),
-  dataset = ppc_application_objs$support_data,
+  dataset = ppc_application_objs$support_data |> dplyr::select(-Country),
   column_a_width = 30
 )
 # Apply formatting
 # Text: left align
-accessibleTables::format_data(wb, "PPC_Applications", c("A","B","C","D"), "left", "")
+accessibleTables::format_data(wb, "PPC_Applications", c("A","B","C"), "left", "")
 # Values: right align * thousand seperator
-accessibleTables::format_data(wb, "PPC_Applications", c("E"), "right", "#,###")
+accessibleTables::format_data(wb, "PPC_Applications", c("D"), "right", "#,###")
 
-# 4.5.2 PPC: Outcomes -----------------------------------------------------
+# 4.5.2 PPC: Issued -----------------------------------------------------
 
 # Create the sheet
 accessibleTables::write_sheet(
   workbook = wb,
-  sheetname = "PPC_Outcomes",
+  sheetname = "PPC_Issued",
   title = paste0(config$publication_table_title, " - Number of prescription prepayment certificates issued, split by financial year and certificate type"),
   notes = c(config$caveat_cert_issued, config$caveat_ppc_type_unknown, config$caveat_ppc_country),
-  dataset = ppc_issued_objs$support_data,
+  dataset = ppc_issued_objs$support_data |> dplyr::select(-Country),
   column_a_width = 30
 )
 # Apply formatting
 # Text: left align
-accessibleTables::format_data(wb, "PPC_Outcomes", c("A","B","C","D"), "left", "")
+accessibleTables::format_data(wb, "PPC_Issued", c("A","B","C"), "left", "")
 # Values: right align * thousand seperator
-accessibleTables::format_data(wb, "PPC_Outcomes", c("E"), "right", "#,###")
+accessibleTables::format_data(wb, "PPC_Issued", c("D"), "right", "#,###")
 
 # 4.5.3 PPC: Age ----------------------------------------------------------
 
@@ -1503,14 +1641,14 @@ accessibleTables::write_sheet(
   sheetname = "PPC_Age_Breakdown",
   title = paste0(config$publication_table_title, " - Number of issued prescription prepayment certificates, split by certificate type and age of applicant"),
   notes = c(config$caveat_cert_issued, config$caveat_ppc_age_group, config$caveat_age_restriction, config$caveat_ppc_country),
-  dataset = ppc_age_objs$support_data,
+  dataset = ppc_age_objs$support_data |> dplyr::select(-Country),
   column_a_width = 30
 )
 # Apply formatting
 # Text: left align
-accessibleTables::format_data(wb, "PPC_Age_Breakdown", c("A","B","C","D","E"), "left", "")
+accessibleTables::format_data(wb, "PPC_Age_Breakdown", c("A","B","C","D"), "left", "")
 # Values: right align * thousand seperator
-accessibleTables::format_data(wb, "PPC_Age_Breakdown", c("F"), "right", "#,###")
+accessibleTables::format_data(wb, "PPC_Age_Breakdown", c("E"), "right", "#,###")
 
 # 4.5.4 PPC: Deprivation --------------------------------------------------
 
@@ -1520,14 +1658,14 @@ accessibleTables::write_sheet(
   sheetname = "PPC_Deprivation_Breakdown",
   title = paste0(config$publication_table_title, " - Number of issued prescription prepayment certificates, split by certificate type and IMD quintile"),
   notes = c(config$caveat_cert_issued, config$caveat_imd_restriction, config$caveat_ppc_country),
-  dataset = ppc_imd_objs$support_data,
+  dataset = ppc_imd_objs$support_data |> dplyr::select(-Country),
   column_a_width = 30
 )
 # Apply formatting
 # Text: left align
-accessibleTables::format_data(wb, "PPC_Deprivation_Breakdown", c("A","B","C","D","E"), "left", "")
+accessibleTables::format_data(wb, "PPC_Deprivation_Breakdown", c("A","B","C","D"), "left", "")
 # Values: right align * thousand seperator
-accessibleTables::format_data(wb, "PPC_Deprivation_Breakdown", c("F"), "right", "#,###")
+accessibleTables::format_data(wb, "PPC_Deprivation_Breakdown", c("E"), "right", "#,###")
 
 # 4.5.5 PPC: ICB ----------------------------------------------------------
 
@@ -1556,33 +1694,33 @@ accessibleTables::write_sheet(
   sheetname = "HRTPPC_Applications",
   title = paste0(config$publication_table_title, " - Number of applications for NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT PPC) split by month"),
   notes = c(),
-  dataset = hrt_application_objs$support_data,
+  dataset = hrt_application_objs$support_data |> dplyr::select(-Country),
   column_a_width = 30
 )
 # Apply formatting
 # Text: left align
-accessibleTables::format_data(wb, "HRTPPC_Applications", c("A","B","C"), "left", "")
+accessibleTables::format_data(wb, "HRTPPC_Applications", c("A","B"), "left", "")
 # Values: right align * thousand seperator
-accessibleTables::format_data(wb, "HRTPPC_Applications", c("D"), "right", "#,###")
+accessibleTables::format_data(wb, "HRTPPC_Applications", c("C"), "right", "#,###")
 
-# 4.6.2 HRT PPC: Outcomes -----------------------------------------------------
+# 4.6.2 HRT PPC: Issued -----------------------------------------------------
 
 # Create the sheet
 accessibleTables::write_sheet(
   workbook = wb,
-  sheetname = "HRTPPC_Outcomes",
+  sheetname = "HRTPPC_Issued",
   title = paste0(config$publication_table_title, " - Number of NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT PPC) issued, split by month"),
   notes = c(config$caveat_hrtppc_start, config$caveat_cert_issued, config$caveat_hrtppc_postdate, config$caveat_hrtppc_country),
-  dataset = hrt_issued_objs$support_data,
+  dataset = hrt_issued_objs$support_data |> dplyr::select(-Country),
   column_a_width = 30
 )
 # Apply formatting
 # Text: left align
-accessibleTables::format_data(wb, "HRTPPC_Outcomes", c("A","B","C"), "left", "")
+accessibleTables::format_data(wb, "HRTPPC_Issued", c("A","B"), "left", "")
 # Values: right align * thousand seperator
-accessibleTables::format_data(wb, "HRTPPC_Outcomes", c("D","E"), "right", "#,###")
+accessibleTables::format_data(wb, "HRTPPC_Issued", c("C","D"), "right", "#,###")
 # Proportion: right align * thousand seperator to 1 decimal place
-accessibleTables::format_data(wb, "HRTPPC_Outcomes", c("F"), "right", "#,###.#")
+accessibleTables::format_data(wb, "HRTPPC_Issued", c("E"), "right", "#,###.0")
 
 # 4.6.3 HRT PPC: Age ----------------------------------------------------------
 
@@ -1592,14 +1730,14 @@ accessibleTables::write_sheet(
   sheetname = "HRTPPC_Age_Breakdown",
   title = paste0(config$publication_table_title, " - Number of issued NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT PPC), split by age of applicant"),
   notes = c(config$caveat_cert_issued, config$caveat_hrtppc_age_group, config$caveat_age_restriction, config$caveat_hrtppc_px_data, config$caveat_hrtppc_country),
-  dataset = hrt_age_objs$support_data,
+  dataset = hrt_age_objs$support_data |> dplyr::select(-Country),
   column_a_width = 30
 )
 # Apply formatting
 # Text: left align
-accessibleTables::format_data(wb, "HRTPPC_Age_Breakdown", c("A","B","C","D"), "left", "")
+accessibleTables::format_data(wb, "HRTPPC_Age_Breakdown", c("A","B","C"), "left", "")
 # Values: right align * thousand seperator
-accessibleTables::format_data(wb, "HRTPPC_Age_Breakdown", c("E","F"), "right", "#,###")
+accessibleTables::format_data(wb, "HRTPPC_Age_Breakdown", c("D","E"), "right", "#,###")
 
 # 4.6.4 HRT PPC: Deprivation --------------------------------------------------
 
@@ -1609,14 +1747,14 @@ accessibleTables::write_sheet(
   sheetname = "HRTPPC_Deprivation_Breakdown",
   title = paste0(config$publication_table_title, " - Number of issued NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT PPC), split by IMD quintile"),
   notes = c(config$caveat_cert_issued, config$caveat_imd_restriction, config$caveat_hrtppc_px_data, config$caveat_hrtppc_country),
-  dataset = hrt_imd_objs$support_data,
+  dataset = hrt_imd_objs$support_data |> dplyr::select(-Country),
   column_a_width = 30
 )
 # Apply formatting
 # Text: left align
-accessibleTables::format_data(wb, "HRTPPC_Deprivation_Breakdown", c("A","B","C","D"), "left", "")
+accessibleTables::format_data(wb, "HRTPPC_Deprivation_Breakdown", c("A","B","C"), "left", "")
 # Values: right align * thousand seperator
-accessibleTables::format_data(wb, "HRTPPC_Deprivation_Breakdown", c("E","F"), "right", "#,###")
+accessibleTables::format_data(wb, "HRTPPC_Deprivation_Breakdown", c("D","E"), "right", "#,###")
 
 # 4.6.5 HRT PPC: ICB ----------------------------------------------------------
 
@@ -1637,12 +1775,12 @@ accessibleTables::format_data(wb, "HRTPPC_ICB_Breakdown", c("E","F","G"), "right
 
 # 4.7 Data Tables: NHS tax credit exemption certificates ----------------------------------
 
-# 4.7.1 TAX: Outcomes -----------------------------------------------------
+# 4.7.1 TAX: Issued -----------------------------------------------------
 
 # Create the sheet
 accessibleTables::write_sheet(
   workbook = wb,
-  sheetname = "TAX_Outcomes",
+  sheetname = "TAX_Issued",
   title = paste0(config$publication_table_title, " - Number of NHS tax credit exemption certificates issued, split by financial year and country"),
   notes = c(config$caveat_tax_issued, config$caveat_country_other, config$caveat_country_unknown),
   dataset = tax_issued_objs$support_data,
@@ -1650,9 +1788,9 @@ accessibleTables::write_sheet(
 )
 # Apply formatting
 # Text: left align
-accessibleTables::format_data(wb, "TAX_Outcomes", c("A","B","C"), "left", "")
+accessibleTables::format_data(wb, "TAX_Issued", c("A","B","C"), "left", "")
 # Values: right align * thousand seperator
-accessibleTables::format_data(wb, "TAX_Outcomes", c("D"), "right", "#,###")
+accessibleTables::format_data(wb, "TAX_Issued", c("D"), "right", "#,###")
 
 # 4.7.2 TAX: Age ----------------------------------------------------------
 
@@ -1734,40 +1872,41 @@ accessibleTables::makeCoverSheet(
   c(
     "Metadata",
     "Table 1:  LIS_Applications",
-    "Table 2:  LIS_Outcomes",
-    "Table 3:  LIS_Active_Certificates",
-    "Table 4:  LIS_Certificate_Duration",
-    "Table 5:  LIS_Age_Breakdown",
-    "Table 6:  LIS_Deprivation_Breakdown",
-    "Table 7:  LIS_ICB_Breakdown",
-    "Table 8:  MATEX_Applications",
-    "Table 9:  MATEX_Outcomes",
-    "Table 10:  MATEX_Active_Certificates",
-    "Table 11:  MATEX_Certificate_Duration",
-    "Table 12:  MATEX_Age_Breakdown",
-    "Table 13:  MATEX_Deprivation_Breakdown",
-    "Table 14:  MATEX_ICB_Breakdown",
-    "Table 15:  MEDEX_Applications",
-    "Table 16:  MEDEX_Outcomes",
-    "Table 17:  MEDEX_Active_Certificates",
-    "Table 18:  MEDEX_Age_Breakdown",
-    "Table 19:  MEDEX_Deprivation_Breakdown",
-    "Table 20:  MEDEX_ICB_Breakdown",
-    "Table 21:  PPC_Applications",
-    "Table 22:  PPC_Outcomes",
-    "Table 23:  PPC_Age_Breakdown",
-    "Table 24:  PPC_Deprivation_Breakdown",
-    "Table 25:  PPC_ICB_Breakdown",
-    "Table 26:  HRTPPC_Applications",
-    "Table 27:  HRTPPC_Outcomes",
-    "Table 28:  HRTPPC_Age_Breakdown",
-    "Table 29:  HRTPPC_Deprivation_Breakdown",
-    "Table 30:  HRTPPC_ICB_Breakdown",
-    "Table 31:  TAX_Outcomes",
-    "Table 32:  TAX_Age_Breakdown",
-    "Table 33:  TAX_Age_Profile",
-    "Table 34:  TAX_Deprivation_Breakdown",
-    "Table 35:  TAX_ICB_Breakdown"
+    "Table 2:  LIS_Issued",
+    "Table 3:  LIS_Issued_HC3_Breakdown",
+    "Table 4:  LIS_Active_Certificates",
+    "Table 5:  LIS_Certificate_Duration",
+    "Table 6:  LIS_Age_Breakdown",
+    "Table 7:  LIS_Deprivation_Breakdown",
+    "Table 8:  LIS_ICB_Breakdown",
+    "Table 9:  MATEX_Applications",
+    "Table 10:  MATEX_Issued",
+    "Table 11:  MATEX_Active_Certificates",
+    "Table 12:  MATEX_Certificate_Duration",
+    "Table 13:  MATEX_Age_Breakdown",
+    "Table 14:  MATEX_Deprivation_Breakdown",
+    "Table 15:  MATEX_ICB_Breakdown",
+    "Table 16:  MEDEX_Applications",
+    "Table 17:  MEDEX_Issued",
+    "Table 18:  MEDEX_Active_Certificates",
+    "Table 19:  MEDEX_Age_Breakdown",
+    "Table 20:  MEDEX_Deprivation_Breakdown",
+    "Table 21:  MEDEX_ICB_Breakdown",
+    "Table 22:  PPC_Applications",
+    "Table 23:  PPC_Issued",
+    "Table 24:  PPC_Age_Breakdown",
+    "Table 25:  PPC_Deprivation_Breakdown",
+    "Table 26:  PPC_ICB_Breakdown",
+    "Table 27:  HRTPPC_Applications",
+    "Table 28:  HRTPPC_Issued",
+    "Table 29:  HRTPPC_Age_Breakdown",
+    "Table 30:  HRTPPC_Deprivation_Breakdown",
+    "Table 31:  HRTPPC_ICB_Breakdown",
+    "Table 32:  TAX_Issued",
+    "Table 33:  TAX_Age_Breakdown",
+    "Table 34:  TAX_Age_Profile",
+    "Table 35:  TAX_Deprivation_Breakdown",
+    "Table 36:  TAX_ICB_Breakdown"
   ),
   c("Metadata", sheetNames)
 )
@@ -1870,64 +2009,82 @@ if(config$rebuild_powerbi_data == TRUE){
 # for population figures based on patient estimates the script struggles to run for multiple years
 # to improve performance the script can be run for individual years with results combined
 # intermediate tables can be dropped following execution
+# this is still slow and should only be required if there have been changes to the code as prescription data does not change
   
-  # create a list of periods to loop for prescription data
-  # values will have been supplied as comma seperated lists in the pipeline
-  px_fy_list <- list(
-    fy = unlist(strsplit(config$px_pop_data_fy_list,",")),
-    min_ym = unlist(strsplit(config$px_pop_data_fy_min_ym,",")),
-    max_ym = unlist(strsplit(config$px_pop_data_fy_max_ym,","))
-  )
-  
-  if(length(px_fy_list$fy) > 0){
+  if(config$rebuild_prescription_population_data == TRUE){
     
-    # build the intermediate tables
-    for(v in 1:num_var){
+    # create a list of periods to loop for prescription data
+    # values will have been supplied as comma seperated lists in the pipeline
+    px_fy_list <- list(
+      fy = unlist(strsplit(config$px_pop_data_fy_list,",")),
+      min_ym = unlist(strsplit(config$px_pop_data_fy_min_ym,",")),
+      max_ym = unlist(strsplit(config$px_pop_data_fy_max_ym,","))
+    )
+    
+    num_var <- length(px_fy_list$fy)
+    
+    if(num_var > 0){
       
-      db_table_name = paste0("HWHC_PX_PAT_FY_ICB_",px_fy_list$fy[v])
-      
-      # update statement to combine intermediate tables
-      if(v==1){
-        sql_stmt = paste0("create table HWHC_PX_PAT_FY_ICB as select * from ", db_table_name)
-      } else {
-        sql_stmt = paste0(sql_stmt, " union all select * from ", db_table_name)
+      # build the intermediate tables
+      for(v in 1:num_var){
+        
+        db_table_name = paste0("HWHC_PX_PAT_FY_ICB_",px_fy_list$fy[v])
+        
+        # update statement to combine intermediate tables
+        if(v==1){
+          sql_stmt = paste0("create table HWHC_PX_PAT_FY_ICB as select * from ", db_table_name)
+        } else {
+          sql_stmt = paste0(sql_stmt, " union all select * from ", db_table_name)
+        }
+        create_dataset_from_sql(
+          db_connection = con,
+          path_to_sql_file = "./SQL/HWHC_PX_PAT_FY_ICB.sql",
+          db_table_name = db_table_name,
+          ls_variables = list(
+            var = c("p_min_ym","p_max_ym"),
+            val = c(px_fy_list$min_ym[v], px_fy_list$max_ym[v])
+          )
+        )
+        
       }
       
-      create_dataset_from_sql(
-        db_connection = con,
-        path_to_sql_file = "./SQL/HWHC_PX_PAT_FY_ICB.sql",
-        db_table_name = db_table_name,
-        ls_variables = list(
-          var = c("p_min_ym","p_max_ym"),
-          val = c(px_fy_list$min_ym[v], px_fy_list$max_ym[v])
+      # remove existing version of the table
+      if(
+        DBI::dbExistsTable(
+          conn = con,
+          name = DBI::Id(schema = toupper(con@info$username), table = "HWHC_PX_PAT_FY_ICB")
+        ) == T
+      ){
+        DBI::dbRemoveTable(
+          conn = con,
+          name = DBI::Id(schema = toupper(con@info$username), table = "HWHC_PX_PAT_FY_ICB")
         )
-      )
+      }
+      
+      # create the combined data
+      # execute script to create database table
+      DBI::dbExecute(conn = con, statement = sql_stmt)
+      
+      # delete the intermediate tables
+      for(v in 1:num_var){
+        DBI::dbRemoveTable(conn = con, name = DBI::Id(schema = toupper(con@info$username), table = paste0("HWHC_PX_PAT_FY_ICB_",px_fy_list$fy[v])))
+      }
       
     }
     
-    # create the combined data
-    # execute script to create database table
-    DBI::dbExecute(conn = con, statement = sql_stmt)
-    
-    # delete the intermediate tables
-    for(v in 1:num_var){
-      DBI::dbRemoveTable(conn = con, name = DBI::Id(schema = toupper(con@info$username), table = paste0("HWHC_PX_PAT_FY_ICB_",px_fy_list$fy[v])))
-    }
+    # create the ICB population reference table
+    create_dataset_from_sql(
+      db_connection = con,
+      path_to_sql_file = "./SQL/HWHC_BI_ICB_POPULATION.sql",
+      db_table_name = "HWHC_BI_ICB_POPULATION",
+      ls_variables = list(
+        var = c("p_min_ym","p_max_ym"),
+        val = c(config$powerbi_min_ym_lis, config$powerbi_max_ym_lis)
+      )
+    )
     
   }
   
-  # create the ICB population reference table
-  create_dataset_from_sql(
-    db_connection = con,
-    path_to_sql_file = "./SQL/HWHC_BI_ICB_POPULATION.sql",
-    db_table_name = "HWHC_BI_ICB_POPULATION",
-    ls_variables = list(
-      var = c("p_min_ym","p_max_ym"),
-      val = c(config$powerbi_min_ym_lis, config$powerbi_max_ym_lis)
-    )
-  )
-  
-}
 
 # 6.3 Create aggregated summary tables ------------------------------------
 # these aggregated tables will be the base for the analyses
@@ -2081,13 +2238,12 @@ if(config$rebuild_powerbi_data == TRUE){
     output_path = "outputs/HWHC_BI_DIM_CERT_TYPE.csv"
   )
 
+}
+
 # 6.5 Close database connection -------------------------------------------
 
 # close connection to database
 DBI::dbDisconnect(con)
 
-
-
-  
 
 logr::log_close()

@@ -1,7 +1,7 @@
 #' create_hes_duration_objects
 #'
 #' Create objects to summarise the HES issued outcomes data split by certificate duration for a specific year
-#' Output will include a column chart, split by duration, supporting download data and data for supplementary datasets
+#' Output will include a column chart and table split by duration, supporting download data and data for supplementary datasets
 #' 
 #' Data will be based on outcomes issued to the customer, using the get_hes_issue_data function to extract data
 #' 
@@ -19,15 +19,18 @@ create_hes_duration_objects <- function(db_connection, db_table_name, service_ar
   # if certificate sub-types are required slightly different objects will be required to allow for this
   if(subtype_split == TRUE){
     
+    # create the data object for the visualisations
+    obj_chart_data <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('CERTIFICATE_SUBTYPE', 'CERTIFICATE_DURATION')) |> 
+      dplyr::filter(CERTIFICATE_SUBTYPE != 'Not Available') |> 
+      dplyr::filter(CERTIFICATE_DURATION != 'Not Available') |> 
+      dplyr::arrange(CERTIFICATE_SUBTYPE, CERTIFICATE_DURATION)
+    
     # create the chart using a grouped chart object
-    obj_chart <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('CERTIFICATE_SUBTYPE', 'CERTIFICATE_DURATION')) |> 
-      dplyr::filter(CERTIFICATE_SUBTYPE != 'N/A') |> 
-      dplyr::filter(CERTIFICATE_DURATION != 'N/A') |> 
-      dplyr::arrange(CERTIFICATE_DURATION, CERTIFICATE_SUBTYPE) |> 
-      dplyr::mutate(ISSUED_CERTS_SF = signif(ISSUED_CERTS,3)) |> 
+    obj_chart <- obj_chart_data |> 
+      dplyr::mutate(ISSUED_CERTS = signif(ISSUED_CERTS,3)) |> 
       nhsbsaVis::group_chart_hc(
         x = CERTIFICATE_DURATION,
-        y = ISSUED_CERTS_SF,
+        y = ISSUED_CERTS,
         type = "column",
         group = "CERTIFICATE_SUBTYPE",
         xLab = "Certificate Duration",
@@ -39,6 +42,14 @@ create_hes_duration_objects <- function(db_connection, db_table_name, service_ar
         enabled = T,
         shared = T,
         sort = T
+      )
+    
+    # create the table object
+    obj_table <- obj_chart_data |> 
+      rename_df_fields() |> 
+      knitr::kable(
+        align = "llr",
+        format.args = list(big.mark = ",")
       )
     
     # create the support datasets
@@ -62,14 +73,17 @@ create_hes_duration_objects <- function(db_connection, db_table_name, service_ar
     
   } else {
     
+    # create the data object for the visualisations
+    obj_chart_data <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('CERTIFICATE_DURATION')) |>
+      dplyr::filter(CERTIFICATE_DURATION != 'Not Available') |> 
+      dplyr::arrange(CERTIFICATE_DURATION)
+    
     # create the chart using a basic single column chart
-    obj_chart <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('CERTIFICATE_DURATION')) |>
-      dplyr::filter(CERTIFICATE_DURATION != 'N/A') |> 
-      dplyr::arrange(CERTIFICATE_DURATION) |> 
-      dplyr::mutate(ISSUED_CERTS_SF = signif(ISSUED_CERTS,3)) |> 
+    obj_chart <- obj_chart_data |> 
+      dplyr::mutate(ISSUED_CERTS = signif(ISSUED_CERTS,3)) |> 
       nhsbsaVis::basic_chart_hc(
         x = CERTIFICATE_DURATION,
-        y = ISSUED_CERTS_SF,
+        y = ISSUED_CERTS,
         type = "column",
         xLab = "Certificate duration",
         yLab = "Number of certificates issued",
@@ -81,6 +95,14 @@ create_hes_duration_objects <- function(db_connection, db_table_name, service_ar
         enabled = T,
         shared = T,
         sort = T
+      )
+    
+    # create the table object
+    obj_table <- obj_chart_data |> 
+      rename_df_fields() |> 
+      knitr::kable(
+        align = "lr",
+        format.args = list(big.mark = ",")
       )
     
     # create the support datasets
@@ -115,7 +137,9 @@ create_hes_duration_objects <- function(db_connection, db_table_name, service_ar
   obj_chart <- obj_chart |> 
     highcharter::hc_yAxis(labels = list(enabled = TRUE))
   
+  
+  
   # return output
-  return(list("chart" = obj_chart, "chart_data" = obj_chData, "support_data" = obj_suppData))
+  return(list("chart" = obj_chart, "table" = obj_table, "chart_data" = obj_chData, "support_data" = obj_suppData))
   
 }

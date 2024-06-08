@@ -8,6 +8,11 @@ AMENDMENTS:
 	2024-03-25  : Steven Buckley    : Initial script created
     2024-05-03  : Steven Buckley    : Tweaked script to fit report scripts
                                         Added some additional fields and links to age bands
+    2024-06-04  : Steven Buckley    : Switched source for postcode reference
+                                        Changed N/A to Not Available
+    2024-06-06  : Steven Buckley    : Adjust code to flag issued certificates
+                                        Warehouse change removed ISSUED status to replace with ACTIVE/EXPIRED
+                                        Switched to exclude PENDING and FAILED to limit impact of future changes
 
 
 DESCRIPTION:
@@ -32,21 +37,21 @@ DEPENDENCIES:
                                             Each application/certificate could have multiple records
                                             Includes key dates and certificate outcome/status
 
-    GRALI.ONS_NSPL_MAY_23               :   Reference table for National Statistics Postcode Lookup (NSPL)
+    OST.ONS_NSPL_MAY_24_11CEN           :   Reference table for National Statistics Postcode Lookup (NSPL)
                                             Contains mapping data from postcode to key geographics and deprivation profile data
-                                            Based on NSPL for May 2023
+                                            Based on NSPL for May 2024
 */
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------SCRIPT START----------------------------------------------------------------------------------------------------------------------
 
-create table HRTPPC_FACT compress for query high as
+create table HWHC_HRTPPC_FACT compress for query high as
 select      hapf.CERTIFICATE_ID                                                                             as CERTIFICATE_NUMBER,
             'HRTPPC'                                                                                        as CERTIFICATE_TYPE,
-            'N/A'                                                                                           as CERTIFICATE_SUBTYPE,
+            'Not Available'                                                                                 as CERTIFICATE_SUBTYPE,
             'HRTPPC'                                                                                        as SERVICE_AREA,
             'NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT PPC)'                 as SERVICE_AREA_NAME,
-            case when hapf.CERTIFICATE_STATUS_ID = 'ISSUED' then 1 else 0 end                               as CERTIFICATE_ISSUED_FLAG,
+            case when hapf.CERTIFICATE_STATUS_ID not in ('PENDING','FAILED') then 1 else 0 end              as CERTIFICATE_ISSUED_FLAG,
             hapf.CERTIFICATE_COUNT,
             hapf.CERTIFICATE_STATUS_ID                                                                      as CERTIFICATE_STATUS,
             case when hapf.CERTIFICATE_STATUS_ID = 'CANCELLED' then 1 else 0 end                            as CERTIFICATE_CANCELLED_FLAG,
@@ -58,16 +63,16 @@ select      hapf.CERTIFICATE_ID                                                 
             case
                 -- for MATEX, MEDEX and PPC exclude any ages outside of expected range 15-59 (likely errors)
                 --for MATEX anything above 45 group as 45+
-                when hcd.CERTIFICATE_HOLDER_AGE <= 15   then 'N/A'
-                when hcd.CERTIFICATE_HOLDER_AGE >= 60   then 'N/A'
-                                                        else age.BAND_5YEARS
+                when hapf.AGE_ON_APPLICATION <= 15  then 'Not Available'
+                when hapf.AGE_ON_APPLICATION >= 60  then 'Not Available'
+                                                    else age.BAND_5YEARS
             end                                                                                             as CUSTOM_AGE_BAND,
             hapf.POSTCODE,
             pcd.LSOA11                                                                                      as LSOA,
             --remove ONS code for non-England areas
-            case when substr(pcd.ICB,1,1) = 'E' then ICB else 'N/A' end                                     as ICB,
-            nvl(pcd.ICB23CDH,'N/A')                                                                         as ICB_CODE,
-            nvl(pcd.ICB23NM,'N/A')                                                                          as ICB_NAME,
+            case when substr(pcd.ICB,1,1) = 'E' then ICB else 'Not Available' end                           as ICB,
+            nvl(pcd.ICB23CDH,'Not Available')                                                               as ICB_CODE,
+            nvl(pcd.ICB23NM,'Not Available')                                                                as ICB_NAME,
             pcd.IMD_DECILE,
             case
                 when pcd.IMD_DECILE in (1,2)    then 1
@@ -102,9 +107,9 @@ select      hapf.CERTIFICATE_ID                                                 
                 else 0 
             end                                                                                             as FLAG_START_FOLLOWING_MONTH
 from        AML.HRT_APPLICATION_PROCESS_FACT    hapf
-inner join  DIM.HRT_CERTIFICATE_DIM             hcd     on  hapf.CERTIFICATE_ID  =   hcd.CERTIFICATE_ID
-left join   GRALI.ONS_NSPL_MAY_23               pcd     on  regexp_replace(upper(hapf.POSTCODE),'[^A-Z0-9]','') = regexp_replace(upper(pcd.PCD),'[^A-Z0-9]','')
-left join   DIM.AGE_DIM                         age     on  hcd.CERTIFICATE_HOLDER_AGE                          =   age.AGE
+inner join  DIM.HRT_CERTIFICATE_DIM             hcd     on  hapf.CERTIFICATE_ID                                 =   hcd.CERTIFICATE_ID
+left join   OST.ONS_NSPL_MAY_24_11CEN           pcd     on  regexp_replace(upper(hapf.POSTCODE),'[^A-Z0-9]','') =   regexp_replace(upper(pcd.PCD),'[^A-Z0-9]','')
+left join   DIM.AGE_DIM                         age     on  hapf.AGE_ON_APPLICATION                             =   age.AGE
 where       1=1
     --limit to records as of a set date supplied at runtime
     and     trunc(hapf.DW_DATE_CREATED) <= to_date(&&p_extract_date,'YYYYMMDD')

@@ -6,6 +6,7 @@ Version 1.0
 
 AMENDMENTS:
 	2024-05-13  : Steven Buckley    : Initial script created
+    2024-06-06  : Steven Buckley    : Switched outcomes to only include issued certificates
 
 DESCRIPTION:
     Identify a base dataset for PowerBI based on NHS Low Income Scheme data.
@@ -17,7 +18,7 @@ DESCRIPTION:
     For each month the number of applications and issued certificates will be calcualted (based on different attribute groups)
 
 DEPENDENCIES:
-	LIS_FACT    :   Prebuilt dataset to application/certificate level for all NHS Low Income Scheme cases    
+	HWHC_LIS_FACT    :   Prebuilt dataset to application/certificate level for all NHS Low Income Scheme cases    
 */
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -36,16 +37,16 @@ select  /*+ materialize */
             APPLICATION_YM                                              as YM,
             substr(APPLICATION_YM,1,4)||'-'||substr(APPLICATION_YM,5,2) as YEAR_MONTH,
             SERVICE_AREA_NAME,
-            'N/A'                                                       as CERTIFICATE_SUBTYPE,
-            'N/A'                                                       as CERTIFICATE_DURATION,
+            'Not Available'                                             as CERTIFICATE_SUBTYPE,
+            'Not Available'                                             as CERTIFICATE_DURATION,
             COUNTRY,
             ICB_NAME,
             ICB,
-            nvl(to_char(IMD_QUINTILE),'N/A')                            as IMD_QUINTILE,
+            nvl(to_char(IMD_QUINTILE),'Not Available')                  as IMD_QUINTILE,
             CUSTOM_AGE_BAND,
             sum(1)                                                      as APPLICATION_COUNT,
             0                                                           as ISSUED_COUNT
-from        LIS_FACT
+from        HWHC_LIS_FACT
 where       1=1
     and     APPLICATION_YM >= &&p_min_ym
     and     APPLICATION_YM <= &&p_max_ym
@@ -78,15 +79,15 @@ select  /*+ materialize */
             COUNTRY,
             ICB_NAME,
             ICB,
-            nvl(to_char(IMD_QUINTILE),'N/A')                as IMD_QUINTILE,
+            nvl(to_char(IMD_QUINTILE),'Not Available')      as IMD_QUINTILE,
             CUSTOM_AGE_BAND,
             0                                               as APPLICATION_COUNT,
             sum(1)                                          as ISSUED_COUNT
-from        LIS_FACT
+from        HWHC_LIS_FACT
 where       1=1
     and     ISSUE_YM >= &&p_min_ym
     and     ISSUE_YM <= &&p_max_ym
-    and     APPLICATION_COMPLETE_FLAG = 1
+    and     CERTIFICATE_ISSUED_FLAG = 1
 group by    ISSUE_FY,
             ISSUE_YM,
             SERVICE_AREA_NAME,
@@ -121,7 +122,7 @@ select * from outcome_data
 output_overall_data as
 (
 select      'OVERALL: All activity'     as GEO_CLASSIFICATION,
-            'N/A'                       as GEO_CODE,
+            'Not Available'             as GEO_CODE,
             FY,
             YM,
             YEAR_MONTH,
@@ -153,7 +154,7 @@ group by    FY,
 output_country_data as
 (
 select      'COUNTRY: '||COUNTRY        as GEO_CLASSIFICATION,
-            'N/A'                       as GEO_CODE,
+            'Not Available'             as GEO_CODE,
             FY,
             YM,
             YEAR_MONTH,

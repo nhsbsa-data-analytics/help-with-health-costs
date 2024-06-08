@@ -9,10 +9,16 @@ methodology_title: "help-with-health-costs-methodology"
 output_type: "html_document" # html_document / word_document
 
 # data table criteria
-rebuild_base_data: FALSE
-extract_date_lis: "20240409"
-extract_date_hes: "20240409"
-extract_date_hrt: "20240507"
+rebuild_base_lis_data: FALSE
+extract_date_lis: "20240607"
+
+rebuild_base_hes_data: FALSE
+extract_date_hes: "20240607"
+
+rebuild_base_hrt_data: FALSE
+extract_date_hrt: "20240607"
+
+rebuild_base_px_data: FALSE
 extract_px_min_ym: 202304
 extract_px_max_ym: 202403
 extract_px_age_dt: 20230930   # date to use to calculate patient age
@@ -76,19 +82,19 @@ icb_classification: 2023
 # Data table caveats
 caveat_country_other: "A country classification of 'Other' will represent applications with a postcode for a country other than England."
 caveat_country_unknown: "A country classification of 'Unknown' will represent applications where the postcode could not be assigned to any country."
-caveat_active_coverage: "The term 'active certifice' refers to the start and end date of the certificate and does not consider if the certificate is being used."
-caveat_age_restriction: "An age band of 'unknown' has been used where the applicants age could not be confidently assigned from the available data."
+caveat_active_coverage: "The term 'active certificate' refers to the start and end date of the certificate and does not consider if the certificate is being used. A certificate will be active if it was valid for one or more days during the period."
+caveat_age_restriction: "An age band of 'Not Available' has been used where the applicants age could not be confidently assigned from the available data."
 caveat_imd_restriction: "IMD quintiles cannot be assigned to applicants that can not be associated to an English postcode."
 caveat_icb_method: "The reported ICB is derived from the postcode held for an applicant."
 caveat_icb_restriction: "ICBs cannot be assigned to applicants that can not be associated to an English postcode."
 caveat_cert_issued: "Results limited to cases where the application has been fully completed, assessed and a certificate issued to the applicant."
 
 caveat_lis_issued: "Results limited to cases where the application has been fully completed, assessed and a decision issued to the applicant."
-caveat_lis_no_cert_fy: "Where no certificate is issued, the financial year is based on the date of application in lieu of no available date of certificate being issued."
 caveat_lis_active_duration: "Certificates can be valid for upto 5 years and therefore some certificates may be represented in figures for multiple years."
 caveat_lis_duration_group: "Certificate duration has been grouped into categories based on time between start and end date for the certificate, rounded to nearest number of months."
 caveat_lis_age_group: "Age is calculated at the point of application, in 5 year age bands, with applicants aged 65 and over grouped as 65+."
 caveat_lis_base_population: "Base population figures represent mid-year population estimates published by ONS for people aged 16 and over."
+caveat_lis_hbd11: "Some HC3 certificates may include a HBD11 letter. These represent circumstances where the certificate holders required contribution to health costs may exceed the maximum cost of NHS dental treatment."
 
 caveat_mat_country: "Maternity exemption certificates are only available for people living in England."
 caveat_mat_active_duration: "Certificates can be valid during pregnancy and upto one year following birth. Therefore some certificates may be represented in figures for multiple years."
@@ -105,7 +111,7 @@ caveat_med_age_group: "Age is calculated at the point of application, in 5 year 
 caveat_med_base_population: "Base population figures represent estimated number of patients, aged 16-59, receiving NHS prescriptions."
 
 caveat_ppc_country: "Prescription prepayment certificates are only available for people living in England."
-caveat_ppc_type_unknown: "A certificate type of 'N/A' has been used where the certificate type cannot be identified as 3-month or 12-month from the available data."
+caveat_ppc_type_unknown: "A certificate type of 'Not Available' has been used where the certificate type cannot be identified as 3-month or 12-month from the available data."
 caveat_ppc_age_group: "Age is calculated at the point of application, in 5 year age bands."
 caveat_ppc_base_population: "Base population figures represent estimated number of patients, aged 16-59, receiving NHS prescriptions."
 
@@ -123,6 +129,7 @@ caveat_tax_base_population: "Base population figures represent mid-year populati
 
 # PowerBI criteria
 rebuild_powerbi_data: FALSE
+rebuild_prescription_population_data: FALSE
 powerbi_min_ym_lis: "201804"
 powerbi_max_ym_lis: "202403"
 powerbi_min_ym_hes: "201804"

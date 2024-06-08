@@ -70,39 +70,39 @@ group by    FY,
             GEO_CLASSIFICATION,
             GEO_CODE
 )
-,
-certificate_combinations as
---include totals for custom combinations of certificate subtype
-(
-select      FY, 
-            SERVICE_AREA_NAME,
-            GEO_CLASSIFICATION,
-            GEO_CODE,
-            case 
-                when    SERVICE_AREA_NAME = 'NHS Low Income Scheme'
-                    and CERTIFICATE_SUBTYPE in ('HC2','HC3')
-                then    'HC2 + HC3'
-                else    'N/A'
-            end                     as CERTIFICATE_SUBTYPE,
-            sum(APPLICATION_COUNT)  as APPLICATION_COUNT,
-            sum(ISSUED_COUNT)       as ISSUED_COUNT
-from        HWHC_BI_OUTPUT
-where       1=1
-    and     GEO_CLASSIFICATION like 'ICB:%'
-    and     (   SERVICE_AREA_NAME = 'NHS Low Income Scheme'
-            and CERTIFICATE_SUBTYPE in ('HC2','HC3')
-            )
-group by    FY, 
-            SERVICE_AREA_NAME,
-            GEO_CLASSIFICATION,
-            GEO_CODE,
-            case 
-                when    SERVICE_AREA_NAME = 'NHS Low Income Scheme'
-                    and CERTIFICATE_SUBTYPE in ('HC2','HC3')
-                then    'HC2 + HC3'
-                else    'N/A'
-            end
-)
+--,
+--certificate_combinations as
+----include totals for custom combinations of certificate subtype
+--(
+--select      FY, 
+--            SERVICE_AREA_NAME,
+--            GEO_CLASSIFICATION,
+--            GEO_CODE,
+--            case 
+--                when    SERVICE_AREA_NAME = 'NHS Low Income Scheme'
+--                    and CERTIFICATE_SUBTYPE in ('HC2','HC3')
+--                then    'HC2 + HC3'
+--                else    'N/A'
+--            end                     as CERTIFICATE_SUBTYPE,
+--            sum(APPLICATION_COUNT)  as APPLICATION_COUNT,
+--            sum(ISSUED_COUNT)       as ISSUED_COUNT
+--from        HWHC_BI_OUTPUT
+--where       1=1
+--    and     GEO_CLASSIFICATION like 'ICB:%'
+--    and     (   SERVICE_AREA_NAME = 'NHS Low Income Scheme'
+--            and CERTIFICATE_SUBTYPE in ('HC2','HC3')
+--            )
+--group by    FY, 
+--            SERVICE_AREA_NAME,
+--            GEO_CLASSIFICATION,
+--            GEO_CODE,
+--            case 
+--                when    SERVICE_AREA_NAME = 'NHS Low Income Scheme'
+--                    and CERTIFICATE_SUBTYPE in ('HC2','HC3')
+--                then    'HC2 + HC3'
+--                else    'N/A'
+--            end
+--)
 --apply suppression rules;
 select      base.FY, 
             base.SERVICE_AREA_NAME,
@@ -130,7 +130,7 @@ select      base.FY,
 from        (
                         select * from all_certificates
             union all   select * from certificate_split
-            union all   select * from certificate_combinations
+--            union all   select * from certificate_combinations
             )                           base
 left join   HWHC_BI_ICB_POPULATION      pop on  base.FY                 =   pop.FINANCIAL_YEAR
                                             and base.SERVICE_AREA_NAME  =   pop.SERVICE_AREA_NAME

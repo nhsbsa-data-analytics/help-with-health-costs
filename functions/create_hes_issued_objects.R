@@ -1,7 +1,7 @@
 #' create_hes_issued_objects
 #'
 #' Create objects to summarise the HES issued outcomes data
-#' Output will include a line chart, supporting download data and data for supplementary datasets
+#' Output will include a line chart, a table, supporting download data and data for supplementary datasets
 #' 
 #' Data will be based on outcomes issued to the customer, using the get_hes_issue_data function to extract data
 #' 
@@ -19,14 +19,17 @@ create_hes_issued_objects <- function(db_connection, db_table_name, service_area
   # if certificate sub-types are required slightly different objects will be required to allow for this
   if(subtype_split == TRUE){
     
+    # create the data object for the visualisations
+    obj_chart_data <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('CERTIFICATE_SUBTYPE', 'ISSUE_FY')) |> 
+      dplyr::filter(CERTIFICATE_SUBTYPE != 'Not Available') |> 
+      dplyr::arrange(CERTIFICATE_SUBTYPE, ISSUE_FY)
+    
     # create the chart using a grouped chart object
-    obj_chart <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('CERTIFICATE_SUBTYPE', 'ISSUE_FY')) |> 
-      dplyr::filter(CERTIFICATE_SUBTYPE != 'N/A') |> 
-      dplyr::arrange(ISSUE_FY, CERTIFICATE_SUBTYPE) |> 
-      dplyr::mutate(ISSUED_CERTS_SF = signif(ISSUED_CERTS,3)) |> 
+    obj_chart <- obj_chart_data |> 
+      dplyr::mutate(ISSUED_CERTS = signif(ISSUED_CERTS,3)) |>  
       nhsbsaVis::group_chart_hc(
         x = ISSUE_FY,
-        y = ISSUED_CERTS_SF,
+        y = ISSUED_CERTS,
         type = "line",
         group = "CERTIFICATE_SUBTYPE",
         xLab = "Financial Year",
@@ -38,6 +41,14 @@ create_hes_issued_objects <- function(db_connection, db_table_name, service_area
         enabled = T,
         shared = T,
         sort = T
+      )
+    
+    # create the table object
+    obj_table <- obj_chart_data |> 
+      rename_df_fields() |> 
+      knitr::kable(
+        align = "llr",
+        format.args = list(big.mark = ",")
       )
     
     # create the support datasets
@@ -61,13 +72,16 @@ create_hes_issued_objects <- function(db_connection, db_table_name, service_area
     
   } else {
     
+    # create the data object for the visualisations
+    obj_chart_data <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('ISSUE_FY')) |>
+      dplyr::arrange(ISSUE_FY)
+    
     # create the chart using a basic single column chart
-    obj_chart <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('ISSUE_FY')) |>
-      dplyr::arrange(ISSUE_FY) |> 
-      dplyr::mutate(ISSUED_CERTS_SF = signif(ISSUED_CERTS,3)) |> 
+    obj_chart <- obj_chart_data |> 
+      dplyr::mutate(ISSUED_CERTS = signif(ISSUED_CERTS,3)) |> 
       nhsbsaVis::basic_chart_hc(
         x = ISSUE_FY,
-        y = ISSUED_CERTS_SF,
+        y = ISSUED_CERTS,
         type = "line",
         xLab = "Financial Year",
         yLab = "Number of certificates issued",
@@ -79,6 +93,14 @@ create_hes_issued_objects <- function(db_connection, db_table_name, service_area
         enabled = T,
         shared = T,
         sort = T
+      )
+    
+    # create the table object
+    obj_table <- obj_chart_data |> 
+      rename_df_fields() |> 
+      knitr::kable(
+        align = "lr",
+        format.args = list(big.mark = ",")
       )
     
     # create the support datasets
@@ -109,22 +131,7 @@ create_hes_issued_objects <- function(db_connection, db_table_name, service_area
     }")))
   }
   
-  # apply custom formatting to LIS to change wording to outcome decisions
-  if(service_area == 'LIS'){
-    
-    # update chart
-    obj_chart <- obj_chart |> 
-      highcharter::hc_yAxis(title = list(text = "Number of outcome decisions"))
-    
-    # update datasets
-    obj_chData <- obj_chData |> 
-      dplyr::rename(`Number of outcome decisions` = `Number of certificates issued`)
-    
-    obj_suppData <- obj_suppData |> 
-      dplyr::rename(`Number of outcome decisions` = `Number of certificates issued`)
-  }
-  
   # return output
-  return(list("chart" = obj_chart, "chart_data" = obj_chData, "support_data" = obj_suppData))
+  return(list("chart" = obj_chart, "table" = obj_table, "chart_data" = obj_chData, "support_data" = obj_suppData))
   
 }

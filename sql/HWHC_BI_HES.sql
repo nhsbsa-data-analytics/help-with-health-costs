@@ -6,18 +6,20 @@ Version 1.0
 
 AMENDMENTS:
 	2024-05-15  : Steven Buckley    : Initial script created
+    2024-06-03  : Steven Buckley    : Adjusted script to remove country aggregation for services without distinct country splits
 
 DESCRIPTION:
     Identify a base dataset for PowerBI based on NHS Low Income Scheme data.
     
     Aggregating data for HES areas (MATEX, MEDEX, PPC, Tax Credits) to only the fields required for PowerBI.
     
-    The different geography levels (Overall, Country and ICB will be captured as seperate records so no aggregation is required in PowerBI.
+    The different geography levels (Overall, Country and ICB) will be captured as seperate records so no aggregation is required in PowerBI.
+        Country is only applicable for Tax Credits as other services are England only by design
     
     For each month the number of applications and issued certificates will be calcualted (based on different attribute groups)
 
 DEPENDENCIES:
-	HES_FACT    :   Prebuilt dataset to application/certificate level for all cases from the PPC database system    
+	HWHC_HES_FACT    :   Prebuilt dataset to application/certificate level for all cases from the PPC database system    
 */
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -48,14 +50,15 @@ select  /*+ materialize */
             end                                                         as COUNTRY,
             ICB_NAME,
             ICB,
-            nvl(to_char(IMD_QUINTILE),'N/A')                            as IMD_QUINTILE,
+            nvl(to_char(IMD_QUINTILE),'Not Available')                  as IMD_QUINTILE,
             CUSTOM_AGE_BAND,
             sum(1)                                                      as APPLICATION_COUNT,
             0                                                           as ISSUED_COUNT
-from        HES_FACT
+from        HWHC_HES_FACT
 where       1=1
     and     APPLICATION_YM >= &&p_min_ym
     and     APPLICATION_YM <= &&p_max_ym
+    and     SERVICE_AREA != 'TAX'
 group by    APPLICATION_FY,
             APPLICATION_YM,
             SERVICE_AREA_NAME,
@@ -101,7 +104,7 @@ select  /*+ materialize */
                     then '14 to 15 months'
                 when CERTIFICATE_DURATION_MONTHS >= 12
                     then '12 to 13 months'
-                else 'N/A'
+                else 'Not Available'
             end                                             as CERTIFICATE_DURATION,
             case 
                 when SERVICE_AREA = 'TAX'
@@ -110,11 +113,11 @@ select  /*+ materialize */
             end                                             as COUNTRY,
             ICB_NAME,
             ICB,
-            nvl(to_char(IMD_QUINTILE),'N/A')                as IMD_QUINTILE,
+            nvl(to_char(IMD_QUINTILE),'Not Available')      as IMD_QUINTILE,
             CUSTOM_AGE_BAND,
             0                                               as APPLICATION_COUNT,
             sum(1)                                          as ISSUED_COUNT
-from        HES_FACT
+from        HWHC_HES_FACT
 where       1=1
     and     ISSUE_YM >= &&p_min_ym
     and     ISSUE_YM <= &&p_max_ym
@@ -138,7 +141,7 @@ group by    ISSUE_FY,
                     then '14 to 15 months'
                 when CERTIFICATE_DURATION_MONTHS >= 12
                     then '12 to 13 months'
-                else 'N/A'
+                else 'Not Available'
             end,
             case 
                 when SERVICE_AREA = 'TAX'
@@ -173,7 +176,7 @@ select * from outcome_data
 output_overall_data as
 (
 select      'OVERALL: All activity'     as GEO_CLASSIFICATION,
-            'N/A'                       as GEO_CODE,
+            'Not Available'             as GEO_CODE,
             FY,
             YM,
             YEAR_MONTH,
@@ -202,10 +205,11 @@ group by    FY,
 
 -----SECTION START: OUTPUT DATA: Country Breakdown----------------------------------------------------------------------------------------------------
 --summarise activity with geographic breakdown by country classification
+--only applicable for TAX as other services are typically only England based
 output_country_data as
 (
 select      'COUNTRY: '||COUNTRY        as GEO_CLASSIFICATION,
-            'N/A'                       as GEO_CODE,
+            'Not Available'             as GEO_CODE,
             FY,
             YM,
             YEAR_MONTH,
@@ -218,6 +222,7 @@ select      'COUNTRY: '||COUNTRY        as GEO_CLASSIFICATION,
             sum(ISSUED_COUNT)           as ISSUED_COUNT
 from        base_data
 where       1=1
+    and     SERVICE_AREA_NAME = 'NHS tax credit exemption certificate'
 group by    'COUNTRY: '||COUNTRY,
             FY,
             YM,

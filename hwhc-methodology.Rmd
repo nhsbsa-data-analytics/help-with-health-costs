@@ -302,9 +302,11 @@ When reporting activity by geographic area, such as ICB, figures can be standard
 
 #### 2.4.1 NHS prescribing data patient counts
 
-Some help with health cost services are focused on providing support with NHS prescription costs. For these services the most appropriate base population may be estimated patient counts based on data captured from NHS prescribing data. Where estimated patient counts 
+Some help with health cost services are focused on providing support with NHS prescription costs. For these services the most appropriate base population may be estimated patient counts based on data captured from NHS prescribing data. 
 
-The patient count estimates are based on available data from the NHS prescription dataset maintained by NHSBSA. These patient counts may omit patients whose prescribing activity either cannot be identified or cannot be attributed to a geographic area or age group. For 2023/24, the required patient information could be identified for XXX% of prescription items dispensed in England.
+The patient count estimates are based on available data from the NHS prescription dataset maintained by NHSBSA. Prescription data is collected from the submission of prescriptions by dispensing contractors to the NHSBSA. These prescriptions can be issued by GPs and other authorised prescribers such as nurses, dentists, and allied health professionals. Prescriptions that are issued by hospitals can also be dispensed in the community and submitted for reimbursement. Prescriptions that are issued in hospitals and fulfilled by the hospital pharmacy or dispensary are not included in this data.
+
+The estimated patient counts included in this publication may omit patients whose prescribing activity either cannot be identified or cannot be attributed to a geographic area or age group. For 2023/24, the required patient information could be identified for 92% of prescription items dispensed in England.
 
 ##### 2.4.1.1 Geographic area identification
 
@@ -321,6 +323,8 @@ To report a patient’s age consistently across a financial year these statistic
 Information relating to NHS numbers that have not been verified by PDS were excluded from patient counts as these patients could not be accurately assigned to an age group. 
 
 In rare circumstances patient data may be updated resulting in multiple dates of birth being captured for an NHS number. In these instances, the date of birth captured against the latest available prescription record in the time period was used to calculate the patient's age.
+
+Where certificates are providing support with NHS prescription costs, these certificates may only be relevant between the ages of 16 and 59 where patients are not automatically exempt from prescription charges based on age. Therefore, estimated patient counts are restricted to patients between the ages of 16 and 59.
 
 ##### 2.4.1.3 Drug classification (HRT PPC population only)
 
@@ -378,7 +382,6 @@ In addition to the lack of a consistent unique person identifier, information go
 
 Any revisions that we make to these statistics will be made in line with our [Revisions and Corrections policy](https://www.nhsbsa.nhs.uk/policies-and-procedures). Any significant errors that are identified within these statistics after their publication that would result in the contradiction of conclusions previously drawn from the data will be notified of prominently on our website and any other platforms that host these statistics, corrected as soon as possible, and communicated clearly to users and stakeholders.
 
-
 ## 6. Related statistics, comparability and useful resources
 
 ### 6.1 Code of Practice for Statistics {.toc-ignore}
@@ -424,11 +427,19 @@ These statistics are derived from data collected during processing activities ca
 
 The figures used are collected as an essential part of the process of supply certificates to individuals.
 
-T.B.C
+As there is a manual data entry element to the services covered by this publication, inevitably some small errors may occur in the data. The NHSBSA take measures to minimise these error including monthly quality checks based on a random sample of certificates issued. 
+
+As of June 2024 the 12 month rolling accuracy results for help with health cost service areas were:
+
+* NHS Low Income Scheme : 98.3%
+*	Maternity exemption : 98.4%
+*	Medical exemption : 98.5%
+* PPC : 98.2%
+* HRT PPC : 96.3%
 
 #### 7.2.2. Reliability {.toc-ignore}
 
-T.B.C
+Data can be collected and updated throughout the full lifecycle, from initial application to certificate expiration. These statistics are derived from the latest available information at the time the report was developed.
 
 
 ### 7.3. Timeliness and punctuality {.toc-ignore}
@@ -463,10 +474,9 @@ Comparability with other publications produced by the NHSBSA can be determined u
 
 #### 7.5.1. Comparisons over time {.toc-ignore}
 
-In order to allow for comparisons to be made over time these statistics cover the whole period for which data is available, from financial year 2019/20 onwards.
+In order to allow for comparisons to be made over time these statistics cover the whole period for which data is available, from financial year 2018/19 onwards.
 
 Changes to the figures over time should be interpreted in the wider context of the national landscape. Uptake of these support services administered by NHSBSA may be impacted by a number of external forces including the different support schemes available and changes to the health and financial status of individuals.
-
 
 ***Trade-offs between output quality components
 This dimension describes the extent to which different aspects of quality are balanced against each other***
@@ -503,9 +513,41 @@ We have made a judgement about the suitability of the administrative data for us
 
 ## 8. Glossary of terms used in these statistics
 
-T.B.C
+**Age**
 
+Age, and therefore age bands, have been calculated based on the applicant's date of birth and the date the application was received. Where the calculated age would suggest potential data quality issues, data has been reported as "Not Available".
 
+**IMD Quintile**
+
+The [English Indices of Deprivation 2019](https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019) have been used to provide a measure of deprivation. The English Indices of Deprivation are an official national measure of deprivation that follows an established methodological framework to capture a wide range of individuals' living conditions.
+
+The reported IMD quintile, where 1 is the most deprived and 5 the least deprived, is derived from the postcode currently held for an applicant. There are a small number of records each year that we have reported as having an unknown IMD quintile. These are applicants with no fixed abode or with british forces addresses, or where we have been unable to match the applicant postcode to an English postcode in the [National Statistics Postcode Lookup (NSPL) - May 2023](https://geoportal.statistics.gov.uk/datasets/379c875939ec4fc4bb48ed32711eb042/about).
+
+IMD quintiles are calculated by ranking census lower-layer super output areas (LSOAs) from most deprived to least deprived and dividing them into equal groups. These range from the most deprived 20% (quintile 1) of small areas nationally to the least deprived 20% (quintile 5) of small areas nationally.
+
+**Integrated Care Board (ICB)**
+
+Integrated care boards (ICBs) are a statutory NHS organisation responsible for developing a plan in collaboration with NHS trusts/foundation trusts and other system partners for meeting the health needs of the population, managing the NHS budget and arranging for the provision of health services in the defined area. They took over the functions of Clinical Commissioning Groups (CCG) in July 2022.
+
+**Number of applications**
+
+The number of applications includes all applications received, regardless of status or outcome. Where an application may cover multiple people, the application will only be counted once. 
+
+Where an applicant submits multiple applications, each application will be counted as a distinct event and counted individually.
+
+Some certificate attributes, such as certificate type and duration, may not be available at the point of application and therefore no application figures can be reported against these attributes.
+
+**Number of issued certificates**
+
+The number of issued certifications includes all cases where a certificate was issued to the customer, regardless of current status. It is not possible to confirm that the issued certificate was then used by recipient. Where a certificate may cover multiple people, the certificate will only be counted once.
+
+Some individuals may receive multiple certificates, with each certificate being counted as an distinct event.
+
+**Number of active certificates**
+
+The number of active certificates is based solely on the start and expiration date of the issued certificates. This does not consider if the certificate holder was using the certificate or not. Certificates will be included if they were valid for one or more days during the reported financial year.
+
+Some individuals may have multiple certificates active in a single financial year, with each certificate being counted as an distinct event.
 
 ## 9. Feedback and contact us
 

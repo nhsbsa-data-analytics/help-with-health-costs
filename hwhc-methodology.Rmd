@@ -1,6 +1,6 @@
 ---
 title: "`r config$publication_top_name`"
-pagetitle: Help with Health Costs
+pagetitle: NHS Help with Health Costs
 always_allow_html: true
 output:
   word_document:
@@ -72,12 +72,12 @@ Full details of these schemes are available on the [NHS Help with Health Costs w
 
 Six different certificate schemes are available, with different levels of help with health costs:
 
-* [NHS Prescription Prepayment certificate     (PPC)](https://www.nhsbsa.nhs.uk/help-nhs-prescription-costs/nhs-prescription-prepayment-certificate-ppc)
-* [NHS Tax credit exemption certificate](https://www.nhsbsa.nhs.uk/exemption-certificates/nhs-tax-credit-exemption-certificates)
-* [Medical exemption certificate](https://www.nhsbsa.nhs.uk/check-if-you-have-nhs-exemption/medical-exemption-certificates)
 * [Maternity exemption certificate](https://www.nhsbsa.nhs.uk/check-if-you-have-nhs-exemption/maternity-exemption-certificates)
+* [Medical exemption certificate](https://www.nhsbsa.nhs.uk/check-if-you-have-nhs-exemption/medical-exemption-certificates)
+* [NHS Tax credit exemption certificate](https://www.nhsbsa.nhs.uk/exemption-certificates/nhs-tax-credit-exemption-certificates)
 * [NHS Low Income Scheme (LIS)](https://www.nhsbsa.nhs.uk/nhs-low-income-scheme)
 * [NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT     PPC)](https://www.nhsbsa.nhs.uk/help-nhs-prescription-costs/nhs-hormone-replacement-therapy-prescription-prepayment-certificate-hrt-ppc)
+* [NHS Prescription Prepayment certificate     (PPC)](https://www.nhsbsa.nhs.uk/help-nhs-prescription-costs/nhs-prescription-prepayment-certificate-ppc)
 
 These statistics provide estimates of volumes related to these certificate schemes. Data covers the financial years 2019/2020 to 2023/24, where the financial year runs from April 1 to March 31.
 
@@ -111,7 +111,7 @@ These statistics use the [National Statistics Postcode Lookup (NSPL) - May 2023]
 
 Postcodes are typically provided during the application process. Some applicant's may then update postcode details when addresses change. The postcode used for these statistics will represent the latest known postcode information.
 
-Some help with health cost services are generally limited to applicants from England whilst other services may also provide certificates for Scotland, Wales and Northern Ireland. Within the main report, figures will represent all activity. Where applicable the supporting dataset will split the country by either England, Other or Unknown. 
+Some NHS Help with Health Costs services are generally limited to applicants from England whilst other services may also provide certificates for Scotland, Wales and Northern Ireland. Within the summary report, figures will represent all activity. Where applicable the supporting dataset will split the country by either England, Other or Unknown. 
 
 ICB reporting is limited to applicants that have an identifiable postcode in England.
 
@@ -141,7 +141,7 @@ Where a count of applications is reported, this includes all applications receiv
 
 A single applicant could submit multiple applications during the same periods. Each application will be treated as a unique event and counted accordingly.
 
-For some help with health cost services, such a NHS Low Income Scheme, a single application could represent multiple people. However, the figures in this report are based on a certificate level and therefore figures will represent a single application or certificate, regardless of how many individuals were included on the application.
+For the NHS Low Income Scheme and NHS tax credit exemption certificates, a single application could cover multiple people. However, the figures in this report represent certificate level data and therefore figures will represent a single application, regardless of how many individuals were included on the application.
 
 #### 2.2.2 Issued certificate counts
 Where a count of issued certificates has been provided this will only include cases where the application has been completed and a certificate issued to the applicant.
@@ -150,14 +150,7 @@ These counts are based solely on certificates issued by NHS BSA. There is no abi
 
 Some certificates may be reissued if the certificate holder changes there personal information or requests a replacement due to damage or loss of a certificate. These additional (reissued) certificates will not be included in any certificate counts. However, if a certificate holder submits a completely new application, and receives an additional certificate, this will be counted alongside all other issued certificates.
 
-For some help with health cost services, such a NHS Low Income Scheme, a single certificate could represent multiple people. However, the figures in this report are based on a certificate level and therefore figures will represent a single application or certificate, regardless of how many individuals were included on the application.
-
-#### 2.2.3 Active certificate counts
-Where a count of active certificates has been provided this will only include cases where a certificate has been issued.
-
-A certificate will be deemed "active" if the start and expiration date of the certificate cover one or more days in the reported time period.
-
-There is no ability to identify if a certificate is actively being used by the certificate holder.
+For the NHS Low Income Scheme and NHS tax credit exemption certificates, a single certificate could represent multiple people. However, the figures in this report represent certificate level data and therefore figures will represent a certificate, regardless of how many individuals are covered.
 
 ### 2.3 Service specific data capture methodology {.toc-ignore}
 
@@ -166,8 +159,6 @@ Reporting reflects data available in the NHSBSA Data Warehouse environment as of
 
 ##### 2.3.1.1 Date restrictions and exclusions applied
 The number of applications and issued outcomes cover the period 2018/19 to 2023/24.
-
-For "active" certificates data can only be reported from 2019/20 onwards. This is due to historic data retention schedules and the potential length of issued certificates.
 
 For analysis based on demographics such as age and location, data relates to the latest financial year of 2023/24.
 
@@ -199,8 +190,6 @@ Reporting reflects data available in the NHSBSA Data Warehouse environment as of
 ##### 2.3.2.1 Date restrictions and exclusions applied
 The number of applications and issued outcomes cover the period 2018/19 to 2023/24.
 
-For "active" certificates data can only be reported from 2019/20 onwards. This is due to historic data retention schedules and the potential length of issued certificates.
-
 For analysis based on demographics such as age and location, data relates to the latest financial year of 2023/24.
 
 Applications that are still ongoing or were abandoned before completion are only included in figures relating to applications received.
@@ -210,10 +199,8 @@ The age reported will represent the age of the applicant at the time of applicat
 
 To limit risk of inaccurate reporting, a classification of "Not Available" represents data with confidence issues. For maternity exemption data this includes where the calculated age would be less than 15 or greater than 60.
 
-##### 2.3.2.3 Proportion of certificates issued based on certificate duration
+##### 2.3.2.3 Certificate duration
 Maternity exemption certificates are valid until a year after the birth of the child. The overall duration of the certificate will depend on how early the application is submitted. Certificates issued very early during pregnancy could be valid for up to a total of 22 months. Certificates only issued after the birth would be valid for less than 12 months.
-
-This measure shows the relationship between the date the certificate was issued to the applicant and the certificate duration. This will identify the pattern of how early in pregnancy certificates are being issued. Proportion figures are cumulative and therefore by 12 months after the birth of the child all certificates must have been issued.
 
 Duration is calculated as the number of months, rounded to the nearest month, between the certificate start and expiration date. If the calculated duration would suggest potential data issues, figures will be reported as "Not Available".
 
@@ -231,8 +218,6 @@ Reporting reflects data available in the NHSBSA Data Warehouse environment as of
 
 ##### 2.3.3.1 Date restrictions and exclusions applied
 The number of applications and issued outcomes cover the period 2018/19 to 2023/24.
-
-For "active" certificates data can only be reported from 2019/20 onwards. This is due to historic data retention schedules and the potential length of issued certificates.
 
 For analysis based on demographics such as age and location, data relates to the latest financial year of 2023/24.
 
@@ -298,11 +283,11 @@ For ICB reporting, rates have been calculated per 10,000 base population. This b
 
 ### 2.4 Base population identification {.toc-ignore}
 
-When reporting activity by geographic area, such as ICB, figures can be standardised to adjust for area size. The easiest method for this to calculate a rate using an appropriate population baseline. Within the help with health costs report two different population baselines have been applied.
+When reporting activity by geographic area, such as ICB, figures can be standardised to adjust for area size. This is done by calculating a rate using an appropriate population baseline. Different population baselines have been applied, depending on the most appropriate population for the service area.
 
 #### 2.4.1 NHS prescribing data patient counts
 
-Some help with health cost services are focused on providing support with NHS prescription costs. For these services the most appropriate base population may be estimated patient counts based on data captured from NHS prescribing data. 
+Medical exemption and prescription prepayment certificates (PPC and HRT PPC) are focused on providing support with NHS prescription costs. For these services the base population is based on estimated patient counts based on data captured from NHS prescribing data. 
 
 The patient count estimates are based on available data from the NHS prescription dataset maintained by NHSBSA. Prescription data is collected from the submission of prescriptions by dispensing contractors to the NHSBSA. These prescriptions can be issued by GPs and other authorised prescribers such as nurses, dentists, and allied health professionals. Prescriptions that are issued by hospitals can also be dispensed in the community and submitted for reimbursement. Prescriptions that are issued in hospitals and fulfilled by the hospital pharmacy or dispensary are not included in this data.
 
@@ -336,11 +321,11 @@ For population baseline figures for certificates other than HRT PPC, no drug res
 
 #### 2.4.2 ONS published population estimates
 
-Some help with health cost services provide support with a range of costs. For these services the most appropriate base population may be estimated population counts as published by ONS.
+Maternity exemption certificates, NHS tax credit exemption certificates and the NHS Low Income Scheme provide support with a range of health costs. For these services the base population is based on population counts as published by ONS.
 
 The population estimates were sourced from [population estimates for health geographies dataset published by ONS](https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/clinicalcommissioninggroupmidyearpopulationestimates).
 
-These population estimates are based on mid-year estimates, with 2022 being the latest available year at time of reporting. Figures published by ONS include a breakdown by age and gender. Within the help with health costs report, data was aggregated as required to include the most appropriate combination of age and gender for the service being reported.
+These population estimates are based on mid-year estimates, with 2022 being the latest available year at time of reporting. Figures published by ONS include a breakdown by age and gender. Data has been aggregated to include the most appropriate combination of age and gender for the service being reported. For NHS tax credit exemption certificates and the NHS Low Income Scheme population figures are based on people aged 16 and over. For maternity exemption certificates the population figures are based on the female population aged 15-45.
 
 #### 2.4.3 ONS live birth statistics
 
@@ -374,9 +359,9 @@ These statistics are reliant on the quality of data supplied and processed durin
 
 Certificates issued for the NHS Low Income Scheme and NHS tax credit exemption may also provide coverage to partners and dependent children. However, any demographic analysis will be limited to using the information for the lead applicant or certificate holder.
 
-Due to the lack of a consistent, reliable unique person identifier, figures cannot be published relating to the number of individuals applying to, or receiving support from, any of the help with health cost service areas. Additionally, as an individual could apply for, and receive, multiple certificates in a single time period the figures included in these statistics may include multiple records relating to the same individual.
+Due to the lack of a consistent, reliable unique person identifier, figures cannot be published relating to the number of individuals applying to, or receiving support from, any of the NHS Help with Health Costs service areas. Additionally, as an individual could apply for, and receive, multiple certificates in a single time period the figures included in these statistics may include multiple records relating to the same individual.
 
-In addition to the lack of a consistent unique person identifier, information governance restrictions prevent the linking of data across different services and therefore it is not possible to provide any data relating to the number of individuals receiving support across all help with health cost services. It is also possible that an individual could hold multiple certificates from different services at the same point in time.
+In addition to the lack of a consistent unique person identifier, information governance restrictions prevent the linking of data across different services and therefore it is not possible to provide any data relating to the number of individuals receiving support across all NHS Help with Health Costs services. It is also possible that an individual could hold multiple certificates from different services at the same point in time.
 
 ## 5. Revisions
 
@@ -429,7 +414,7 @@ The figures used are collected as an essential part of the process of supply cer
 
 As there is a manual data entry element to the services covered by this publication, inevitably some small errors may occur in the data. The NHSBSA take measures to minimise these error including monthly quality checks based on a random sample of certificates issued. 
 
-As of June 2024 the 12 month rolling accuracy results for help with health cost service areas were:
+As of May 2024 the 12 month rolling accuracy results for NHS Help with Health Costs service areas were:
 
 * NHS Low Income Scheme : 98.3%
 *	Maternity exemption : 98.4%
@@ -542,12 +527,6 @@ Some certificate attributes, such as certificate type and duration, may not be a
 The number of issued certifications includes all cases where a certificate was issued to the customer, regardless of current status. It is not possible to confirm that the issued certificate was then used by recipient. Where a certificate may cover multiple people, the certificate will only be counted once.
 
 Some individuals may receive multiple certificates, with each certificate being counted as an distinct event.
-
-**Number of active certificates**
-
-The number of active certificates is based solely on the start and expiration date of the issued certificates. This does not consider if the certificate holder was using the certificate or not. Certificates will be included if they were valid for one or more days during the reported financial year.
-
-Some individuals may have multiple certificates active in a single financial year, with each certificate being counted as an distinct event.
 
 ## 9. Feedback and contact us
 

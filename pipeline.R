@@ -192,6 +192,8 @@ if(config$rebuild_base_px_data == TRUE){
 # Applications will include any application to the scheme regardless of current status or outcome
 # The dataset is already limited to HC1 applications excluding HC5 (refund only) applications
 
+# not required for narrative and only required for supporting data
+
 lis_application_objs <- create_hes_application_objects(
   db_connection = con,
   db_table_name = 'HWHC_LIS_FACT',
@@ -217,53 +219,12 @@ lis_issued_objs <- create_hes_issued_objects(
   subtype_split = TRUE
 )
 
-# identify the split of HC3 that were HBD11
-# this will only be included in the supporting data document
-hbd11_support_data <- dplyr::tbl(
-  con, 
-  from = dbplyr::in_schema(toupper(con@info$username), "HWHC_LIS_FACT")
-) |> 
-  # filter to service area and time periods
-  dplyr::filter(
-    SERVICE_AREA == 'LIS',
-    ISSUE_YM >= config$min_trend_ym_lis,
-    ISSUE_YM <= config$max_trend_ym_lis,
-    CERTIFICATE_ISSUED_FLAG == 1,
-    CERTIFICATE_TYPE == 'HC3'
-  ) |> 
-  dplyr::mutate(HBD11_FLAG = ifelse(LETTER_TYPE_CODE == 'HBD11',1,0)) |> 
-  # summarise, splitting by supplied field list
-  dplyr::group_by(SERVICE_AREA_NAME, ISSUE_FY, COUNTRY) |> 
-  dplyr::summarise(
-    ISSUED_HC3 = sum(CERTIFICATE_ISSUED_FLAG), 
-    ISSUED_HBD11 = sum(HBD11_FLAG),
-    .groups = "keep"
-  ) |> 
-  dplyr::ungroup() |> 
-  dplyr::mutate(PROP_HC3_HBD11 = round((ISSUED_HBD11 / ISSUED_HC3) * 100, 1)) |> 
-  dplyr::arrange(COUNTRY, ISSUE_FY) |> 
-  dplyr::collect() |> 
-  rename_df_fields()
-
-
-# 3.1.3 LIS: Active certificates (trend)-------------------------------------------
-# Only issued HC2/HC3 certificates should be considered in "active" counts
-# Certificates could be active for multiple years and therefore should be included in counts for each applicable year
-# The validity period for a HC2/HC3 is determined when the certificate is issued so will not change if the holders circumstances change during this period
-
-lis_active_objs <- create_hes_active_objects(
-  db_connection = con,
-  db_table_name = 'HWHC_LIS_FACT',
-  service_area = 'LIS',
-  min_ym = config$min_trend_active_ym_lis,
-  max_ym = config$max_trend_ym_lis,
-  subtype_split = TRUE
-)
-
-# 3.1.4 LIS: Duration (latest year)-------------------------------------------------
+# 3.1.3 LIS: Duration (latest year)-------------------------------------------------
 # The duration of HC2/HC3 certificates will vary based on applicants circumstances
 # This reporting is only applicable for issued HC2/HC3 certificates
 # CERTIFICATE_DURATION in the data uses some grouping categories to bundle certificates into common categories
+
+# not required for narrative and only required for supporting data
 
 lis_duration_objs <- create_hes_duration_objects(
   db_connection = con,
@@ -274,7 +235,7 @@ lis_duration_objs <- create_hes_duration_objects(
   subtype_split = TRUE
 )
 
-# 3.1.5 LIS: Age profile (latest year)-------------------------------------------------
+# 3.1.4 LIS: Age profile (latest year)-------------------------------------------------
 # Age is available for the lead applicant only
 # Some processing has been performed to group by set age bands and reclassify potential errors 
 
@@ -287,7 +248,7 @@ lis_age_objs <- create_hes_age_objects(
   subtype_split = TRUE
 )
 
-# 3.1.6 LIS: Deprivation profile (latest year)-------------------------------------------------
+# 3.1.5 LIS: Deprivation profile (latest year)-------------------------------------------------
 # IMD may not be available if the postcode cannot be mapped to NSPL
 
 lis_imd_objs <- create_hes_imd_objects(
@@ -299,7 +260,7 @@ lis_imd_objs <- create_hes_imd_objects(
   subtype_split = TRUE
 )
 
-# 3.1.7 LIS: ICB profile (latest year)-------------------------------------------------
+# 3.1.6 LIS: ICB profile (latest year)-------------------------------------------------
 # ICBs can vary in size and therefore are not appropriate for direct comparison
 # Figures should be standardised by a population denominator
 # ONS only publish mid-year estimates and at a delayed schedule
@@ -325,6 +286,8 @@ lis_icb_objs <- create_hes_icb_objects(
 # 3.2.1 MATEX: Applications received (trend)------------------------------------------------
 # Applications will include any application to the scheme regardless of current status or outcome
 
+# not required for narrative and only required for supporting data
+
 mat_application_objs <- create_hes_application_objects(
   db_connection = con,
   db_table_name = 'HWHC_HES_FACT',
@@ -346,22 +309,11 @@ mat_issued_objs <- create_hes_issued_objects(
   subtype_split = FALSE
 )
 
-# 3.2.3 MATEX: Certificates active (trend)------------------------------------------------
-# Active certificates will only include cases where a certificate was issued to the customer
-# Certificates will be included if active for one or more days in the financial year and could be assigned to multiple years
-
-mat_active_objs <- create_hes_active_objects(
-  db_connection = con,
-  db_table_name = 'HWHC_HES_FACT',
-  service_area = 'MAT',
-  min_ym = config$min_trend_active_ym_mat,
-  max_ym = config$max_trend_ym_mat,
-  subtype_split = FALSE
-)
-
-# 3.2.4 MATEX: Duration (latest year)------------------------------------------------
+# 3.2.3 MATEX: Duration (latest year)------------------------------------------------
 # Looking at certificates issued in the latest FY
 # Split by time between due date and certificate issue
+
+# not required for narrative and only required for supporting data
 
 mat_duration_objs <- create_matex_duration_objects(
   db_connection = con,
@@ -369,7 +321,7 @@ mat_duration_objs <- create_matex_duration_objects(
   max_ym = config$max_focus_ym_mat
 )
 
-# 3.2.5 MATEX: Age profile (latest year)------------------------------------------------
+# 3.2.4 MATEX: Age profile (latest year)------------------------------------------------
 # Issued certificates will only include cases where a certificate was issued to the customer
 # Some processing has been performed to group by set age bands and reclassify potential errors 
 
@@ -437,7 +389,7 @@ mat_age_objs$support_data <- mat_age_objs$support_data |>
   dplyr::rename(!!paste0("ONS Live Births (", config$ons_births_year, ")") := LIVE_BIRTHS)
 
 
-# 3.2.6 MATEX: Deprivation profile (latest year)------------------------------------------------
+# 3.2.5 MATEX: Deprivation profile (latest year)------------------------------------------------
 # IMD may not be available if the postcode cannot be mapped to NSPL
 
 mat_imd_objs <- create_hes_imd_objects(
@@ -504,7 +456,7 @@ mat_imd_objs$support_data <- mat_imd_objs$support_data |>
   ) |> 
   dplyr::rename(!!paste0("ONS Live Births (", config$ons_births_year, ")") := LIVE_BIRTHS)
 
-# 3.2.7 MATEX: ICB profile (latest year)-------------------------------------------------
+# 3.2.6 MATEX: ICB profile (latest year)-------------------------------------------------
 # ICBs can vary in size and therefore are not appropriate for direct comparison
 # Figures should be standardised by a population denominator
 # ONS only publish mid-year estimates and at a delayed schedule
@@ -530,6 +482,8 @@ mat_icb_objs <- create_hes_icb_objects(
 # 3.3.1 MEDEX: Applications received (trend)------------------------------------------------
 # Applications will include any application to the scheme regardless of current status or outcome
 
+# not required for narrative and only required for supporting data
+
 med_application_objs <- create_hes_application_objects(
   db_connection = con,
   db_table_name = 'HWHC_HES_FACT',
@@ -551,20 +505,7 @@ med_issued_objs <- create_hes_issued_objects(
   subtype_split = FALSE
 )
 
-# 3.3.3 MEDEX: Certificates active (trend)------------------------------------------------
-# Active certificates will only include cases where a certificate was issued to the customer
-# Certificates will be included if active for one or more days in the financial year and could be assigned to multiple years
-
-med_active_objs <- create_hes_active_objects(
-  db_connection = con,
-  db_table_name = 'HWHC_HES_FACT',
-  service_area = 'MED',
-  min_ym = config$min_trend_active_ym_med,
-  max_ym = config$max_trend_ym_med,
-  subtype_split = FALSE
-)
-
-# 3.3.4 MEDEX: Age profile (latest year)------------------------------------------------
+# 3.3.3 MEDEX: Age profile (latest year)------------------------------------------------
 # Some processing has been performed to group by set age bands and reclassify potential errors
 
 med_age_objs <- create_hes_age_objects(
@@ -576,7 +517,7 @@ med_age_objs <- create_hes_age_objects(
   subtype_split = FALSE
 )
 
-# 3.3.5 MEDEX: Deprivation profile (latest year)------------------------------------------------
+# 3.3.4 MEDEX: Deprivation profile (latest year)------------------------------------------------
 # IMD may not be available if the postcode cannot be mapped to NSPL
 
 med_imd_objs <- create_hes_imd_objects(
@@ -588,7 +529,7 @@ med_imd_objs <- create_hes_imd_objects(
   subtype_split = FALSE
 )
 
-# 3.3.6 MEDEX: ICB profile (latest year)-------------------------------------------------
+# 3.3.5 MEDEX: ICB profile (latest year)-------------------------------------------------
 # ICBs can vary in size and therefore are not appropriate for direct comparison
 # Figures should be standardised by a population denominator
 
@@ -635,6 +576,8 @@ med_icb_objs <- create_hes_icb_objects(
 # 3.4.1 PPC: Applications received (trend) ------------------------------------------------
 # Applications will include any application to the scheme regardless of current status or outcome
 # Applications will be for a specific certificate type and therefore can be split
+
+# not required for narrative and only required for supporting data
 
 ppc_application_objs <- create_hes_application_objects(
   db_connection = con,
@@ -723,6 +666,8 @@ ppc_icb_objs <- create_hes_icb_objects(
 
 # 3.5.1 HRTPPC: Applications received (trend) --------------------------------------------------
 # Applications will include any application to the scheme regardless of current status or outcome
+
+# not required for narrative and only required for supporting data
 
 hrt_application_objs <- create_hes_application_month_objects(
   db_connection = con,
@@ -1106,47 +1051,38 @@ DBI::dbDisconnect(con)
 # list sheets to include in the output
 sheetNames <- c(
   # "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" # 31 character limit
-  "LIS_Applications",
-  "LIS_Issued",
-  "LIS_Issued_HC3_Breakdown",
-  "LIS_Active_Certificates",
-  "LIS_Certificate_Duration",
-  "LIS_Age_Breakdown",
-  "LIS_Deprivation_Breakdown",
-  "LIS_ICB_Breakdown",
-  
   "MATEX_Applications",
   "MATEX_Issued",
-  "MATEX_Active_Certificates",
   "MATEX_Certificate_Duration",
   "MATEX_Age_Breakdown",
   "MATEX_Deprivation_Breakdown",
   "MATEX_ICB_Breakdown",
-  
   "MEDEX_Applications",
   "MEDEX_Issued",
-  "MEDEX_Active_Certificates",
   "MEDEX_Age_Breakdown",
   "MEDEX_Deprivation_Breakdown",
   "MEDEX_ICB_Breakdown",
-  
+  "TAX_Issued",
+  "TAX_Age_Breakdown",
+  "TAX_Age_Profile",
+  "TAX_Deprivation_Breakdown",
+  "TAX_ICB_Breakdown",
+  "LIS_Applications",
+  "LIS_Issued",
+  "LIS_Certificate_Duration",
+  "LIS_Age_Breakdown",
+  "LIS_Deprivation_Breakdown",
+  "LIS_ICB_Breakdown",
   "PPC_Applications",
   "PPC_Issued",
   "PPC_Age_Breakdown",
   "PPC_Deprivation_Breakdown",
   "PPC_ICB_Breakdown",
-  
   "HRTPPC_Applications",
   "HRTPPC_Issued",
   "HRTPPC_Age_Breakdown",
   "HRTPPC_Deprivation_Breakdown",
-  "HRTPPC_ICB_Breakdown",
-  
-  "TAX_Issued",
-  "TAX_Age_Breakdown",
-  "TAX_Age_Profile",
-  "TAX_Deprivation_Breakdown",
-  "TAX_ICB_Breakdown"
+  "HRTPPC_ICB_Breakdown"
 )
 
 wb <- accessibleTables::create_wb(sheetNames)
@@ -1172,7 +1108,6 @@ meta_fields <- c(
   "ICB Name",
   "Number of applications received",
   "Number of certificates issued",
-  "Number of active certificates",
   "ONS population estimate (...)",
   "Population estimate (...)",
   "Number of issued certificates per 10,000 population",
@@ -1181,10 +1116,7 @@ meta_fields <- c(
   "ONS Live Births (...)",
   "Number of issued certificates post-dated to start the following month",
   "Issued certificates post-dated to start the following month (%)",
-  "Estimated patients receiving HRT PPC qualifying medication (aged 16-59)",
-  "Number of Number of HC3 certificates issued",
-  "Number of HC3 certificates including HBD11 letter",
-  "Proportion of HC3 certificates including HBD11 letter (%)"
+  "Estimated patients receiving HRT PPC qualifying medication (aged 16-59)"
   
 )
 
@@ -1209,7 +1141,6 @@ meta_descs <-
     "Full name for each ICB.",
     "Number of applications received by NHS BSA. Includes applications via any route. Includes all applications regardless of status or outcome.",
     "Number of certificates issued to applicants following processing of applications. Will exclude ongoing or incomplete applications.",
-    "Number of certificates that were valid for one or more days during the reported period. The term 'active certifice' refers to the start and end date of the certificate and does not consider if the certificate is being used.",
     "For ICB level reporting population baselines are included for context. Based on mid-year population estimates published by Office for National Statistics. Column header will include definition for which year and age range are included in population aggregations.",
     "For ICB level reporting population baselines are included for context. Based on the estimated number of patients receiving appicable NHS prescribing. Column header will include definition for the age range of patients included in the population aggregation.",
     "For ICB level reporting data is presented as rates per 10,000 population to prevent ICB size unfairly impacting results. Figures calculated using the number of issued certificates and the appropriate population denominator, with rates reported per 10,000 population.",
@@ -1218,10 +1149,7 @@ meta_descs <-
     "Maternity exemption only. Figures sourced from Office for National Statistics to provide additional context. The time period for the live birth figures will be included in the column header.",
     "HRT PPC only. Showing the number of certificates where the applicant requested the certificate to start the following month. Applicants can specify when they would like their certificate to start, up to one month after the application date. This can help applicants apply for a new certificate to start as soon as their existing certificate expires.",
     "HRT PPC only. Showing the proportion of certificates issed where the applicant requested the certificate to start the following month. Applicants can specify when they would like their certificate to start, up to one month after the application date. This can help applicants apply for a new certificate to start as soon as their existing certificate expires.",
-    "HRT PPC only. Showing the estimated number of patients who could be identified receiving NHS prescriptions for medication that is eligilbe for support via a HRT PPC.",
-    "NHS Low Income Scheme only. The number of HC3 certificates issued to applicants.",
-    "NHS Low Income Scheme only. The number of HC3 certificates were a HBD11 letter was supplied to the applicant. This letter states that the certificate holders required contribution to health costs is above the maximum cost for NHS dental treatment and therefore the HC3 does not provide support with dental treatment costs.",
-    "NHS Low Income Scheme only. The proportion of HC3 certificates issued that included a HBD11, and therefore would not provided any support with NHS dental treatment costs."
+    "HRT PPC only. Showing the estimated number of patients who could be identified receiving NHS prescriptions for medication that is eligilbe for support via a HRT PPC."
   )
 
 accessibleTables::create_metadata(wb,
@@ -1265,50 +1193,14 @@ accessibleTables::format_data(wb, "LIS_Issued", c("A","B","C","D"), "left", "")
 # Values: right align * thousand seperator
 accessibleTables::format_data(wb, "LIS_Issued", c("E"), "right", "#,###")
 
-# 4.2.3 LIS: HC3 - HBD11 -----------------------------------------------------
-
-# Create the sheet
-accessibleTables::write_sheet(
-  workbook = wb,
-  sheetname = "LIS_Issued_HC3_Breakdown",
-  title = paste0(config$publication_table_title, " - Number of NHS Low Income Scheme HC3 certificates issued (including HBD11 subset), split by financial year, country and certificate type"),
-  notes = c(config$caveat_lis_hbd11, config$caveat_lis_issued, config$caveat_country_other, config$caveat_country_unknown),
-  dataset = hbd11_support_data,
-  column_a_width = 30
-)
-# Apply formatting
-# Text: left align
-accessibleTables::format_data(wb, "LIS_Issued_HC3_Breakdown", c("A","B","C"), "left", "")
-# Values: right align * thousand seperator
-accessibleTables::format_data(wb, "LIS_Issued_HC3_Breakdown", c("D","E"), "right", "#,###")
-# Proportion: right align * thousand seperator and 1 decimal place
-accessibleTables::format_data(wb, "LIS_Issued_HC3_Breakdown", c("F"), "right", "#,###.0")
-
-# 4.2.4 LIS: Active -------------------------------------------------------
-
-# Create the sheet
-accessibleTables::write_sheet(
-  workbook = wb,
-  sheetname = "LIS_Active_Certificates",
-  title = paste0(config$publication_table_title, " - Number of active NHS Low Income Scheme HC2/HC3 certificates split by financial year and country"),
-  notes = c(config$caveat_lis_active_duration, config$caveat_active_coverage, config$caveat_country_other, config$caveat_country_unknown),
-  dataset = lis_active_objs$support_data,
-  column_a_width = 30
-)
-# Apply formatting
-# Text: left align
-accessibleTables::format_data(wb, "LIS_Active_Certificates", c("A","B","C","D"), "left", "")
-# Values: right align * thousand seperator
-accessibleTables::format_data(wb, "LIS_Active_Certificates", c("E"), "right", "#,###")
-
-# 4.2.5 LIS: Duration -----------------------------------------------------
+# 4.2.3 LIS: Duration -----------------------------------------------------
 
 # Create the sheet
 accessibleTables::write_sheet(
   workbook = wb,
   sheetname = "LIS_Certificate_Duration",
   title = paste0(config$publication_table_title, " - Number of issued NHS Low Income Scheme HC2/HC3 certificates, split by financial year, country and certificate duration"),
-  notes = c(config$caveat_lis_issued, config$caveat_lis_duration_group, config$caveat_country_other, config$caveat_country_unknown),
+  notes = c(config$caveat_lis_issued, config$caveat_lis_duration_group, config$caveat_lis_duration_notes, config$caveat_country_other, config$caveat_country_unknown),
   dataset = lis_duration_objs$support_data,
   column_a_width = 30
 )
@@ -1318,7 +1210,7 @@ accessibleTables::format_data(wb, "LIS_Certificate_Duration", c("A","B","C","D",
 # Values: right align * thousand seperator
 accessibleTables::format_data(wb, "LIS_Certificate_Duration", c("F"), "right", "#,###")
 
-# 4.2.6 LIS: Age ----------------------------------------------------------
+# 4.2.4 LIS: Age ----------------------------------------------------------
 
 # Create the sheet
 accessibleTables::write_sheet(
@@ -1335,7 +1227,7 @@ accessibleTables::format_data(wb, "LIS_Age_Breakdown", c("A","B","C","D","E"), "
 # Values: right align * thousand seperator
 accessibleTables::format_data(wb, "LIS_Age_Breakdown", c("F"), "right", "#,###")
 
-# 4.2.7 LIS: Deprivation --------------------------------------------------
+# 4.2.5 LIS: Deprivation --------------------------------------------------
 
 # Create the sheet
 accessibleTables::write_sheet(
@@ -1352,7 +1244,7 @@ accessibleTables::format_data(wb, "LIS_Deprivation_Breakdown", c("A","B","C","D"
 # Values: right align * thousand seperator
 accessibleTables::format_data(wb, "LIS_Deprivation_Breakdown", c("F"), "right", "#,###")
 
-# 4.2.8 LIS: ICB ----------------------------------------------------------
+# 4.2.6 LIS: ICB ----------------------------------------------------------
 
 # Create the sheet
 accessibleTables::write_sheet(
@@ -1406,31 +1298,14 @@ accessibleTables::format_data(wb, "MATEX_Issued", c("A","B"), "left", "")
 # Values: right align * thousand seperator
 accessibleTables::format_data(wb, "MATEX_Issued", c("C"), "right", "#,###")
 
-# 4.3.3 MATEX: Active -------------------------------------------------------
-
-# Create the sheet
-accessibleTables::write_sheet(
-  workbook = wb,
-  sheetname = "MATEX_Active_Certificates",
-  title = paste0(config$publication_table_title, " - Number of active maternity exemption certificates split by financial year"),
-  notes = c(config$caveat_mat_active_duration, config$caveat_active_coverage, config$caveat_mat_country),
-  dataset = mat_active_objs$support_data |> dplyr::select(-Country),
-  column_a_width = 30
-)
-# Apply formatting
-# Text: left align
-accessibleTables::format_data(wb, "MATEX_Active_Certificates", c("A","B"), "left", "")
-# Values: right align * thousand seperator
-accessibleTables::format_data(wb, "MATEX_Active_Certificates", c("C"), "right", "#,###")
-
-# 4.3.4 MATEX: Duration -----------------------------------------------------
+# 4.3.3 MATEX: Duration -----------------------------------------------------
 
 # Create the sheet
 accessibleTables::write_sheet(
   workbook = wb,
   sheetname = "MATEX_Certificate_Duration",
   title = paste0(config$publication_table_title, " - Proportion of maternity exemption certificates issued relative to expected due date"),
-  notes = c(config$caveat_cert_issued, config$caveat_mat_duration_method, config$caveat_mat_due_date, config$caveat_mat_duration_restriction, config$caveat_mat_country),
+  notes = c(config$caveat_cert_issued, config$caveat_mat_duration_method, config$caveat_mat_duration_restriction, config$caveat_mat_country),
   dataset = mat_duration_objs$support_data |> dplyr::select(-Country),
   column_a_width = 30
 )
@@ -1442,7 +1317,7 @@ accessibleTables::format_data(wb, "MATEX_Certificate_Duration", c("C","D","E"), 
 # Proportion: right align * 1 decimal place
 accessibleTables::format_data(wb, "MATEX_Certificate_Duration", c("F"), "right", "#,###.0")
 
-# 4.3.5 MATEX: Age ----------------------------------------------------------
+# 4.3.4 MATEX: Age ----------------------------------------------------------
 
 # Create the sheet
 accessibleTables::write_sheet(
@@ -1459,7 +1334,7 @@ accessibleTables::format_data(wb, "MATEX_Age_Breakdown", c("A","B","C"), "left",
 # Values: right align * thousand seperator
 accessibleTables::format_data(wb, "MATEX_Age_Breakdown", c("D","E"), "right", "#,###")
 
-# 4.3.6 MATEX: Deprivation --------------------------------------------------
+# 4.3.5 MATEX: Deprivation --------------------------------------------------
 
 # Create the sheet
 accessibleTables::write_sheet(
@@ -1476,7 +1351,7 @@ accessibleTables::format_data(wb, "MATEX_Deprivation_Breakdown", c("A","B","C"),
 # Values: right align * thousand seperator
 accessibleTables::format_data(wb, "MATEX_Deprivation_Breakdown", c("D","E"), "right", "#,###")
 
-# 4.3.7 MATEX: ICB ----------------------------------------------------------
+# 4.3.6 MATEX: ICB ----------------------------------------------------------
 
 # Create the sheet
 accessibleTables::write_sheet(
@@ -1529,24 +1404,7 @@ accessibleTables::format_data(wb, "MEDEX_Issued", c("A","B"), "left", "")
 # Values: right align * thousand seperator
 accessibleTables::format_data(wb, "MEDEX_Issued", c("C"), "right", "#,###")
 
-# 4.4.3 MEDEX: Active -------------------------------------------------------
-
-# Create the sheet
-accessibleTables::write_sheet(
-  workbook = wb,
-  sheetname = "MEDEX_Active_Certificates",
-  title = paste0(config$publication_table_title, " - Number of active medical exemption certificates split by financial year"),
-  notes = c(config$caveat_med_active_duration, config$caveat_active_coverage, config$caveat_med_country),
-  dataset = med_active_objs$support_data |> dplyr::select(-Country),
-  column_a_width = 30
-)
-# Apply formatting
-# Text: left align
-accessibleTables::format_data(wb, "MEDEX_Active_Certificates", c("A","B"), "left", "")
-# Values: right align * thousand seperator
-accessibleTables::format_data(wb, "MEDEX_Active_Certificates", c("C"), "right", "#,###")
-
-# 4.4.4 MEDEX: Age ----------------------------------------------------------
+# 4.4.3 MEDEX: Age ----------------------------------------------------------
 
 # Create the sheet
 accessibleTables::write_sheet(
@@ -1563,7 +1421,7 @@ accessibleTables::format_data(wb, "MEDEX_Age_Breakdown", c("A","B","C"), "left",
 # Values: right align * thousand seperator
 accessibleTables::format_data(wb, "MEDEX_Age_Breakdown", c("D"), "right", "#,###")
 
-# 4.4.5 MEDEX: Deprivation --------------------------------------------------
+# 4.4.4 MEDEX: Deprivation --------------------------------------------------
 
 # Create the sheet
 accessibleTables::write_sheet(
@@ -1580,7 +1438,7 @@ accessibleTables::format_data(wb, "MEDEX_Deprivation_Breakdown", c("A","B","C"),
 # Values: right align * thousand seperator
 accessibleTables::format_data(wb, "MEDEX_Deprivation_Breakdown", c("D"), "right", "#,###")
 
-# 4.4.6 MEDEX: ICB ----------------------------------------------------------
+# 4.4.5 MEDEX: ICB ----------------------------------------------------------
 
 # Create the sheet
 accessibleTables::write_sheet(
@@ -1862,6 +1720,17 @@ accessibleTables::format_data(wb, "TAX_ICB_Breakdown", c("F","G","H"), "right", 
 
 # 4.8 Cover Sheet ---------------------------------------------------------
 
+# assign a table name to each of the sheets in the workbook
+# identify all the tables included (based on sheetNames)
+table_list <- sheetNames
+# append a sequential table number
+for(s in 1:length(table_list)){
+  table_list[s] <- paste0("Table ",s,": ",table_list[s])
+}
+# add the Metadata reference to the top of the list
+table_list <- c("Metadata",table_list)
+
+
 # create cover sheet
 accessibleTables::makeCoverSheet(
   config$publication_top_name,
@@ -1869,45 +1738,7 @@ accessibleTables::makeCoverSheet(
   paste0("Publication date: ", config$publication_date),
   wb,
   sheetNames,
-  c(
-    "Metadata",
-    "Table 1:  LIS_Applications",
-    "Table 2:  LIS_Issued",
-    "Table 3:  LIS_Issued_HC3_Breakdown",
-    "Table 4:  LIS_Active_Certificates",
-    "Table 5:  LIS_Certificate_Duration",
-    "Table 6:  LIS_Age_Breakdown",
-    "Table 7:  LIS_Deprivation_Breakdown",
-    "Table 8:  LIS_ICB_Breakdown",
-    "Table 9:  MATEX_Applications",
-    "Table 10:  MATEX_Issued",
-    "Table 11:  MATEX_Active_Certificates",
-    "Table 12:  MATEX_Certificate_Duration",
-    "Table 13:  MATEX_Age_Breakdown",
-    "Table 14:  MATEX_Deprivation_Breakdown",
-    "Table 15:  MATEX_ICB_Breakdown",
-    "Table 16:  MEDEX_Applications",
-    "Table 17:  MEDEX_Issued",
-    "Table 18:  MEDEX_Active_Certificates",
-    "Table 19:  MEDEX_Age_Breakdown",
-    "Table 20:  MEDEX_Deprivation_Breakdown",
-    "Table 21:  MEDEX_ICB_Breakdown",
-    "Table 22:  PPC_Applications",
-    "Table 23:  PPC_Issued",
-    "Table 24:  PPC_Age_Breakdown",
-    "Table 25:  PPC_Deprivation_Breakdown",
-    "Table 26:  PPC_ICB_Breakdown",
-    "Table 27:  HRTPPC_Applications",
-    "Table 28:  HRTPPC_Issued",
-    "Table 29:  HRTPPC_Age_Breakdown",
-    "Table 30:  HRTPPC_Deprivation_Breakdown",
-    "Table 31:  HRTPPC_ICB_Breakdown",
-    "Table 32:  TAX_Issued",
-    "Table 33:  TAX_Age_Breakdown",
-    "Table 34:  TAX_Age_Profile",
-    "Table 35:  TAX_Deprivation_Breakdown",
-    "Table 36:  TAX_ICB_Breakdown"
-  ),
+  table_list,
   c("Metadata", sheetNames)
 )
 

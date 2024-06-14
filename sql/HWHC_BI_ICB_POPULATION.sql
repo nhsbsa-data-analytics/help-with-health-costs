@@ -6,6 +6,7 @@ Version 1.0
 
 AMENDMENTS:
 	2024-05-15  : Steven Buckley    : Initial script created
+    2024-06-13  : Steven Buckley    : Added SERVICE_AREA to script to map to other tables
     
 
 DESCRIPTION:
@@ -79,6 +80,7 @@ where       1=1
 lis_population as
 (
 select      tpm.FINANCIAL_YEAR,
+            'LIS'                                                           as SERVICE_AREA,
             'NHS Low Income Scheme'                                         as SERVICE_AREA_NAME,
             'ONS mid-year estimate '||pop.POPULATION_YEAR||' (aged 16+)'    as POP_TYPE,
             pop.GEOGRAPHY_ONS_CODE                                          as GEO_CODE,
@@ -98,6 +100,7 @@ where       1=1
 matex_population as
 (
 select      tpm.FINANCIAL_YEAR,
+            'MAT'                                                                   as SERVICE_AREA,
             'Maternity exemption certificate'                                       as SERVICE_AREA_NAME,
             'ONS mid-year estimate '||pop.POPULATION_YEAR||' (females aged 15-45)'  as POP_TYPE,
             pop.GEOGRAPHY_ONS_CODE                                                  as GEO_CODE,
@@ -117,6 +120,7 @@ where       1=1
 tax_population as
 (
 select      tpm.FINANCIAL_YEAR,
+            'TAX'                                                           as SERVICE_AREA,
             'NHS tax credit exemption certificate'                          as SERVICE_AREA_NAME,
             'ONS mid-year estimate '||pop.POPULATION_YEAR||' (aged 16+)'    as POP_TYPE,
             pop.GEOGRAPHY_ONS_CODE                                          as GEO_CODE,
@@ -136,6 +140,7 @@ where       1=1
 medex_population as
 (
 select      tpm.FINANCIAL_YEAR,
+            'MED'                                                                                   as SERVICE_AREA,
             'Medical exemption certificate'                                                         as SERVICE_AREA_NAME,
             'Estimated patients (aged 16-59) receiving NHS prescribing ('||tpm.FINANCIAL_YEAR||')'  as POP_TYPE,
             pop.ICB                                                                                 as GEO_CODE,
@@ -156,6 +161,7 @@ where       1=1
 ppc_population as
 (
 select      tpm.FINANCIAL_YEAR,
+            'PPC'                                                                                   as SERVICE_AREA,
             'NHS Prescription Prepayment Certificate'                                               as SERVICE_AREA_NAME,
             'Estimated patients (aged 16-59) receiving NHS prescribing ('||tpm.FINANCIAL_YEAR||')'  as POP_TYPE,
             pop.ICB                                                                                 as GEO_CODE,
@@ -176,6 +182,7 @@ where       1=1
 hrtppc_population as
 (
 select      tpm.FINANCIAL_YEAR,
+            'HRTPPC'                                                                                                                as SERVICE_AREA,
             'NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT PPC)'                                         as SERVICE_AREA_NAME,
             'Estimated patients (aged 16-59) receiving NHS prescribing of HRT PPC eligible medicines ('||tpm.FINANCIAL_YEAR||')'    as POP_TYPE,
             pop.ICB                                                                                                                 as GEO_CODE,

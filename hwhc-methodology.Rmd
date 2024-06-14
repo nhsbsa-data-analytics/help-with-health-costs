@@ -106,8 +106,9 @@ Due to the method used to calculate age using the applicants date of birth, some
 
 * if a person updates their data to correct inaccuracies with their date of birth
 
-#### 2.1.2  Location (Country/ICB)
-These statistics use the [National Statistics Postcode Lookup (NSPL) - May 2023](https://geoportal.statistics.gov.uk/datasets/379c875939ec4fc4bb48ed32711eb042/about) to identify ICB and country for each individual. This uses the captured postcode information supplied for the application/certificate.
+#### 2.1.2  Location (Country/Integrated Care Board)
+
+These statistics use the [National Statistics Postcode Lookup (NSPL) - May 2024](https://geoportal.statistics.gov.uk/datasets/521edce4159a451a932539b7fc786322/about) to identify Integrated Care Board (ICB) and country for each individual. This uses the captured postcode information supplied for the application/certificate.
 
 Postcodes are typically provided during the application process. Some applicant's may then update postcode details when addresses change. The postcode used for these statistics will represent the latest known postcode information.
 
@@ -121,7 +122,7 @@ Due to the method used to assign location, some data may change between releases
 * if the NSPL reclassifies a postcode against a different area in the new NSPL edition
 
 #### 2.1.3  Deprivation
-Deprivation reporting uses the [English Indices of Deprivation 2019](https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019). In particular, the headline Index of Multiple Deprivation (IMD). IMD data combines with the National Statistics Postcode Lookup (NSPL) using lower-layer super output area (LSOA) 2011. This identifies the general deprivation for an applicant's postcode.
+Deprivation reporting uses the [English Indices of Deprivation 2019](https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019). In particular, the headline Index of Multiple Deprivation (IMD). IMD data combines with the [National Statistics Postcode Lookup (NSPL) - May 2024](https://geoportal.statistics.gov.uk/datasets/521edce4159a451a932539b7fc786322/about) using lower-layer super output area (LSOA) 2011. This identifies the general deprivation for an applicant's postcode.
 
 As deprivation is based on indices calculated for England only, reporting is limiting to applicants that can be identified with an English postcode.
 
@@ -295,7 +296,7 @@ The estimated patient counts included in this publication may omit patients whos
 
 ##### 2.4.1.1 Geographic area identification
 
-For prescribing via the Electronic Prescription Service (EPS), the patient's residential address is captured from the prescription data. This address is then assigned to a lower-layer super output area (LSOA) 2011. The LSOA can then be used to identify both the ICB and the deprivation profile (see section 2.1.3) based on mapping available in the National Statistics Postcode Lookup (NSPL).
+For prescribing via the Electronic Prescription Service (EPS), the patient's residential address is captured from the prescription data. This address is then assigned to a lower-layer super output area (LSOA) 2011. The LSOA can then be used to identify both the ICB and the deprivation profile (see section 2.1.3) based on mapping available in the [National Statistics Postcode Lookup (NSPL) - May 2024](https://geoportal.statistics.gov.uk/datasets/521edce4159a451a932539b7fc786322/about).
 
 LSOA is only captured for prescriptions via EPS. For patients receiving both paper and EPS prescribing, the LSOA data is based on their EPS activity only.
 
@@ -532,7 +533,7 @@ Some individuals may receive multiple certificates, with each certificate being 
 
 Feedback is important to us; we welcome any questions and comments relating to these statistics. 
 
-You can complete a [short survey about this publication](https://online1.snapsurveys.com/Official_Statistics_Feedback) to help us improve the Official Statistics that we produce. All responses will remain anonymous, and individuals will not be identifiable in any report that we produce.
+You can complete a [short survey about this publication](`r config$stats_survey_link`) to help us improve the Official Statistics that we produce. All responses will remain anonymous, and individuals will not be identifiable in any report that we produce.
 
 You can view our [privacy policy](https://www.nhsbsa.nhs.uk/our-policies/privacy) on our website to see how your data is used and stored.
 

@@ -805,7 +805,9 @@ The amount of support provided is based on weekly income, necessary outgoings, p
 
 The majority of certificates are issued for a year, but some are issued for periods of between 1 day and 5 years, depending on circumstances.
 
-The majority of activity is for applicants from England, however applications are also processed for applicants from Scotland and Wales."
+The majority of activity is for applicants from England, however applications are also processed for applicants from Scotland and Wales.
+
+These statistics exclude any figures for certificates issued to asylum seekers assisted by UK Visas and Immigration (UKVI). These individuals are issued certificates automatically as part of the support they receive and are not handled through the regular application and assessment process."
 , width = "100%")`
 
 #### Number of NHS Low Income Scheme certificates issued by certificate type 2018/19 to 2023/24 {.tabset}

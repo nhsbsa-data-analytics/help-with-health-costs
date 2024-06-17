@@ -6,7 +6,7 @@ stats_survey_link: "https://online1.snapsurveys.com/Official_Statistics_Feedback
 publication_table_title: "Help with Health Costs (HwHC) - 2018/19 to 2023/24"
 publication_title: "help-with-health-costs"
 methodology_title: "help-with-health-costs-methodology"
-output_type: "word_document" # html_document / word_document
+output_type: "html_document" # html_document / word_document
 
 # data table criteria
 rebuild_base_lis_data: FALSE

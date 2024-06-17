@@ -167,7 +167,7 @@ The following restrictions apply to all reporting relating to NHS Low Income Sch
 
 * Limited to HC1 applications submitted to NHS Low Income Scheme.
 * Excluding any HC5 (refund only) applications.
-* Excluding any data relating to UKVI Asylum Seekers.
+* Excluding any data relating to certificates issued to asylum seekers assisted by UK Visas and Immigration (UKVI). For these individuals a HC2 is automatically issued as part of the support they receive.
 
 ##### 2.3.1.2 Certificates issued
 Applications are only considered as complete if the data shows an outcome has been issued to the applicant. Applications that are currently in progress are not included. Applications abandoned before completion are only included in figures relating to applications received.

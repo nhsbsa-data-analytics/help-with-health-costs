@@ -1153,83 +1153,6 @@ tax_age_objs <- create_hes_age_objects(
   subtype_split = FALSE
 )
 
-# create dataframe to look at age group profile
-df_tax_age_trend <- get_hes_issue_data(con, 'HWHC_HES_FACT', 'TAX', config$min_trend_ym_tax, config$max_trend_ym_tax, c('SERVICE_AREA_NAME','ISSUE_FY','CUSTOM_AGE_BAND')) |>
-  dplyr::mutate(AGE_GROUP = dplyr::case_when(
-    CUSTOM_AGE_BAND == 'Not Available' ~ 'Not Available',
-    CUSTOM_AGE_BAND %in% c('15-19','20-24','25-29','30-34','35-39') ~ 'Under 40',
-    TRUE ~ '40 and over'
-  )) |> 
-  dplyr::group_by(SERVICE_AREA_NAME, ISSUE_FY, AGE_GROUP) |> 
-  dplyr::summarise(ISSUED_CERTS = sum(ISSUED_CERTS), .groups = "keep") |> 
-  dplyr::mutate(SORT_ORDER = dplyr::case_when(
-    AGE_GROUP == 'Under 40' ~ 1,
-    AGE_GROUP == '40 and over' ~ 2,
-    AGE_GROUP == 'Not Available' ~ 3
-  ))
-
-# produce stacked chart
-ch_tax_age_trend <- df_tax_age_trend |> 
-  dplyr::filter(AGE_GROUP != 'Not Available') |> 
-  dplyr::arrange(desc(SORT_ORDER)) |> 
-  dplyr::mutate(ISSUED_CERTS_SF = signif(ISSUED_CERTS,3)) |> 
-  nhsbsaVis::group_chart_hc(
-    x = ISSUE_FY,
-    y = ISSUED_CERTS_SF,
-    type = "column",
-    group = "AGE_GROUP",
-    xLab = "Financial Year",
-    yLab = "Number of certificates issued",
-    title = "",
-    dlOn = FALSE
-  ) |> 
-  highcharter::hc_tooltip(
-    enabled = T,
-    shared = T,
-    sort = T
-  ) |> 
-  highcharter::hc_yAxis(labels = list(formatter = htmlwidgets::JS( 
-    "function() {
-        return (this.value/1000000)+'m'; /* all labels to absolute values */
-    }"))) |> 
-  highcharter::hc_plotOptions(series = list(stacking = "normal"))
-
-# produce table
-tbl_tax_age_trend <- df_tax_age_trend |> 
-  dplyr::ungroup() |> 
-  dplyr::filter(AGE_GROUP != 'Not Available') |> 
-  dplyr::select(ISSUE_FY,AGE_GROUP, ISSUED_CERTS) |> 
-  dplyr::arrange(AGE_GROUP, ISSUE_FY) |> 
-  rename_df_fields() |> 
-  knitr::kable(
-    align = "llr",
-    format.args = list(big.mark = ",")
-  )
-
-# data download
-dl_tax_age_trend <- df_tax_age_trend |> 
-  dplyr::arrange(ISSUE_FY, SORT_ORDER) |> 
-  dplyr::select(-SORT_ORDER) |> 
-  rename_df_fields()
-
-# supporting data
-sd_tax_age_trend <- get_hes_issue_data(con, 'HWHC_HES_FACT', 'TAX', config$min_trend_ym_tax, config$max_trend_ym_tax, c('SERVICE_AREA_NAME','COUNTRY','ISSUE_FY','CUSTOM_AGE_BAND')) |>
-  dplyr::mutate(AGE_GROUP = dplyr::case_when(
-    CUSTOM_AGE_BAND == 'Not Available' ~ 'Not Available',
-    CUSTOM_AGE_BAND %in% c('15-19','20-24','25-29','30-34','35-39') ~ 'Under 40',
-    TRUE ~ '40 and over'
-  )) |> 
-  dplyr::group_by(SERVICE_AREA_NAME, COUNTRY, ISSUE_FY, AGE_GROUP) |> 
-  dplyr::summarise(ISSUED_CERTS = sum(ISSUED_CERTS), .groups = "keep") |> 
-  dplyr::mutate(SORT_ORDER = dplyr::case_when(
-    AGE_GROUP == 'Under 40' ~ 1,
-    AGE_GROUP == '40 and over' ~ 2,
-    AGE_GROUP == 'Not Available' ~ 3
-  )) |> 
-  dplyr::arrange(ISSUE_FY, COUNTRY, SORT_ORDER) |> 
-  dplyr::select(-SORT_ORDER) |> 
-  rename_df_fields()
-
 # 4.6.3 TAX: Deprivation profile (narrative = latest year only)------------------------------------------------
 # IMD may not be available if the postcode cannot be mapped to NSPL
 
@@ -1291,7 +1214,6 @@ sheetNames <- c(
   "MEDEX_ICB_Breakdown",
   "TAX_Issued",
   "TAX_Age_Breakdown",
-  "TAX_Age_Profile",
   "TAX_Deprivation_Breakdown",
   "TAX_ICB_Breakdown",
   "LIS_Applications",
@@ -1886,23 +1808,6 @@ accessibleTables::write_sheet(
 accessibleTables::format_data(wb, "TAX_Age_Breakdown", c("A","B","C","D"), "left", "")
 # Values: right align * thousand seperator
 accessibleTables::format_data(wb, "TAX_Age_Breakdown", c("E"), "right", "#,###")
-
-# 5.7.3 TAX: Age Profile ----------------------------------------------------------
-
-# Create the sheet
-accessibleTables::write_sheet(
-  workbook = wb,
-  sheetname = "TAX_Age_Profile",
-  title = paste0(config$publication_table_title, " - Number of issued NHS tax credit exemption certificates, split by financial year, country and age group"),
-  notes = c(config$caveat_tax_age_group, config$caveat_age_restriction, config$caveat_country_other, config$caveat_country_unknown),
-  dataset = sd_tax_age_trend,
-  column_a_width = 30
-)
-# Apply formatting
-# Text: left align
-accessibleTables::format_data(wb, "TAX_Age_Profile", c("A","B","C","D"), "left", "")
-# Values: right align * thousand seperator
-accessibleTables::format_data(wb, "TAX_Age_Profile", c("E"), "right", "#,###")
 
 # 5.7.4 TAX: Deprivation --------------------------------------------------
 

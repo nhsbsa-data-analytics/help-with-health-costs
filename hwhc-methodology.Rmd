@@ -79,7 +79,7 @@ Six different certificate schemes are available, with different levels of help w
 * [NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT     PPC)](https://www.nhsbsa.nhs.uk/help-nhs-prescription-costs/nhs-hormone-replacement-therapy-prescription-prepayment-certificate-hrt-ppc)
 * [NHS Prescription Prepayment certificate     (PPC)](https://www.nhsbsa.nhs.uk/help-nhs-prescription-costs/nhs-prescription-prepayment-certificate-ppc)
 
-These statistics provide estimates of volumes related to these certificate schemes. Data covers the financial years 2019/2020 to 2023/24, where the financial year runs from April 1 to March 31.
+These statistics provide estimates of volumes related to these certificate schemes. Data covers the financial years 2019/2020 to 2023/24, where the financial year runs from April 1 to March 31. The time period covered by these statistics includes the Coronavirus (COVID-19) pandemic period. It is worth noting that during this time period there was a reduction in face to face primary care consultations, referrals, new prescriptions and diagnoses due to the COVID-19 pandemic and national lockdowns.  
 
 #### Users and uses
 This publication can have a wide range of uses, including:

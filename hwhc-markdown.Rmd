@@ -98,7 +98,7 @@ Six different certificate schemes are available, with different levels of help w
 
 The number of certificates issued has risen each year since 2020/21. There were 552,000 maternity exemption certificates issued in 2023/24.
 
-The most deprived areas of the country have the highest number of births. However, the most deprived areas do not receive the highest number of maternity exemption certificates.
+The most deprived areas of the country have the highest number of births. However, the most deprived areas do not receive the highest number of maternity exemption certificates. In the most deprived areas, women may be more likely to qualify for other income-related benefits that offer the same support as a maternity exemption certificate.
 
 ### Medical exemption certificates {.toc-ignore}
 
@@ -116,7 +116,7 @@ The age profile of recipients has changed over the past few years. In 2018/19, 5
 
 The number of applications and issued certificates in 2023/24 was a slight decrease from 2022/23 but higher than the 2 years prior. There were 161,000 HC2 certificates and 87,000 HC3 certificates issued in 2023/24.
 
-Certificates were most commonly issued to people from the younger (15-24) and older (65+) age groups, and to people from more deprived areas.
+Certificates were most commonly issued to people from younger (15-24) and older (65+) age groups, and to people from more deprived areas.
 
 ### NHS Prescription Prepayment Certificate (PPC) {.toc-ignore}
 
@@ -130,7 +130,7 @@ The number of PPCs issued is slightly lower in the most and least deprived areas
 
 The HRT PPC was launched in April 2023, with 131,000 certificates being issued in the first month. This represents 23% of the 566,000 certificates issued in 2023/24.
 
-The number of certificates issued was higher in less deprived areas. There was also a higher number of patients in the least deprived areas receiving HRT medicines.
+The number of certificates issued was higher in less deprived areas.
 
 The South West region has some of the largest rates of HRT PPCs issued.
 
@@ -141,13 +141,13 @@ The South West region has some of the largest rates of HRT PPCs issued.
 
 ### 1.1. Scope {.toc-ignore}
 
-These statistics provide estimates of volumes related to these certificate schemes. Data covers the financial years 2018/2019 to 2023/24, where the financial year runs from April 1 to March 31.
+These statistics provide estimates of volumes related to the six certificate schemes. Data covers the financial years 2018/2019 to 2023/24, where the financial year runs from April 1 to March 31. The time period covered by these statistics includes the Coronavirus (COVID-19) pandemic period. It is worth noting that during this time period there was a reduction in face to face primary care consultations, referrals, new prescriptions and diagnoses due to the COVID-19 pandemic and national lockdowns.  
 
-These statistics are based on information from applications and data captured during certificate processing activities. Therefore, where information has not been supplied or captured accurately, this may impact the quality of the statistics. The NHSBSA take measures to minimise potential errors including monthly quality checks based on a random sample of certificates issued. As of May 2024 the 12-month rolling accuracy results for NHS Help with Health Costs service areas were above 98%.  
+These statistics are based on information from applications and data captured during certificate processing activities. Therefore, where information has not been supplied or captured accurately, this may impact the quality of the statistics. The NHSBSA take measures to minimise potential errors including monthly quality checks based on a random sample of certificates issued. As of May 2024, the 12-month rolling accuracy results for NHS Help with Health Costs service areas were above 98%.  
 
 Figures are presented based on the number of applications and issued certificates. Figures should not be interpreted as numbers of people as a unique individual could be represented multiple times.
 
-The NHS Low Income Scheme and NHS tax credit exemption certificate provide certificates to people across the United Kingdom whilst the other NHS Help with Health Costs services administered by NHSBSA are typically focused on support for English residents. Within this report figures represent all activity, with additional breakdowns by country available in the supporting datasets.
+The NHS Low Income Scheme and NHS tax credit exemption certificate provide certificates to people across the United Kingdom whilst the other NHS Help with Health Costs services administered by NHSBSA are typically focused on support for residents in England. Within this report figures represent all activity, with additional breakdowns by country available in the supporting datasets.
 
 Integrated Care Board (ICB) areas have been used within this narrative to allow comparisons between areas. Applicants are aligned to an ICB area based on their postcode and mappings available using the [National Statistics Postcode Lookup (NSPL) - May 2024](https://geoportal.statistics.gov.uk/datasets/521edce4159a451a932539b7fc786322/about).
 
@@ -157,11 +157,13 @@ Integrated Care Board (ICB) areas have been used within this narrative to allow 
 
 ### 2.1 Maternity exemption certificate
 
-`r infoBox_border("",text = "Maternity exemption certifications exempt the holders from NHS prescription charges. It can also be used as proof of entitlement to free NHS dental treatment.
+`r infoBox_border("",text = "Maternity exemption certificates exempt the holders from NHS prescription charges. They can also be used as proof of entitlement to free NHS dental treatment.
 
 Maternity exemption certificates are available to anybody who is currently pregnant, or has given birth in the last 12 months. The certificate is valid until 12 months after the birth of the baby.
 
-Applications are submitted via a midwife, doctor or health visitor who confirms eligibility. Both paper and digital applications are available.
+Applications are submitted via a midwife, doctor or health visitor who confirms eligibility. Both paper and digital applications are available. 
+
+Only a small proportion of applications would not end with a certificate being issued. Certificates may not be issued if essential details cannot be confirmed by the applicant or other issues cannot be resolved. Due to the time taken to resolve an application, some certificates may be issued in a later time period to when the application was submitted.
 
 As a maternity exemption certificate provides support with NHS prescription charges, support is generally applicable to applicants from England only." 
 , width = "100%")`
@@ -205,13 +207,11 @@ get_download_button(title = "Download table data", data = mat_issued_objs$chart_
 
 </div>
 
-Applications are submitted via a healthcare professional, who confirms eligibility. Therefore, only a small proportion of applications would not end with a certificate being issued. Certificates may not be issued if essential details cannot be confirmed by the applicant or other issues cannot be resolved. Due to the time taken to resolve an application, some certificates may be issued in a later time period to when the application was submitted.
-
 The number of issued maternity exemption certificates decreased in 2020/2021 but has increased in each of the following years. In 2023/24, the increase in certificates issued of 12% is the largest in recent years.
 
 In 2023/24 there were 552,000 maternity exemption certificates issued, up from 494,000 in 2022/23.
 
-#### Number of maternity exemption certificates issued, split by age band of recipient 2023/24 {.tabset}
+#### Number of maternity exemption certificates issued, split by age band of applicant 2023/24 {.tabset}
 
 <div class = "tabset">
 
@@ -229,7 +229,7 @@ In 2023/24 there were 552,000 maternity exemption certificates issued, up from 4
 
 ###### Figure 2: Certificates issued peaked in the 30-34 age group
 
-Number of maternity exemption certificates issued in 2023/24 by age of recipient
+Number of maternity exemption certificates issued in 2023/24 by age of applicant
 
 ```{r matex_age_chart}
 mat_age_objs$chart
@@ -252,7 +252,7 @@ Source: Live birth figures from the Office for National Statistics
 
 ###### Table 2: Certificates issued peaked in the 30-34 age group
 
-Number of maternity exemption certificates issued in 2023/24 by age of recipient
+Number of maternity exemption certificates issued in 2023/24 by age of applicant
 
 ```{r matex_age_table}
 mat_age_objs$table
@@ -280,8 +280,8 @@ There is no publicly available data that accurately shows the number of women el
 
 ##### Chart
 
-###### Figure 3: Certificates issued generally decrease in line with deprivation
-
+###### Figure 3: The number of certificates issued is lowest in the least deprived areas
+ 
 Number of maternity exemption certificates issued in 2023/24 by IMD quintile of recipient
 
 ```{r mat_imd_chart}
@@ -303,7 +303,7 @@ Source: Live birth figures from the Office for National Statistics
 
 ##### Table
 
-###### Table 3: Certificates issued generally decrease in line with deprivation
+###### Table 3: The number of certificates issued is lowest in the least deprived areas
 
 Number of maternity exemption certificates issued in 2023/24 by IMD quintile of recipient
 
@@ -314,11 +314,9 @@ get_download_button(title = "Download table data", data = mat_imd_objs$chart_dat
 
 </div>
 
-The English Indices of Deprivation provide a measure of deprivation. In this report deprivation reflects the applicant's registered address. [Section 3.3 of this summary](#about_imd) contains more information on this measure.
+The number of certificates issued is generally higher in more deprived areas, with the least deprived areas having the least number of certificates issued. The exception is the most deprived quintile, where the 118,000 certificates issued is slightly less than 123,000 issued to the second most deprived quintile.
 
-In general the number of maternity exemption certificates decreases in line with deprivation. The exception is the most deprived areas, where the 118,000 certificates issued is slightly less than 123,000 issued to the second most deprived group.
-
-The latest available live birth statistics published by Office for National Statistics show that the number of births are higher in the more deprived areas. In the most deprived areas, women may be more likely to qualify for other income-related benefits that offer the same support as a maternity exemption certificate.
+The latest available live birth statistics published by Office for National Statistics show that the number of births are higher in more deprived areas. In the most deprived areas, women may be more likely to qualify for other income-related benefits that offer the same support as a maternity exemption certificate.
 
 #### Number of maternity exemption certificates issued per 10,000 population, by ICB 2023/24 {.tabset}
 
@@ -361,9 +359,9 @@ get_download_button(title = "Download table data", data = mat_icb_objs$chart_dat
 
 ICB areas have been used to allow comparisons between areas, with applicants aligned to an ICB area based on their postcode.
 
-Population estimates use figures published by [Office for National Statistics for ICB population](https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/clinicalcommissioninggroupmidyearpopulationestimates). These figures are mid-year estimates with 2022 population estimates used for this report. This is the latest available population statistics at the time of publication. To align with women who may benefit from maternity exemption certificates, population figures are based on the female population aged 15 to 45. However, these population statistics only cover a single year and will include women who are not pregnant and have not recently given birth.
+Population estimates use figures published by [Office for National Statistics for ICB population](https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/clinicalcommissioninggroupmidyearpopulationestimates). These figures are mid-year estimates with 2022 population estimates used for this report. This is the latest available population statistics at the time of publication. To align with women who may be most likely to benefit from maternity exemption certificates, population figures are based on the female population aged 15 to 45. There is no publicly available data that includes the number of women who would qualify for support via the maternity exemption certificate at a point in time.
 
-Bedfordshire, Luton and Milton Keynes ICB had the highest estimated number of certificates issued per 10,000 population. In 2023/24, an estimated 637 certificates were issued per 10,000 population in this ICB.
+In 2023/24, Bedfordshire, Luton and Milton Keynes ICB had the highest estimated number of certificates issued per 10,000 population. An estimated 637 certificates were issued per 10,000 population in this ICB.
 
 Cheshire and Merseyside ICB had the lowest estimated number of certificates issued per 10,000 population in 2023/24. This ICB had an estimated 408 certificates per 10,000 population.
 
@@ -371,7 +369,7 @@ Cheshire and Merseyside ICB had the lowest estimated number of certificates issu
 
 ### 2.2 Medical exemption certificate
 
-`r infoBox_border("",text = "Medical exemption certifications exempt the holders from NHS prescription charges only. Patients with any of the qualifying conditions can apply for a certificate. But it is the certificate that provides exemption - not the condition.
+`r infoBox_border("",text = "Medical exemption certificates exempt the holders from NHS prescription charges only. Patients with any of the qualifying conditions can apply for a certificate. But it is the certificate that provides exemption - not the condition.
 
 Patients can apply for a medical exemption certificate if they have either:
 
@@ -389,9 +387,11 @@ Patients can apply for a medical exemption certificate if they have either:
   * the effects of cancer
   * the effects of cancer treatment
 
-A GP or doctor can provide the application form to qualifying patients. Medical exemption certificates are usually valid for 5 years. Certificates will not be automatically renewed upon expiration, with certificate holders needing to reapply.
+A GP or doctor provides the application form to qualifying patients. Medical exemption certificates are usually valid for 5 years. Certificates will not be automatically renewed upon expiration, with certificate holders needing to reapply.
 
-As a medical exemption certificate provides support with NHS prescription charges, support is generally applicable to applicants from England only."
+Only a small proportion of applications would not end with a certificate being issued. Certificates may not be issued if essential details cannot be confirmed by the applicant or other issues cannot be resolved. Due to the time taken to resolve an application, some certificates may be issued in a later time period to when the application was submitted.
+
+As a medical exemption certificate provides support with NHS prescription charges, support is generally applicable to applicants from England aged between 15 and 59."
 , width = "100%")`
 
 #### Number of medical exemption certificates issued 2018/19 to 2023/24 {.tabset}
@@ -433,13 +433,11 @@ get_download_button(title = "Download table data", data = med_issued_objs$chart_
 
 </div>
 
-Applications are authorised by a healthcare professional, who confirms eligibility. Therefore, only a small proportion of applications would not end with a certificate being issued. Certificates may not be issued if essential details cannot be confirmed by the applicant or other issues cannot be resolved. Due to the time taken to resolve an application, some certificates may be issued in a later time period to when the application was submitted.
-
 The number of issued medical exemption certificates dipped in 2020/2021 but has since increased to the highest level in recent years.
 
 In 2023/24 there were 475,000 medical exemption certificates issued, up from 453,000 in 2022/23.
 
-#### Number of medical exemption certificates issued, split by age of recipient 2023/24 {.tabset}
+#### Number of medical exemption certificates issued, split by age of applicant 2023/24 {.tabset}
 
 <div class = "tabset">
 
@@ -451,9 +449,9 @@ In 2023/24 there were 475,000 medical exemption certificates issued, up from 453
 
 ##### Chart
 
-###### Figure 6: The number of certificates issued rises as the age of recipient rises
+###### Figure 6: The number of certificates issued rises as the age of applicant rises
 
-Number of medical exemption certificates issued in 2023/24 by age of recipient
+Number of medical exemption certificates issued in 2023/24 by age of applicant
 
 ```{r medex_age_chart}
 med_age_objs$chart
@@ -462,9 +460,9 @@ get_download_button(title = "Download chart data", data = med_age_objs$chart_dat
 
 ##### Table
 
-###### Table 6: The number of certificates issued rises as the age of recipient rises
+###### Table 6: The number of certificates issued rises as the age of applicant rises
 
-Number of medical exemption certificates issued in 2023/24 by age of recipient
+Number of medical exemption certificates issued in 2023/24 by age of applicant
 
 ```{r medex_age_table}
 med_age_objs$table
@@ -511,11 +509,9 @@ get_download_button(title = "Download table data", data = med_imd_objs$chart_dat
 
 </div>
 
-The English Indices of Deprivation provide a measure of deprivation. In this report deprivation reflects the applicant's registered address. [Section 3.3 of this summary](#about_imd) contains more information on this measure.
-
 Excluding the most deprived areas, as deprivation decreases so does the number of issued certificates.
 
-The number of certificates issued in the most deprived areas was slightly lower than that for the next 2, less deprived, groups. In the most deprived areas people may be more likely to qualify for other income-related benefits that offer the same support as a medical exemption certificate.
+The number of certificates issued in the most deprived areas was slightly lower than that for the next 2, less deprived groups. In the most deprived areas people may be more likely to qualify for other income-related benefits that offer the same support as a medical exemption certificate.
 
 #### Number of medical exemption certificates issued per 10,000 population, by ICB 2023/24 {.tabset}
 
@@ -558,7 +554,7 @@ get_download_button(title = "Download table data", data = med_icb_objs$chart_dat
 
 ICB areas have been used to allow comparisons between areas, with applicants aligned to an ICB area based on their postcode.
 
-Population estimates are based on the number of patients, aged 16-59, identified receiving NHS prescriptions during 2023/24. The population estimates will include all patients regardless of whether or not they paid prescription charges in 2023/24, and will include patients who do not qualify for support via the medical exemption certificate. These population estimates may miss some patients who cannot be identified in the NHS prescriptions dataset, or those who cannot be assigned to an ICB or age group from the available data.
+Population estimates are based on the number of patients, aged 16-59, identified receiving NHS prescriptions during 2023/24. The population estimates include all patients regardless of whether or not they paid prescription charges in 2023/24, and include patients who do not qualify for support via the medical exemption certificate. These population estimates may miss some patients who cannot be identified in the NHS prescriptions dataset, or those who cannot be assigned to an ICB or age group from the available data.
 
 There is not a large variation between ICBs. Values range from 220 certificates per 10,000 population in Greater Manchester ICB to 311 per 10,000 population in Lincolnshire ICB.
 
@@ -619,9 +615,9 @@ get_download_button(title = "Download table data", data = tax_issued_objs$chart_
 
 </div>
 
-The number of issued Tax Credit Exemption Certificates has been dropping year on year from 3.7 million in 2018/19 to 1.2 million in 2023/24. This strong decline may be linked to the Universal Credit roll-out as people are migrated to new benefit schemes. The number of certificates issued each year has declined by between 22% and 26% since 2019/2020.
+The number of issued Tax Credit Exemption Certificates has been dropping year on year from 3.7 million in 2018/19 to 1.2 million in 2023/24. As part of the Universal Credit roll-out people are being migrated to new benefit schemes which will reduce the number of people in receipt of tax credits. The number of certificates issued each year has declined by between 22% and 26% since 2019/2020.
 
-#### Number of NHS tax credit exemption certificates issued, split by age band 2023/24 {.tabset}
+#### Number of NHS tax credit exemption certificates issued, split by age band of applicant 2023/24 {.tabset}
 
 <div class = "tabset">
 
@@ -635,7 +631,7 @@ The number of issued Tax Credit Exemption Certificates has been dropping year on
 
 ###### Figure 10: The number of certificates issued peaks at age 40-44
 
-Number of NHS tax credit exemption certificates issued in 2023/24, split by age of recipient
+Number of NHS tax credit exemption certificates issued in 2023/24, split by age of applicant
 
 ```{r tax_age_chart}
 tax_age_objs$chart
@@ -646,7 +642,7 @@ get_download_button(title = "Download chart data", data = tax_age_objs$chart_dat
 
 ###### Table 10: The number of certificates issued peaks at age 40-44
 
-Number of NHS tax credit exemption certificates issued in 2023/24, split by age of recipient
+Number of NHS tax credit exemption certificates issued in 2023/24, split by age of applicant
 
 ```{r tax_age_table}
 tax_age_objs$table
@@ -661,45 +657,6 @@ Over three-quarters of all certificates were issued to people aged between 35 an
 
 Although numbers are relatively small, some certificates are issued to people aged 60 and over as Tax Credit Exemption Certificate also provides support with some health costs which do not have an age exemption.
 
-#### Change in age profile of NHS tax credit exemption certificates issued 2018/19 to 2023/24 {.tabset}
-
-<div class = "tabset">
-
-::: {.row style="display: flex; padding-bottom: 15px;"}
-::: col-md-6
-`r infoBox_no_border("", text = "<b>In 2018/19, over 55% of NHS tax credit exemption certificates were issued to people under 40 years old</b>", width = "100%")`
-:::
-::: col-md-6
-`r infoBox_no_border("", text = "<b>By 2023/24 this had dropped to just over 30% of issued certificates</b>", width = "100%")`
-:::
-:::
-
-##### Chart
-
-###### Figure 11: People aged under 40 are representing less of the NHS tax credit exemption population each year
-
-Number of NHS tax credit exemption certificates issued by financial year, 2018/19 to 2023/24, split by age group of recipient
-
-```{r tax_age_trend_chart}
-ch_tax_age_trend
-get_download_button(title = "Download chart data", data = dl_tax_age_trend, filename = "hwhc_figure_11")
-```
-
-##### Table
-
-###### Table 11: People aged under 40 are representing less of the NHS tax credit exemption population each year
-
-Number of NHS tax credit exemption certificates issued by financial year, 2018/19 to 2023/24, split by age group of recipient
-
-```{r tax_age_trend_table}
-tbl_tax_age_trend
-get_download_button(title = "Download table data", data = dl_tax_age_trend, filename = "hwhc_table_11")
-```
-
-</div>
-
-The age profile of Tax Credit Exemption Certificates have changed considerably over the past few years. In 2018/19 over 55% of certificates holders were under 40 years old, but as of 2023/24 this group represents only 30% of certificates issued. Following the introduction of Universal Credit, new applicants will receive support via Universal Credit rather than tax credits.
-
 #### Number of NHS tax credit exemption certificates issued by deprivation profile 2023/24 {.tabset}
 
 <div class = "tabset">
@@ -712,29 +669,29 @@ The age profile of Tax Credit Exemption Certificates have changed considerably o
 
 ##### Chart
 
-###### Figure 12: Certificates are most commonly issued to the most deprived areas
+###### Figure 11: Certificates are most commonly issued to the most deprived areas
 
 Number of NHS tax credit exemption certificates issued in 2023/24, split by IMD quintile
 
 ```{r tax_imd_chart}
 tax_imd_objs$chart
-get_download_button(title = "Download chart data", data = tax_imd_objs$chart_data, filename = "hwhc_figure_12")
+get_download_button(title = "Download chart data", data = tax_imd_objs$chart_data, filename = "hwhc_figure_11")
 ```
 
 ##### Table
 
-###### Table 12: Certificates are most commonly issued to the most deprived areas
+###### Table 11: Certificates are most commonly issued to the most deprived areas
 
 Number of NHS tax credit exemption certificates issued in 2023/24, split by IMD quintile
 
 ```{r tax_imd_table}
 tax_imd_objs$table
-get_download_button(title = "Download table data", data = tax_imd_objs$chart_data, filename = "hwhc_table_12")
+get_download_button(title = "Download table data", data = tax_imd_objs$chart_data, filename = "hwhc_table_11")
 ```
 
 </div>
 
-The English Indices of Deprivation provide a measure of deprivation. In this report deprivation reflects the applicant's registered address. [Section 3.3 of this summary](#about_imd) contains more information on this measure. These indices of deprivation are specific to England and therefore can only be applied to certificates that can be assigned to an English postcode.
+The English Indices of Deprivation provide a measure of deprivation. These indices of deprivation are specific to England and therefore can only be applied to certificates that can be assigned to an English address.
 
 There is a strong relationship between deprivation and number of NHS tax credit exemption certificates issued. This is to be expected as this is a means-tested benefit. In 2023/24, there were 394,000 certificates issued in the most deprived areas. In the least deprived areas only 67,800 certificates were issued in 2023/24.
 
@@ -744,35 +701,35 @@ There is a strong relationship between deprivation and number of NHS tax credit 
 
 ##### Map
 
-###### Figure 13 (map): Certificates issued per 10,000 population varies by ICB area
+###### Figure 12 (map): Certificates issued per 10,000 population varies by ICB area
 
 Number of NHS tax credit exemption certificates issued in 2023/24, within ICB areas, per 10,000 population aged 16 and over
 
 ```{r tax_icb_map}
 tax_icb_objs$map
-get_download_button(title = "Download map data", data = tax_icb_objs$chart_data, filename = "hwhc_figure_13")
+get_download_button(title = "Download map data", data = tax_icb_objs$chart_data, filename = "hwhc_figure_12")
 ```
 
 ##### Chart
 
-###### Figure 13 (chart): Certificates issued per 10,000 population varies by ICB area
+###### Figure 12 (chart): Certificates issued per 10,000 population varies by ICB area
 
 Number of NHS tax credit exemption certificates issued in 2023/24, within ICB areas, per 10,000 population aged 16 and over
 
 ```{r tax_icb_chart}
 tax_icb_objs$chart
-get_download_button(title = "Download chart data", data = tax_icb_objs$chart_data, filename = "hwhc_figure_13")
+get_download_button(title = "Download chart data", data = tax_icb_objs$chart_data, filename = "hwhc_figure_12")
 ```
 
 ##### Table
 
-###### Table 13: Certificates issued per 10,000 population varies by ICB area
+###### Table 12: Certificates issued per 10,000 population varies by ICB area
 
 Number of NHS tax credit exemption certificates issued in 2023/24, within ICB areas, per 10,000 population aged 16 and over
 
 ```{r tax_icb_table}
 tax_icb_objs$table
-get_download_button(title = "Download table data", data = tax_icb_objs$chart_data, filename = "hwhc_table_13")
+get_download_button(title = "Download table data", data = tax_icb_objs$chart_data, filename = "hwhc_table_12")
 ```
 
 </div>
@@ -820,37 +777,37 @@ These statistics exclude any figures for certificates issued to asylum seekers a
 :::
 :::
 
-Applicants will either complete a paper HC1 form or apply via the [online application for LIS](https://apply-for-help-with-nhs-costs.nhsbsa.nhs.uk/apply-online). Two levels of support are available from the NHS Low Income Scheme. Depending on the outcome of the assessment, applicants could receive:
+Applicants either complete a paper HC1 form or apply via the [online application for LIS](https://apply-for-help-with-nhs-costs.nhsbsa.nhs.uk/apply-online). Two levels of support are available from the NHS Low Income Scheme. Depending on the outcome of the assessment, applicants could receive:
 
 * an [HC2 certificate](https://www.nhsbsa.nhs.uk/nhs-low-income-scheme/hc2-certificates-full-help-health-costs) for full help with health costs, including free NHS prescriptions
 * an [HC3 certificate](https://www.nhsbsa.nhs.uk/nhs-low-income-scheme/hc3-certificates-limited-help-health-costs) for limited help with health costs, which will show how much the holder has to pay towards health costs
 
 ##### Chart
 
-###### Figure 14: Almost two-thirds of certificates issued provided full help with health costs
+###### Figure 13: Almost two-thirds of certificates issued provided full help with health costs
 
 Number of NHS Low Income Scheme certificates issued, by certificate type, from 2018/19 to 2023/24
 
 ```{r lis_issued_chart}
 lis_issued_objs$chart |> 
   highcharter::hc_yAxis(min = 0)
-get_download_button(title = "Download chart data", data = lis_issued_objs$chart_data, filename = "hwhc_figure_14")
+get_download_button(title = "Download chart data", data = lis_issued_objs$chart_data, filename = "hwhc_figure_13")
 ```
 
 ##### Table
 
-###### Table 14: Almost two-thirds of certificates issued provided full help with health costs
+###### Table 13: Almost two-thirds of certificates issued provided full help with health costs
 
 Number of NHS Low Income Scheme certificates issued, by certificate type, from 2018/19 to 2023/24
 
 ```{r lis_issued_table}
 lis_issued_objs$table
-get_download_button(title = "Download table data", data = lis_issued_objs$chart_data, filename = "hwhc_table_14")
+get_download_button(title = "Download table data", data = lis_issued_objs$chart_data, filename = "hwhc_table_13")
 ```
 
 </div>
 
-There were 249,000 certificates issued in 2023/24. This included 161,000 HC2 certificates and 87,100 HC3 certificates. Compared to 2022/23 there has been a slight decrease in the number of certificates issued to customers. 
+There were 249,000 certificates issued in 2023/24. This includes 161,000 HC2 certificates and 87,100 HC3 certificates. Compared to 2022/23 there has been a slight decrease in the number of certificates issued to customers. 
 
 A certificate is only issued to the applicant following the completion of the assessment. Therefore these figures do not include any applications that are ongoing or were abandoned before completion. These figures also exclude any completed applications where no certificate was issued to the applicant.
 
@@ -866,24 +823,24 @@ A certificate is only issued to the applicant following the completion of the as
 
 ##### Chart
 
-###### Figure 15: Over half of certificates issued were to people aged under 25 or 65 and over
+###### Figure 14: Over half of certificates issued were to people aged under 25 or 65 and over
 
 Number of NHS Low Income Scheme certificates issued in 2023/24, by certificate type and applicant age band
 
 ```{r lis_age_chart}
 lis_age_objs$chart
-get_download_button(title = "Download chart data", data = lis_age_objs$chart_data, filename = "hwhc_figure_15")
+get_download_button(title = "Download chart data", data = lis_age_objs$chart_data, filename = "hwhc_figure_14")
 ```
 
 ##### Table
 
-###### Table 15: Over half of certificates issued were to people aged under 25 or 65 and over
+###### Table 14: Over half of certificates issued were to people aged under 25 or 65 and over
 
 Number of NHS Low Income Scheme certificates issued in 2023/24, by certificate type and applicant age band
 
 ```{r lis_age_table}
 lis_age_objs$table
-get_download_button(title = "Download table data", data = lis_age_objs$chart_data, filename = "hwhc_table_15")
+get_download_button(title = "Download table data", data = lis_age_objs$chart_data, filename = "hwhc_table_14")
 ```
 
 </div>
@@ -910,33 +867,35 @@ The younger and older age groups receive more certificates than other ages. Over
 
 ##### Chart
 
-###### Figure 16: Certificates were issued three times more often in the most deprived areas than the least deprived areas
+###### Figure 15: Certificates were issued three times more often in the most deprived areas than the least deprived areas
 
 Number of NHS Low Income Scheme certificates issued in 2023/24, split by certificate type and IMD quintile
 
 ```{r lis_imd_chart}
 lis_imd_objs$chart
-get_download_button(title = "Download chart data", data = lis_imd_objs$chart_data, filename = "hwhc_figure_16")
+get_download_button(title = "Download chart data", data = lis_imd_objs$chart_data, filename = "hwhc_figure_15")
 ```
 
 ##### Table
 
-###### Table 16: Certificates were issued three times more often in the most deprived areas than the least deprived areas
+###### Table 15: Certificates were issued three times more often in the most deprived areas than the least deprived areas
 
 Number of NHS Low Income Scheme certificates issued in 2023/24, split by certificate type and IMD quintile
 
 ```{r lis_imd_table}
 lis_imd_objs$table
-get_download_button(title = "Download table data", data = lis_imd_objs$chart_data, filename = "hwhc_table_16")
+get_download_button(title = "Download table data", data = lis_imd_objs$chart_data, filename = "hwhc_table_15")
 ```
 
 </div>
 
-The English Indices of Deprivation provide a measure of deprivation. In this report deprivation reflects the applicant's registered address. [Section 3.3 of this summary](#about_imd) contains more information on this measure. These indices of deprivation are specific to England and therefore can only be applied to certificates that can be assigned to an English postcode.
+The English Indices of Deprivation provide a measure of deprivation. These indices of deprivation are specific to England and therefore can only be applied to certificates that can be assigned to an English address.
 
-Certificates were issued in the most deprived areas more than 3 times more often than the least deprived areas. In the most deprived areas, people may be more likely to qualify for other income-related benefits that offer some of the same support as available through the NHS Low Income Scheme.
+The 69,600 certificates issued in the most deprived areas is more than 3 times the 21,600 certificates in the least deprived areas.
 
-Despite being means-tested, certificates are still issued to applicants from less deprived areas. In 2023/24, over 13,000 HC2 certificates and over 8,000 HC3 certificates went to the least deprived areas.
+There is not much difference in the number of certificates issued in the 2 most deprived quintiles. In the most deprived areas, people may be more likely to qualify for other income-related benefits that offer some of the same support as available through the NHS Low Income Scheme.
+
+Despite being means-tested, certificates are still issued to applicants from less deprived areas. The IMD quintiles show a generalised level of deprivation for geographic areas and will not reflect the circumstances of all the people in those areas. In 2023/24, over 13,000 HC2 certificates and over 8,000 HC3 certificates went to the least deprived areas.
 
 #### Number of NHS Low Income Scheme certificates issued per 10,000 population, by ICB 2023/24 {.tabset}
 
@@ -952,35 +911,35 @@ The map, chart and table are based on the total combined number of HC2 and HC3 c
 
 ##### Map
 
-###### Figure 17 (map): Certificates issued per 10,000 population varies by ICB area
+###### Figure 16 (map): Certificates issued per 10,000 population varies by ICB area
 
 Number of NHS Low Income Scheme certificates issued in 2023/24, within ICB areas, per 10,000 population aged 16 and over
 
 ```{r lis_icb_map}
 lis_icb_objs$map
-get_download_button(title = "Download map data", data = lis_icb_objs$chart_data, filename = "hwhc_figure_17")
+get_download_button(title = "Download map data", data = lis_icb_objs$chart_data, filename = "hwhc_figure_16")
 ```
 
 ##### Chart
 
-###### Figure 17 (chart): Certificates issued per 10,000 population varies by ICB area
+###### Figure 16 (chart): Certificates issued per 10,000 population varies by ICB area
 
 Number of NHS Low Income Scheme certificates issued in 2023/24, within ICB areas, per 10,000 population aged 16 and over
 
 ```{r lis_icb_chart}
 lis_icb_objs$chart
-get_download_button(title = "Download chart data", data = lis_icb_objs$chart_data, filename = "hwhc_figure_17")
+get_download_button(title = "Download chart data", data = lis_icb_objs$chart_data, filename = "hwhc_figure_16")
 ```
 
 ##### Table
 
-###### Table 17: Certificates issued per 10,000 population varies by ICB area
+###### Table 16: Certificates issued per 10,000 population varies by ICB area
 
 Number of NHS Low Income Scheme certificates issued in 2023/24, within ICB areas, per 10,000 population aged 16 and over
 
 ```{r lis_icb_table}
 lis_icb_objs$table
-get_download_button(title = "Download table data", data = lis_icb_objs$chart_data, filename = "hwhc_table_17")
+get_download_button(title = "Download table data", data = lis_icb_objs$chart_data, filename = "hwhc_table_16")
 ```
 
 </div>
@@ -1001,9 +960,11 @@ Bath and North East Somerset, Swindon and Wiltshire ICB had the lowest estimated
 
 PPCs can be purchased in-person at some pharmacies or direct via the [PPC webpage](https://www.nhsbsa.nhs.uk/help-nhs-prescription-costs/nhs-prescription-prepayment-certificate-ppc). Applicants can choose between a 3-month and 12-month certificate.
 
+Only a small proportion of applications would not end with a certificate being issued. Certificates will not be issued if there are issues with the initial payment for the certificate and in some cases the applicant may drop out for other reasons. Due to the time taken to resolve an application, some certificates may be issued in a later time period to when the application was submitted.
+
 Patients receiving prescriptions for hormone replacement therapy (HRT) may benefit more from the Hormone Replacement Therapy Prescription Prepayment Certificate (HRT PPC).
 
-As a PPC provides support with NHS prescription charges, support is generally applicable to applicants from England only."
+As a PPC provides support with NHS prescription charges, support is generally only applicable to applicants from England aged between 16 and 59."
 , width = "100%")`
 
 #### Number of PPCs issued 2018/19 to 2023/24, split by PPC type {.tabset}
@@ -1018,35 +979,33 @@ As a PPC provides support with NHS prescription charges, support is generally ap
 
 ##### Chart
 
-###### Figure 18: The number of PPCs issued has increased each year
+###### Figure 17: The number of PPCs issued has increased each year
 
 Number of PPCs issued from 2018/19 to 2023/24, split by PPC type
 
 ```{r ppc_issued_chart}
 ppc_issued_objs$chart
-get_download_button(title = "Download chart data", data = ppc_issued_objs$chart_data, filename = "hwhc_figure_18")
+get_download_button(title = "Download chart data", data = ppc_issued_objs$chart_data, filename = "hwhc_figure_17")
 ```
 
 ##### Table
 
-###### Table 18: The number of PPCs issued has increased each year
+###### Table 17: The number of PPCs issued has increased each year
 
 Number of PPCs issued from 2018/19 to 2023/24, split by PPC type
 
 ```{r ppc_issued_table}
 ppc_issued_objs$table
-get_download_button(title = "Download table data", data = ppc_issued_objs$chart_data, filename = "hwhc_table_18")
+get_download_button(title = "Download table data", data = ppc_issued_objs$chart_data, filename = "hwhc_table_17")
 ```
 
 </div>
-
-Not all applications will result in a certificate being issued. Certificates will not be issued if there are issues with the initial payment for the certificate and in some cases the applicant may drop out for other reasons.
 
 The number of 12-month PPCs issued has shown a consistent year-on-year increase. In 2023/24 there were 2.1 million certificates issued, up from 2.0 million in 2022/23 which is a 4% increase. The number of 12-month certificates issued is more than double the number of 3-month certificates issued. 
 
 The year-on-year increase for 3-month certificates issued is not as high, and the number of certificates issued dropped in 2020/21. In 2023/24 there were 936,000 certificates issued, up 1% from the 923,000 certificates issued in 2022/23.
 
-#### Number of PPCs issued by age of recipient, split by PPC type 2023/24 {.tabset}
+#### Number of PPCs issued by age of applicant, split by PPC type 2023/24 {.tabset}
 
 <div class = "tabset">
 
@@ -1058,24 +1017,24 @@ The year-on-year increase for 3-month certificates issued is not as high, and th
 
 ##### Chart
 
-###### Figure 19: The number of certificates issued rises as the age of the recipient rises
+###### Figure 18: The number of certificates issued rises as the age of the applicant rises
 
-Number of PPCs issued in 2023/24, split by PPC type and age of recipient
+Number of PPCs issued in 2023/24, split by PPC type and age of applicant
 
 ```{r ppc_age_chart}
 ppc_age_objs$chart
-get_download_button(title = "Download chart data", data = ppc_age_objs$chart_data, filename = "hwhc_figure_19")
+get_download_button(title = "Download chart data", data = ppc_age_objs$chart_data, filename = "hwhc_figure_18")
 ```
 
 ##### Table
 
-###### Table 19: The number of certificates issued rises as the age of the recipient rises
+###### Table 18: The number of certificates issued rises as the age of the applicant rises
 
-Number of PPCs issued in 2023/24, split by PPC type and age of recipient
+Number of PPCs issued in 2023/24, split by PPC type and age of applicant
 
 ```{r ppc_age_table}
 ppc_age_objs$table
-get_download_button(title = "Download table data", data = ppc_age_objs$chart_data, filename = "hwhc_table_19")
+get_download_button(title = "Download table data", data = ppc_age_objs$chart_data, filename = "hwhc_table_18")
 ```
 
 </div>
@@ -1097,29 +1056,27 @@ The 12-month certificate is more popular across all age bands. However, the rati
 
 ##### Chart
 
-###### Figure 20: Certificates are issued less frequently in the most and least deprived areas
+###### Figure 19: Certificates are issued less frequently in the most and least deprived areas
 
 Number of PPCs issued in 2023/24, split by PPC type and IMD quintile
 
 ```{r ppc_imd_chart}
 ppc_imd_objs$chart
-get_download_button(title = "Download chart data", data = ppc_imd_objs$chart_data, filename = "hwhc_figure_20")
+get_download_button(title = "Download chart data", data = ppc_imd_objs$chart_data, filename = "hwhc_figure_19")
 ```
 
 ##### Table
 
-###### Table 20: Certificates are issued less frequently in the most and least deprived areas
+###### Table 19: Certificates are issued less frequently in the most and least deprived areas
 
 Number of PPCs issued in 2023/24, split by PPC type and IMD quintile
 
 ```{r ppc_imd_table}
 ppc_imd_objs$table
-get_download_button(title = "Download table data", data = ppc_imd_objs$chart_data, filename = "hwhc_table_20")
+get_download_button(title = "Download table data", data = ppc_imd_objs$chart_data, filename = "hwhc_table_19")
 ```
 
 </div>
-
-The English Indices of Deprivation provide a measure of deprivation. In this report deprivation reflects the applicant's registered address. [Section 3.3 of this summary](#about_imd) contains more information on this measure.
 
 There is not a strong relationship between deprivation and number of PPCs issued. However, numbers are lower in the most and least deprived areas of the country. In the most deprived areas, people may be more likely to qualify for other income-related benefits that provide access to free NHS prescriptions.
 
@@ -1137,35 +1094,35 @@ The map, chart and table are based on the total number of 3-month and 12-month c
 
 ##### Map
 
-###### Figure 21 (map): Certificates issued per 10,000 population varies by ICB area
+###### Figure 20 (map): Certificates issued per 10,000 population varies by ICB area
 
 Number of PPCs issued in 2023/24, within ICB areas, per 10,000 population aged 16 to 59 receiving NHS prescriptions
 
 ```{r ppc_icb_map}
 ppc_icb_objs$map
-get_download_button(title = "Download map data", data = ppc_icb_objs$chart_data, filename = "hwhc_figure_21")
+get_download_button(title = "Download map data", data = ppc_icb_objs$chart_data, filename = "hwhc_figure_20")
 ```
 
 ##### Chart
 
-###### Figure 21 (chart): Certificates issued per 10,000 population varies by ICB area
+###### Figure 20 (chart): Certificates issued per 10,000 population varies by ICB area
 
 Number of PPCs issued in 2023/24, within ICB areas, per 10,000 population aged 16 to 59 receiving NHS prescriptions
 
 ```{r ppc_icb_chart}
 ppc_icb_objs$chart
-get_download_button(title = "Download chart data", data = ppc_icb_objs$chart_data, filename = "hwhc_figure_21")
+get_download_button(title = "Download chart data", data = ppc_icb_objs$chart_data, filename = "hwhc_figure_20")
 ```
 
 ##### Table
 
-###### Table 21: Certificates issued per 10,000 population varies by ICB area
+###### Table 20: Certificates issued per 10,000 population varies by ICB area
 
 Number of PPCs issued in 2023/24, within ICB areas, per 10,000 population aged 16 to 59 receiving NHS prescriptions
 
 ```{r ppc_icb_table}
 ppc_icb_objs$table
-get_download_button(title = "Download table data", data = ppc_icb_objs$chart_data, filename = "hwhc_table_21")
+get_download_button(title = "Download table data", data = ppc_icb_objs$chart_data, filename = "hwhc_table_20")
 ```
 
 </div>
@@ -1190,9 +1147,11 @@ The HRT PCC can be used for any of the applicable HRT medicines, regardless of w
 
 HRT PPCs can be purchased in-person at some pharmacies or direct via the [HRT PPC webpage](https://www.nhsbsa.nhs.uk/help-nhs-prescription-costs/nhs-hormone-replacement-therapy-prescription-prepayment-certificate-hrt-ppc).
 
+Only a small proportion of applications would not end with a certificate being issued. Certificates will not be issued if there are issues with the initial payment for the certificate and in some cases the applicant may drop out for other reasons. Due to the time taken to resolve an application, some certificates may be issued in a later time period to when the application was submitted.
+
 Patients receiving prescriptions for other medicines, including HRT medicines not covered by the HRT PPC, may benefit more from a 3 or 12 month Prescription Prepayment Certificate (PPC) that covers all NHS prescriptions.
 
-As a HRT PPC provides support with NHS prescription charges, support is generally applicable to applicants from England only."
+As a HRT PPC provides support with NHS prescription charges, support is generally only applicable to applicants from England aged between 16 and 59."
 , width = "100%")`
 
 #### Number of HRT PPCs issued 2023/24 {.tabset}
@@ -1211,35 +1170,35 @@ As a HRT PPC provides support with NHS prescription charges, support is generall
 
 ##### Chart
 
-###### Figure 22: Certificates issued dropped following a strong launch in April 2023 but have started to climb
+###### Figure 21: Certificates issued dropped following a strong launch in April 2023 but have started to climb
 
 Number of HRT PPCs issued by month during 2023/24
 
 ```{r hrt_issued_chart}
 hrt_issued_objs$chart
-get_download_button(title = "Download chart data", data = hrt_issued_objs$chart_data, filename = "hwhc_figure_22")
+get_download_button(title = "Download chart data", data = hrt_issued_objs$chart_data, filename = "hwhc_figure_21")
 ```
 
 ##### Supporting Information
 
-###### Figure 22 (post-dated certicates): March 2024 had a spike in the proportion of certificates post-dated to start the following month
+###### Figure 21 (post-dated certicates): March 2024 had a spike in the proportion of certificates post-dated to start the following month
 
 Proportion of issued HRT PPCs post-dated to start the following month, by month of certificate issue
 
 ```{r hrt_issued_support}
 ch_hrt_issued_postdate
-get_download_button(title = "Download chart data", data = hrt_issued_objs$chart_data, filename = "hwhc_figure_22")
+get_download_button(title = "Download chart data", data = hrt_issued_objs$chart_data, filename = "hwhc_figure_21")
 ```
 
 ##### Table
 
-###### Table 22: Certificates issued dropped following a strong launch in April 2023 but have started to climb
+###### Table 21: Certificates issued dropped following a strong launch in April 2023 but have started to climb
 
 Number of HRT PPCs issued by month during 2023/24
 
 ```{r hrt_issued_table}
 hrt_issued_objs$table
-get_download_button(title = "Download table data", data = hrt_issued_objs$chart_data, filename = "hwhc_table_22")
+get_download_button(title = "Download table data", data = hrt_issued_objs$chart_data, filename = "hwhc_table_21")
 ```
 
 </div>
@@ -1250,13 +1209,13 @@ The 131,000 certificates issued in the first month represent 23% of all HRT PPCs
 
 The number of certificates issued leveled out near the end of the financial year with a notable jump in March 2024 when 37,600 certificates were issued. However, almost half of the certificates issued in March 2024 had a certificate start date in April 2024 which may suggest a large number of these were customers renewing expiring certificates. 
 
-#### Number of HRT PPCs issued by age of recipient 2023/24 {.tabset}
+#### Number of HRT PPCs issued by age of applicant 2023/24 {.tabset}
 
 <div class = "tabset">
 
 ::: {.row style="display: flex; padding-bottom: 15px;"}
 ::: col-md-6
-`r infoBox_no_border("", text = "<b>92% of HRT PPCs were issued to recipients aged 45 and over</b>", width = "100%")`
+`r infoBox_no_border("", text = "<b>92% of HRT PPCs were issued to people aged 45 and over</b>", width = "100%")`
 :::
 
 ::: col-md-6
@@ -1266,36 +1225,36 @@ The number of certificates issued leveled out near the end of the financial year
 
 ##### Chart
 
-###### Figure 23: Most people issued HRT PPCs were aged 45 and over
+###### Figure 22: Most people issued HRT PPCs were aged 45 and over
 
-Number of HRT PPCs issued in 2023/24, split by age of recipient
+Number of HRT PPCs issued in 2023/24, split by age of applicant
 
 
 ```{r hrt_age_chart}
 hrt_age_objs$chart
-get_download_button(title = "Download chart data", data = hrt_age_objs$chart_data, filename = "hwhc_figure_23")
+get_download_button(title = "Download chart data", data = hrt_age_objs$chart_data, filename = "hwhc_figure_22")
 ```
 
 ##### Supporting Information
 
-###### Figure 23 (NHS prescribing): Most patients receiving HRT PPC eligible medication were aged 45 and over
+###### Figure 22 (NHS prescribing): Most patients receiving HRT PPC eligible medication were aged 45 and over
 
-Estimated number of patients receiving NHS prescribing in 2023/24 of medication qualifying for support by HRT PPC, split by age of recipient
+Estimated number of patients receiving NHS prescribing in 2023/24 of medication qualifying for support by HRT PPC, split by patient age band
 
 ```{r hrt_age_support}
 hrt_age_base_pop_objs$chart
-get_download_button(title = "Download chart data", data = hrt_age_objs$chart_data, filename = "hwhc_figure_23")
+get_download_button(title = "Download chart data", data = hrt_age_objs$chart_data, filename = "hwhc_figure_22")
 ```
 
 ##### Table
 
-###### Table 23: Most people issued HRT PPCs were aged 45 and over
+###### Table 22: Most people issued HRT PPCs were aged 45 and over
 
-Number of HRT PPCs issued in 2023/24, split by age of recipient
+Number of HRT PPCs issued in 2023/24, split by age of applicant
 
 ```{r hrt_age_table}
 hrt_age_objs$table
-get_download_button(title = "Download table data", data = hrt_age_objs$chart_data, filename = "hwhc_table_23")
+get_download_button(title = "Download table data", data = hrt_age_objs$chart_data, filename = "hwhc_table_22")
 ```
 
 </div>
@@ -1316,44 +1275,42 @@ The distribution of HRT PPCs by age is similar to the distribution of the estima
 
 ##### Chart
 
-###### Figure 24: The number of HRT PPCs issued rises as deprivation decreases
+###### Figure 23: The number of HRT PPCs issued rises as deprivation decreases
 
 Number of HRT PPCs issued in 2023/24, by IMD quintile
 
 ```{r hrt_imd_chart}
 hrt_imd_objs$chart
-get_download_button(title = "Download chart data", data = hrt_imd_objs$chart_data, filename = "hwhc_figure_24")
+get_download_button(title = "Download chart data", data = hrt_imd_objs$chart_data, filename = "hwhc_figure_23")
 ```
 
 ##### Supporting Information
 
-###### Figure 24 (eligible patients): Patients in the least deprived areas are more likely to receiving prescribing of HRT medication
+###### Figure 23 (eligible patients): Patients in the least deprived areas are more likely to receive prescribing of HRT medication
 
 Estimated number of patients receiving NHS prescribing in 2023/24 of medication qualifying for support by HRT PPC, split by IMD quintile
 
 ```{r hrt_imd_support}
 hrt_imd_base_pop_objs$chart
-get_download_button(title = "Download chart data", data = hrt_imd_objs$chart_data, filename = "hwhc_figure_24")
+get_download_button(title = "Download chart data", data = hrt_imd_objs$chart_data, filename = "hwhc_figure_23")
 ```
 
 ##### Table
 
-###### Table 24: The number of HRT PPCs issued rises as deprivation decreases
+###### Table 23: The number of HRT PPCs issued rises as deprivation decreases
 
 Number of HRT PPCs issued in 2023/24, by IMD quintile
 
 ```{r hrt_imd_table}
 hrt_imd_objs$table
-get_download_button(title = "Download table data", data = hrt_imd_objs$chart_data, filename = "hwhc_table_24")
+get_download_button(title = "Download table data", data = hrt_imd_objs$chart_data, filename = "hwhc_table_23")
 ```
 
 </div>
 
-The English Indices of Deprivation provide a measure of deprivation. In this report deprivation reflects the applicant's registered address. [Section 3.3 of this summary](#about_imd) contains more information on this measure.
-
 There is a strong relationship between deprivation and the number of HRT PPCs issued in 2023/24. There were only 37,600 certificates issued in the most deprived areas. There were 189,000 certificates issued in the least deprived areas.
 
-The distribution of HRT PPCs by deprivation is similar to the distribution of the estimated number of patients receiving the HRT qualifying medication on NHS prescriptions in 2023/24. However, the relationship between deprivation and issued certificates is a bit more pronounced for HRT PPCs issued, with less certificates issued to the most deprived areas. In the most deprived areas, people may be more likely to qualify for other methods of help with health costs.
+The distribution of HRT PPCs by deprivation is similar to the distribution of the estimated number of patients receiving the HRT qualifying medication on NHS prescriptions in 2023/24. However, the relationship between deprivation and HRT PPCs issued is a bit more pronounced, with less certificates issued to the most deprived areas. In the most deprived areas, people may be more likely to qualify for other methods of help with health costs.
 
 #### Number of HRT PPCs issued per 10,000 population, by ICB 2023/24 {.tabset}
 
@@ -1361,35 +1318,35 @@ The distribution of HRT PPCs by deprivation is similar to the distribution of th
 
 ##### Map
 
-###### Figure 25 (map): A cluster of ICBs in the South West have higher rates than the rest of the country
+###### Figure 24 (map): A cluster of ICBs in the South West have higher rates than the rest of the country
 
 Number of HRT PPCs issued in 2023/24 within ICB areas per 10,000 patients receiving NHS prescribing of eligible medication
 
 ```{r hrt_icb_map}
 hrt_icb_objs$map
-get_download_button(title = "Download map data", data = hrt_icb_objs$chart_data, filename = "hwhc_figure_25")
+get_download_button(title = "Download map data", data = hrt_icb_objs$chart_data, filename = "hwhc_figure_24")
 ```
 
 ##### Chart
 
-###### Figure 25 (chart): A cluster of ICBs in the South West have higher rates than the rest of the country
+###### Figure 24 (chart): A cluster of ICBs in the South West have higher rates than the rest of the country
 
 Number of HRT PPCs issued in 2023/24 within ICB areas per 10,000 patients receiving NHS prescribing of eligible medication
 
 ```{r hrt_icb_chart}
 hrt_icb_objs$chart
-get_download_button(title = "Download chart data", data = hrt_icb_objs$chart_data, filename = "hwhc_figure_25")
+get_download_button(title = "Download chart data", data = hrt_icb_objs$chart_data, filename = "hwhc_figure_24")
 ```
 
 ##### Table
 
-###### Table 25: A cluster of ICBs in the South West have higher rates than the rest of the country
+###### Table 24: A cluster of ICBs in the South West have higher rates than the rest of the country
 
 Number of HRT PPCs issued in 2023/24 within ICB areas per 10,000 patients receiving NHS prescribing of eligible medication
 
 ```{r hrt_icb_table}
 hrt_icb_objs$table
-get_download_button(title = "Download table data", data = hrt_icb_objs$chart_data, filename = "hwhc_table_25")
+get_download_button(title = "Download table data", data = hrt_icb_objs$chart_data, filename = "hwhc_table_24")
 ```
 
 </div>
@@ -1418,13 +1375,21 @@ The high-level figures in this statistical summary have been rounded where appro
 
 The [English Indices of Deprivation 2019](https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019) have been used to provide a measure of deprivation. The English Indices of Deprivation are an official national measure of deprivation that follows an established methodological framework to capture a wide range of individuals' living conditions.
 
-The reported IMD quintile, where 1 is the most deprived and 5 the least deprived, is derived from the postcode currently held for an applicant. There are a small number of records each year that we have reported as having an unknown IMD quintile. These are applicants with no fixed abode or with british forces addresses, or where we have been unable to match the applicant postcode to an English postcode in the [National Statistics Postcode Lookup (NSPL) - May 2024](https://geoportal.statistics.gov.uk/datasets/521edce4159a451a932539b7fc786322/about).
+The reported IMD quintile, where 1 is the most deprived and 5 the least deprived, is derived from the postcode currently held for an applicant. There are a small number of records each year that we have reported as IMD quintile being "not available". These are applicants with no fixed abode or with British forces addresses, or where we have been unable to match the applicant postcode to an English postcode in the [National Statistics Postcode Lookup (NSPL) - May 2024](https://geoportal.statistics.gov.uk/datasets/521edce4159a451a932539b7fc786322/about).
 
 IMD quintiles are calculated by ranking census lower-layer super output areas (LSOAs) from most deprived to least deprived and dividing them into equal groups. These range from the most deprived 20% (quintile 1) of small areas nationally to the least deprived 20% (quintile 5) of small areas nationally.
 
 ### 3.4. ICB classification {#about_icb .toc-ignore}
 
-ICB areas have been used to allow comparisons between areas. Applicants have been associated with an ICB area based on their postcode using the [National Statistics Postcode Lookup (NSPL) - May 2024](https://geoportal.statistics.gov.uk/datasets/521edce4159a451a932539b7fc786322/about). As ICBs are only available within England this geography classificaiton is only available for applicants with a valid English postcode.
+ICB areas have been used to allow comparisons between areas. Applicants have been associated with an ICB area based on their postcode using the [National Statistics Postcode Lookup (NSPL) - May 2024](https://geoportal.statistics.gov.uk/datasets/521edce4159a451a932539b7fc786322/about). As ICBs are only available within England this geography classification is only available for applicants with a valid English postcode.
+
+### 3.5. Age classification {#about_icb .toc-ignore}
+
+Reporting by age band uses the applicants age at the time of application. Figures have been grouped into 5 year age bands. The age is calculated using the captured date of birth information for the applicant. If the date of birth is not available the age will be reported as "not available".
+
+Patients under 16 do not usually require NHSBSA issued exemption certificates as NHS treatment is free.
+
+Patients aged 60 and over are automatically entitled to free NHS prescriptions and therefore would not require maternity exemption certificate, medical exemption certificate or prescription prepayment certificates.
 
 ------------------------------------------------------------------------
 

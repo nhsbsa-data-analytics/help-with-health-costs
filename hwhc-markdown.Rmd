@@ -21,13 +21,6 @@ output:
 ---
 
 ```{=html}
-<script>
-  $(document).ready(function() {
-    $('#header').prepend('<img src=`r knitr::image_uri("www/bsa_logo.svg")` alt=\"NHSBSA logo\" style=\"position:absolute; top: 0; right: 0; padding: 10px; width: 25%;\">');
-  });
-</script>
-```
-```{=html}
 <style type="text/css">  body, td {
     font-size: 16px;
     font-family: sans-serif;
@@ -586,8 +579,10 @@ The majority of activity is for certificates issued to people in England, howeve
 
 <div class = "tabset">
 
+::: {.row style="display: flex; padding-bottom: 15px;"}
 ::: col-md-12
 `r infoBox_no_border("", text = "<b>There were 1.2 million certificates issued in 2023/24</b>", width = "100%")`
+:::
 :::
 
 ##### Chart
@@ -1383,7 +1378,7 @@ IMD quintiles are calculated by ranking census lower-layer super output areas (L
 
 ICB areas have been used to allow comparisons between areas. Applicants have been associated with an ICB area based on their postcode using the [National Statistics Postcode Lookup (NSPL) - May 2024](https://geoportal.statistics.gov.uk/datasets/521edce4159a451a932539b7fc786322/about). As ICBs are only available within England this geography classification is only available for applicants with a valid English postcode.
 
-### 3.5. Age classification {#about_icb .toc-ignore}
+### 3.5. Age classification {#about_age .toc-ignore}
 
 Reporting by age band uses the applicants age at the time of application. Figures have been grouped into 5 year age bands. The age is calculated using the captured date of birth information for the applicant. If the date of birth is not available the age will be reported as "not available".
 

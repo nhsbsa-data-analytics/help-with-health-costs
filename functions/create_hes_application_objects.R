@@ -52,21 +52,21 @@ create_hes_application_objects <- function(db_connection, db_table_name, service
       )
     
     # create the support datasets
-    obj_chData <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'APPLICATION_FY', 'CERTIFICATE_SUBTYPE')) |> 
-      dplyr::arrange(APPLICATION_FY, CERTIFICATE_SUBTYPE) |> 
+    obj_chData <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'CERTIFICATE_SUBTYPE', 'APPLICATION_FY')) |> 
+      dplyr::arrange(CERTIFICATE_SUBTYPE, APPLICATION_FY) |> 
       rename_df_fields()
     
     # for "England only" services use a n/a placeholder for country
     if(service_area %in% c("MAT","MED","PPC","HRTPPC")){
-      obj_suppData <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'APPLICATION_FY', 'CERTIFICATE_SUBTYPE')) |> 
+      obj_suppData <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'CERTIFICATE_SUBTYPE', 'APPLICATION_FY')) |> 
         dplyr::mutate(COUNTRY = 'n/a') |> 
         dplyr::relocate(COUNTRY, .after = APPLICATION_FY) |> 
-        dplyr::arrange(APPLICATION_FY, CERTIFICATE_SUBTYPE) |> 
+        dplyr::arrange(CERTIFICATE_SUBTYPE, APPLICATION_FY) |> 
         rename_df_fields()
       
     } else {
-      obj_suppData <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'APPLICATION_FY', 'COUNTRY', 'CERTIFICATE_SUBTYPE')) |> 
-        dplyr::arrange(COUNTRY, APPLICATION_FY, CERTIFICATE_SUBTYPE) |> 
+      obj_suppData <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'CERTIFICATE_SUBTYPE', 'COUNTRY', 'APPLICATION_FY')) |> 
+        dplyr::arrange(CERTIFICATE_SUBTYPE, COUNTRY, APPLICATION_FY) |> 
         rename_df_fields()
     }
     
@@ -116,7 +116,7 @@ create_hes_application_objects <- function(db_connection, db_table_name, service
         dplyr::arrange(APPLICATION_FY) |> 
         rename_df_fields()
     } else {
-      obj_suppData <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'APPLICATION_FY', 'COUNTRY')) |> 
+      obj_suppData <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'COUNTRY', 'APPLICATION_FY')) |> 
         dplyr::arrange(COUNTRY, APPLICATION_FY) |> 
         rename_df_fields()
     }

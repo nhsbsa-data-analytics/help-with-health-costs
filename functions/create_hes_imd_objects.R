@@ -20,20 +20,20 @@ create_hes_imd_objects <- function(db_connection, db_table_name, service_area, m
   # identify which fields to aggregate and sort by
   # will define is the certificate subtype and country fields are required
   if(subtype_split == TRUE){
-    chart_fields <- c('SERVICE_AREA_NAME', 'ISSUE_FY', 'CERTIFICATE_SUBTYPE', 'IMD_QUINTILE')
+    chart_fields <- c('SERVICE_AREA_NAME', 'CERTIFICATE_SUBTYPE', 'ISSUE_FY', 'IMD_QUINTILE')
     sort_fields_chart <- c('CERTIFICATE_SUBTYPE', 'IMD_QUINTILE')
     tab_align <- "llr"
     if(service_area %in% c("LIS","TAX")){
-      supp_fields <- c('SERVICE_AREA_NAME', 'ISSUE_FY', 'COUNTRY','CERTIFICATE_SUBTYPE', 'IMD_QUINTILE')
+      supp_fields <- c('SERVICE_AREA_NAME','CERTIFICATE_SUBTYPE', 'COUNTRY', 'ISSUE_FY', 'IMD_QUINTILE')
     } else {
       supp_fields <- chart_fields # country not required
     }
   } else {
     chart_fields <- c('SERVICE_AREA_NAME', 'ISSUE_FY', 'IMD_QUINTILE') # subtype not required
     sort_fields_chart <- c('IMD_QUINTILE')
-    tab_align <- "llr"
+    tab_align <- "lr"
     if(service_area %in% c("LIS","TAX")){
-      supp_fields <- c('SERVICE_AREA_NAME', 'ISSUE_FY', 'COUNTRY', 'IMD_QUINTILE')
+      supp_fields <- c('SERVICE_AREA_NAME', 'COUNTRY', 'ISSUE_FY', 'IMD_QUINTILE')
     } else {
       supp_fields <- chart_fields # country not required
     }

@@ -20,10 +20,10 @@ create_hes_duration_objects <- function(db_connection, db_table_name, service_ar
   # identify which fields to aggregate and sort by
   # will define is the certificate subtype and country fields are required
   if(subtype_split == TRUE){
-    chart_fields <- c('SERVICE_AREA_NAME', 'ISSUE_FY', 'CERTIFICATE_SUBTYPE', 'CERTIFICATE_DURATION')
+    chart_fields <- c('SERVICE_AREA_NAME', 'CERTIFICATE_SUBTYPE', 'ISSUE_FY', 'CERTIFICATE_DURATION')
     sort_fields_chart <- c('CERTIFICATE_SUBTYPE', 'CERTIFICATE_DURATION')
     if(service_area %in% c("LIS","TAX")){
-      supp_fields <- c('SERVICE_AREA_NAME', 'ISSUE_FY', 'COUNTRY','CERTIFICATE_SUBTYPE', 'CERTIFICATE_DURATION')
+      supp_fields <- c('SERVICE_AREA_NAME', 'CERTIFICATE_SUBTYPE', 'COUNTRY', 'ISSUE_FY', 'CERTIFICATE_DURATION')
     } else {
       supp_fields <- chart_fields # country not required
     }
@@ -31,7 +31,7 @@ create_hes_duration_objects <- function(db_connection, db_table_name, service_ar
     chart_fields <- c('SERVICE_AREA_NAME', 'ISSUE_FY', 'CERTIFICATE_DURATION') # subtype not required
     sort_fields_chart <- c('CERTIFICATE_DURATION')
     if(service_area %in% c("LIS","TAX")){
-      supp_fields <- c('SERVICE_AREA_NAME', 'ISSUE_FY', 'COUNTRY', 'CERTIFICATE_DURATION')
+      supp_fields <- c('SERVICE_AREA_NAME', 'COUNTRY', 'ISSUE_FY', 'CERTIFICATE_DURATION')
     } else {
       supp_fields <- chart_fields # country not required
     }
@@ -39,6 +39,24 @@ create_hes_duration_objects <- function(db_connection, db_table_name, service_ar
   
   # collect the issued certificate data
   df_issue <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, chart_fields)
+  
+  # reclassify MATEX duration
+  if(service_area == 'MAT'){
+    df_issue <- df_issue |> 
+      mutate(CERTIFICATE_DURATION = dplyr::case_when(
+        CERTIFICATE_DURATION < 12 ~ '11 months or less',
+        CERTIFICATE_DURATION >= 20 ~ '20 to 22 months',
+        CERTIFICATE_DURATION >= 18 ~ '18 to 19 months',
+        CERTIFICATE_DURATION >= 16 ~ '16 to 17 months',
+        CERTIFICATE_DURATION >= 14 ~ '14 to 15 months',
+        CERTIFICATE_DURATION >= 12 ~ '12 to 13 months',
+        TRUE ~ 'Not Available'
+        )
+      ) |> 
+      dplyr::group_by(across(all_of(chart_fields))) |> 
+      dplyr::summarise(ISSUED_CERTS = sum(ISSUED_CERTS), .groups = "keep") |> 
+      dplyr::ungroup()
+  }
   
   # create the data object for the visualisations
   obj_chart_data <- df_issue |> 
@@ -118,6 +136,26 @@ create_hes_duration_objects <- function(db_connection, db_table_name, service_ar
   } else {
     # data needs to be collated from database again to include the country aggregation
     obj_suppData <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, supp_fields)
+    
+    # reclassify MATEX duration
+    if(service_area == 'MAT'){
+      obj_suppData <- obj_suppData |> 
+        mutate(CERTIFICATE_DURATION = dplyr::case_when(
+          CERTIFICATE_DURATION < 12 ~ '11 months or less',
+          CERTIFICATE_DURATION >= 20 ~ '20 to 22 months',
+          CERTIFICATE_DURATION >= 18 ~ '18 to 19 months',
+          CERTIFICATE_DURATION >= 16 ~ '16 to 17 months',
+          CERTIFICATE_DURATION >= 14 ~ '14 to 15 months',
+          CERTIFICATE_DURATION >= 12 ~ '12 to 13 months',
+          TRUE ~ 'Not Available'
+        )
+        ) |> 
+        dplyr::group_by(across(all_of(chart_fields))) |> 
+        dplyr::summarise(ISSUED_CERTS = sum(ISSUED_CERTS), .groups = "keep") |> 
+        dplyr::ungroup()
+    }
+    
+    
   }
   obj_suppData <- obj_suppData |>
     dplyr::arrange_at(supp_fields) |> 

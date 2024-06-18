@@ -612,6 +612,7 @@ mat_duration_objs <- create_hes_duration_objects(
   subtype_split = FALSE
 )
 
+
 # 4.2.4 MATEX: Age profile (narrative = latest year only)------------------------------------------------
 # Issued certificates will only include cases where a certificate was issued to the customer
 # Some processing has been performed to group by set age bands and reclassify potential errors 
@@ -1268,8 +1269,8 @@ meta_fields <- c(
 
 meta_descs <-
   c(
-    "Name of NHS BSA administered service.",
-    "Financial year the activity can be assigned to.",
+    "Name of NHSBSA administered NHS Help with Health Costs service.",
+    "Financial year the activity can be assigned to. For reporting of number of applications, this will represent the financial year the application was received. For reporting of issued certificates, this will represent the financial year in which the certificate was issued.",
     "Country classification based on the applicants residential address, using mapping via the National Statistics Postcode Lookup (NSPL) - May 2024. Not included for services typically available to English residents only.",
     "Where the applicants residential address can be aligned to an English postcode via the National Statistics Postcode Lookup (NSPL) - May 2024",
     "Where the applicants residential address can be assigned to a country other than England via the National Statistics Postcode Lookup (NSPL) - May 2024, the country will be recorded as 'Other'.",
@@ -1279,13 +1280,13 @@ meta_descs <-
     "HC3 certificates provide limited help with health costs. A HC3 certificate will show how much the holder has to pay towards health costs.",
     "A 12-month PPC will cover all of a patients NHS prescription charges for a period of 12-months for a set cost.",
     "A 3-month PPC will cover all of a patients NHS prescription charges for a period of 3-months for a set cost.",
-    "The length of the certificate, rounded to nearest month based on the certificate start and end dates. For reporting purposes, duration will be grouped based on common scenarios for each service area.",
+    "Certificate duration has been grouped into categories based on the number of months between the start and end date for the certificate, rounded to nearest number of months.",
     "The age band of the applicant, based on the age at the time the application was received and processed. Age will be rounded to the nearest year and reported in 5 year age bands.",
-    "IMD quintiles are calculated by ranking census lower-layer super output areas (LSOAs) from most deprived to least deprived and dividing them into equal groups. Quintiles range from the most deprived 20% (quintile 1) of small areas nationally to the least deprived 20% (quintile 5) of small areas nationally. People are aligned to an IMD quintile based on mapping their postcode to an LSOA (2011 classification) using the National Statistics Postcode Lookup (NSPL) - May 2024",
+    "IMD quintiles are based on the English Indices of Deprivation 2019. IMD quintiles are calculated by ranking census lower-layer super output areas (LSOAs) from most deprived to least deprived and dividing them into equal groups. Quintiles range from the most deprived 20% (quintile 1) of small areas nationally to the least deprived 20% (quintile 5) of small areas nationally. People are aligned to an IMD quintile based on mapping their postcode to an LSOA (2011 classification) using the National Statistics Postcode Lookup (NSPL) - May 2024",
     "Integrated care boards (ICBs) are a statutory NHS organisation responsible for developing a plan in collaboration with NHS trusts/foundation trusts and other system partners for meeting the health needs of the population, managing the NHS budget and arranging for the provision of health services in the defined area. They took over the functions of Clinical Commissioning Groups (CCG) in July 2022. People are aligned to an ICB based on mappings using the National Statistics Postcode Lookup (NSPL) - May 2024",
     "Three character code unique to an ICB.",
     "Full name for each ICB.",
-    "Number of applications received by NHS BSA. Includes applications via any route. Includes all applications regardless of status or outcome.",
+    "Number of applications received by NHSBSA. Includes applications via any route. Includes all applications regardless of status or outcome.",
     "Number of certificates issued to applicants following processing of applications. Will exclude ongoing or incomplete applications.",
     "For ICB Breakdown reporting this field will identify the base population group used to calculate rates.",
     "For ICB Breakdown reporting this field will number of people identified for the base population group.",
@@ -1394,7 +1395,7 @@ accessibleTables::write_sheet(
   workbook = wb,
   sheetname = "LIS_ICB_Breakdown",
   title = paste0(config$publication_table_title, " - Number of issued NHS Low Income Scheme HC2/HC3 certificates, split by financial year and ICB"),
-  notes = c(config$caveat_lis_issued, config$caveat_icb_method, config$caveat_icb_restriction, config$caveat_lis_base_population, config$caveat_country_other, config$caveat_country_unknown),
+  notes = c(config$caveat_lis_issued, config$caveat_icb_method, config$caveat_icb_restriction, config$caveat_icb_missing_data, config$caveat_lis_base_population, config$caveat_country_other, config$caveat_country_unknown),
   dataset = lis_icb_objs$support_data,
   column_a_width = 30
 )
@@ -1448,7 +1449,7 @@ accessibleTables::write_sheet(
   workbook = wb,
   sheetname = "MATEX_Certificate_Duration",
   title = paste0(config$publication_table_title, " - Number of issued maternity exemption certificates, split by financial year and certificate duration"),
-  notes = c(config$caveat_cert_issued, config$caveat_mat_duration_method, config$caveat_mat_duration_restriction, config$caveat_mat_country),
+  notes = c(config$caveat_cert_issued, config$caveat_mat_duration_method, config$caveat_mat_duration_notes, config$caveat_mat_duration_restriction, config$caveat_mat_country),
   dataset = mat_duration_objs$support_data |> dplyr::select(-Country),
   column_a_width = 30
 )
@@ -1499,7 +1500,7 @@ accessibleTables::write_sheet(
   workbook = wb,
   sheetname = "MATEX_ICB_Breakdown",
   title = paste0(config$publication_table_title, " - Number of issued maternity exemption certificates, split by financial year and ICB"),
-  notes = c(config$caveat_cert_issued, config$caveat_icb_method, config$caveat_icb_restriction, config$caveat_mat_base_population),
+  notes = c(config$caveat_cert_issued, config$caveat_icb_method, config$caveat_icb_restriction, config$caveat_icb_missing_data, config$caveat_mat_base_population),
   dataset = mat_icb_objs$support_data,
   column_a_width = 30
 )
@@ -1585,8 +1586,8 @@ accessibleTables::format_data(wb, "MEDEX_Deprivation_Breakdown", c("D"), "right"
 accessibleTables::write_sheet(
   workbook = wb,
   sheetname = "MEDEX_ICB_Breakdown",
-  title = paste0(config$publication_table_title, " - Number of issued maternity exemption certificates, split by financial year and  ICB"),
-  notes = c(config$caveat_cert_issued, config$caveat_icb_method, config$caveat_icb_restriction, config$caveat_med_base_population),
+  title = paste0(config$publication_table_title, " - Number of issued medical exemption certificates, split by financial year and  ICB"),
+  notes = c(config$caveat_cert_issued, config$caveat_icb_method, config$caveat_icb_restriction, config$caveat_icb_missing_data, config$caveat_med_base_population),
   dataset = med_icb_objs$support_data,
   column_a_width = 30
 )
@@ -1673,7 +1674,7 @@ accessibleTables::write_sheet(
   workbook = wb,
   sheetname = "PPC_ICB_Breakdown",
   title = paste0(config$publication_table_title, " - Number of issued prescription prepayment certificates, split by financial year and ICB"),
-  notes = c(config$caveat_cert_issued, config$caveat_icb_method, config$caveat_icb_restriction, config$caveat_ppc_base_population),
+  notes = c(config$caveat_cert_issued, config$caveat_icb_method, config$caveat_icb_restriction, config$caveat_icb_missing_data, config$caveat_ppc_base_population),
   dataset = ppc_icb_objs$support_data,
   column_a_width = 30
 )
@@ -1729,7 +1730,7 @@ accessibleTables::write_sheet(
   workbook = wb,
   sheetname = "HRTPPC_Age_Breakdown",
   title = paste0(config$publication_table_title, " - Number of issued NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT PPC), split by financial year and age of applicant"),
-  notes = c(config$caveat_cert_issued, config$caveat_hrtppc_age_group, config$caveat_age_restriction, config$caveat_hrtppc_px_data, config$caveat_hrtppc_country),
+  notes = c(config$caveat_cert_issued, config$caveat_hrtppc_age_group, config$caveat_hrtppc_px_data, config$caveat_hrtppc_country),
   dataset = hrt_age_objs$support_data |> dplyr::select(-Country),
   column_a_width = 30
 )
@@ -1763,7 +1764,7 @@ accessibleTables::write_sheet(
   workbook = wb,
   sheetname = "HRTPPC_ICB_Breakdown",
   title = paste0(config$publication_table_title, " - Number of issued NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT PPC), split by financial year and ICB"),
-  notes = c(config$caveat_cert_issued, config$caveat_icb_method, config$caveat_icb_restriction, config$caveat_hrtppc_base_population),
+  notes = c(config$caveat_cert_issued, config$caveat_icb_method, config$caveat_icb_restriction, config$caveat_icb_missing_data, config$caveat_hrtppc_base_population),
   dataset = hrt_icb_objs$support_data,
   column_a_width = 30
 )
@@ -1833,7 +1834,7 @@ accessibleTables::write_sheet(
   workbook = wb,
   sheetname = "TAX_ICB_Breakdown",
   title = paste0(config$publication_table_title, " - Number of issued NHS tax credit exemption certificates, split by financial year and ICB"),
-  notes = c(config$caveat_icb_method, config$caveat_icb_restriction, config$caveat_tax_base_population),
+  notes = c(config$caveat_icb_method, config$caveat_icb_restriction, config$caveat_icb_missing_data, config$caveat_tax_base_population),
   dataset = tax_icb_objs$support_data,
   column_a_width = 30
 )

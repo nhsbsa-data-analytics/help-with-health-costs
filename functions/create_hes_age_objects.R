@@ -21,11 +21,11 @@ create_hes_age_objects <- function(db_connection, db_table_name, service_area, m
   # identify which fields to aggregate and sort by
   # will define is the certificate subtype and country fields are required
   if(subtype_split == TRUE){
-    chart_fields <- c('SERVICE_AREA_NAME', 'ISSUE_FY', 'CERTIFICATE_SUBTYPE', 'CUSTOM_AGE_BAND')
+    chart_fields <- c('SERVICE_AREA_NAME', 'CERTIFICATE_SUBTYPE', 'ISSUE_FY', 'CUSTOM_AGE_BAND')
     sort_fields_chart <- c('CERTIFICATE_SUBTYPE', 'CUSTOM_AGE_BAND')
     tab_align <- "llr"
     if(service_area %in% c("LIS","TAX")){
-      supp_fields <- c('SERVICE_AREA_NAME', 'ISSUE_FY', 'COUNTRY','CERTIFICATE_SUBTYPE', 'CUSTOM_AGE_BAND')
+      supp_fields <- c('SERVICE_AREA_NAME','CERTIFICATE_SUBTYPE', 'COUNTRY', 'ISSUE_FY', 'CUSTOM_AGE_BAND')
     } else {
       supp_fields <- chart_fields # country not required
     }
@@ -34,7 +34,7 @@ create_hes_age_objects <- function(db_connection, db_table_name, service_area, m
     sort_fields_chart <- c('CUSTOM_AGE_BAND')
     tab_align <- "lr"
     if(service_area %in% c("LIS","TAX")){
-      supp_fields <- c('SERVICE_AREA_NAME', 'ISSUE_FY', 'COUNTRY', 'CUSTOM_AGE_BAND')
+      supp_fields <- c('SERVICE_AREA_NAME', 'COUNTRY', 'ISSUE_FY', 'CUSTOM_AGE_BAND')
     } else {
       supp_fields <- chart_fields # country not required
     }

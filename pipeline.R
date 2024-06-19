@@ -1278,8 +1278,8 @@ meta_descs <-
     "Where distinct certificate types are available, this field will show which certificate was applicable.",
     "HC2 certificates provide full help with health costs, including free NHS prescriptions.",
     "HC3 certificates provide limited help with health costs. A HC3 certificate will show how much the holder has to pay towards health costs.",
-    "A 12-month PPC will cover all of a patients NHS prescription charges for a period of 12-months for a set cost.",
-    "A 3-month PPC will cover all of a patients NHS prescription charges for a period of 3-months for a set cost.",
+    "A 12-month PPC will cover all NHS prescription charges for a period of 12-months for a set cost.",
+    "A 3-month PPC will cover all NHS prescription charges for a period of 3-months for a set cost.",
     "Certificate duration has been grouped into categories based on the number of months between the start and end date for the certificate, rounded to nearest number of months.",
     "The age band of the applicant, based on the age at the time the application was received and processed. Age will be rounded to the nearest year and reported in 5 year age bands.",
     "IMD quintiles are based on the English Indices of Deprivation 2019. IMD quintiles are calculated by ranking census lower-layer super output areas (LSOAs) from most deprived to least deprived and dividing them into equal groups. Quintiles range from the most deprived 20% (quintile 1) of small areas nationally to the least deprived 20% (quintile 5) of small areas nationally. People are aligned to an IMD quintile based on mapping their postcode to an LSOA (2011 classification) using the National Statistics Postcode Lookup (NSPL) - May 2024",
@@ -1774,7 +1774,7 @@ accessibleTables::format_data(wb, "HRTPPC_ICB_Breakdown", c("A","B","C","D","F")
 # Values: right align * thousand seperator
 accessibleTables::format_data(wb, "HRTPPC_ICB_Breakdown", c("E","G","H"), "right", "#,###")
 
-# 5.7 Data Tables: NHS tax credit exemption certificates ----------------------------------
+# 5.7 Data Tables: NHS Tax Credit Exemption Certificates ----------------------------------
 
 # 5.7.1 TAX: Issued -----------------------------------------------------
 
@@ -1782,7 +1782,7 @@ accessibleTables::format_data(wb, "HRTPPC_ICB_Breakdown", c("E","G","H"), "right
 accessibleTables::write_sheet(
   workbook = wb,
   sheetname = "TAX_Issued",
-  title = paste0(config$publication_table_title, " - Number of NHS tax credit exemption certificates issued, split by financial year and country"),
+  title = paste0(config$publication_table_title, " - Number of NHS Tax Credit Exemption Certificates issued, split by financial year and country"),
   notes = c(config$caveat_tax_issued, config$caveat_country_other, config$caveat_country_unknown),
   dataset = tax_issued_objs$support_data,
   column_a_width = 30
@@ -1799,7 +1799,7 @@ accessibleTables::format_data(wb, "TAX_Issued", c("D"), "right", "#,###")
 accessibleTables::write_sheet(
   workbook = wb,
   sheetname = "TAX_Age_Breakdown",
-  title = paste0(config$publication_table_title, " - Number of issued NHS tax credit exemption certificates, split by financial year, country and age of applicant"),
+  title = paste0(config$publication_table_title, " - Number of issued NHS Tax Credit Exemption Certificates, split by financial year, country and age of applicant"),
   notes = c(config$caveat_tax_age_band, config$caveat_age_restriction, config$caveat_country_other, config$caveat_country_unknown),
   dataset = tax_age_objs$support_data,
   column_a_width = 30
@@ -1816,7 +1816,7 @@ accessibleTables::format_data(wb, "TAX_Age_Breakdown", c("E"), "right", "#,###")
 accessibleTables::write_sheet(
   workbook = wb,
   sheetname = "TAX_Deprivation_Breakdown",
-  title = paste0(config$publication_table_title, " - Number of issued NHS tax credit exemption certificates, split by financial year, country and IMD quintile"),
+  title = paste0(config$publication_table_title, " - Number of issued NHS Tax Credit Exemption Certificates, split by financial year, country and IMD quintile"),
   notes = c(config$caveat_imd_restriction, config$caveat_country_other, config$caveat_country_unknown),
   dataset = tax_imd_objs$support_data,
   column_a_width = 30
@@ -1833,7 +1833,7 @@ accessibleTables::format_data(wb, "TAX_Deprivation_Breakdown", c("E"), "right", 
 accessibleTables::write_sheet(
   workbook = wb,
   sheetname = "TAX_ICB_Breakdown",
-  title = paste0(config$publication_table_title, " - Number of issued NHS tax credit exemption certificates, split by financial year and ICB"),
+  title = paste0(config$publication_table_title, " - Number of issued NHS Tax Credit Exemption Certificates, split by financial year and ICB"),
   notes = c(config$caveat_icb_method, config$caveat_icb_restriction, config$caveat_icb_missing_data, config$caveat_tax_base_population),
   dataset = tax_icb_objs$support_data,
   column_a_width = 30

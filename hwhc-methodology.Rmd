@@ -66,12 +66,12 @@ Full details of these schemes are available on the [NHS Help with Health Costs w
 
 Six different certificate schemes are available, with different levels of help with health costs:
 
-* [Maternity exemption certificate](https://www.nhsbsa.nhs.uk/check-if-you-have-nhs-exemption/maternity-exemption-certificates)
-* [Medical exemption certificate](https://www.nhsbsa.nhs.uk/check-if-you-have-nhs-exemption/medical-exemption-certificates)
-* [NHS Tax credit exemption certificate](https://www.nhsbsa.nhs.uk/exemption-certificates/nhs-tax-credit-exemption-certificates)
-* [NHS Low Income Scheme (LIS)](https://www.nhsbsa.nhs.uk/nhs-low-income-scheme)
-* [NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT     PPC)](https://www.nhsbsa.nhs.uk/help-nhs-prescription-costs/nhs-hormone-replacement-therapy-prescription-prepayment-certificate-hrt-ppc)
+* [Maternity exemption certificates](https://www.nhsbsa.nhs.uk/check-if-you-have-nhs-exemption/maternity-exemption-certificates)
+* [Medical exemption certificates](https://www.nhsbsa.nhs.uk/check-if-you-have-nhs-exemption/medical-exemption-certificates)
+* [NHS Tax Credit Exemption Certificates](https://www.nhsbsa.nhs.uk/exemption-certificates/nhs-tax-credit-exemption-certificates)
+* [NHS Low Income Scheme](https://www.nhsbsa.nhs.uk/nhs-low-income-scheme)
 * [NHS Prescription Prepayment certificate     (PPC)](https://www.nhsbsa.nhs.uk/help-nhs-prescription-costs/nhs-prescription-prepayment-certificate-ppc)
+* [NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT     PPC)](https://www.nhsbsa.nhs.uk/help-nhs-prescription-costs/nhs-hormone-replacement-therapy-prescription-prepayment-certificate-hrt-ppc)
 
 These statistics provide estimates of volumes related to these certificate schemes. Data covers the financial years 2019/2020 to 2023/24, where the financial year runs from April 1 to March 31. The time period covered by these statistics includes the Coronavirus (COVID-19) pandemic period. It is worth noting that during this time period there was a reduction in face to face primary care consultations, referrals, new prescriptions and diagnoses due to the COVID-19 pandemic and national lockdowns.  
 
@@ -131,9 +131,9 @@ Due to the method used to assign IMD quintile, some data may change between rele
 #### 2.2.1 Application counts
 Where a count of applications is reported, this includes all applications received regardless of application route, status or outcome.
 
-A single applicant could submit multiple applications during the same periods. Each application will be treated as a unique event and counted accordingly.
+A single applicant could submit multiple applications during the same period. Each application will be treated as a unique event and counted accordingly.
 
-For the NHS Low Income Scheme and NHS tax credit exemption certificates, a single application could cover multiple people. However, the figures in this report represent certificate level data and therefore figures will represent a single application, regardless of how many individuals were included on the application.
+For the NHS Low Income Scheme and NHS Tax Credit Exemption Certificates, a single application could cover multiple people. However, the figures in this report represent certificate level data and therefore figures will represent a single application, regardless of how many individuals were included on the application.
 
 #### 2.2.2 Issued certificate counts
 Where a count of issued certificates has been provided this will only include cases where the application has been completed and a certificate issued to the applicant.
@@ -142,7 +142,7 @@ These counts are based solely on certificates issued by NHSBSA. There is no abil
 
 Some certificates may be reissued if the certificate holder changes there personal information or requests a replacement due to damage or loss of a certificate. These additional (reissued) certificates will not be included in any certificate counts. However, if a certificate holder submits a completely new application, and receives an additional certificate, this will be counted alongside all other issued certificates.
 
-For the NHS Low Income Scheme and NHS tax credit exemption certificates, a single certificate could represent multiple people. However, the figures in this report represent certificate level data and therefore figures will represent a certificate, regardless of how many individuals are covered.
+For the NHS Low Income Scheme and NHS Tax Credit Exemption Certificates, a single certificate could represent multiple people. However, the figures in this report represent certificate level data and therefore figures will represent a certificate, regardless of how many individuals are covered.
 
 ### 2.3 Service specific data capture methodology {.toc-ignore}
 
@@ -168,7 +168,7 @@ The certificate type for issued certificates will be HC2 or HC3.
 ##### 2.3.1.3 Age
 The age reported will represent the age of the applicant at the time of application. Figures are reported in 5 year age bands, with applicants aged 65 and over grouped as 65+.
 
-To limit risk of inaccurate reporting, a classification of "Not Available" represents data with confidence issues. For NHS Low Income Scheme data this includes where the calculated age would be less than 15 or greater than 99.
+An age band of 'Not Available' has been used where the applicants age could not be confidently assigned from the available data. For NHS Low Income Scheme data this includes where the calculated age would be less than 15 or greater than 99.
 
 ##### 2.3.1.4 Certificate duration
 Duration is the number of months between the start and expiry date for a certificate. To simplify reporting, age bands reported represent the most common scenarios.
@@ -189,7 +189,7 @@ Applications that are still ongoing or were abandoned before completion are only
 ##### 2.3.2.2 Age
 The age reported will represent the age of the applicant at the time of application. Figures are reported in 5 year age bands, with applicants aged 45 and over grouped as 45+.
 
-To limit risk of inaccurate reporting, a classification of "Not Available" represents data with confidence issues. For maternity exemption data this includes where the calculated age would be less than 15 or greater than 60.
+An age band of 'Not Available' has been used where the applicants age could not be confidently assigned from the available data. For maternity exemption data this includes where the calculated age would be less than 15 or greater than 60.
 
 ##### 2.3.2.3 Certificate duration
 Maternity exemption certificates are valid until a year after the birth of the child. The overall duration of the certificate will depend on how early the application is submitted. Certificates issued very early during pregnancy could be valid for up to a total of 22 months. Certificates only issued after the birth would be valid for less than 12 months.
@@ -218,7 +218,7 @@ Applications that are still ongoing or were abandoned before completion are only
 ##### 2.3.3.2 Age
 The age reported will represent the age of the applicant at the time of application. Figures are reported in 5 year age bands. The medical exemption certificate provides support with NHS prescription charges and therefore is only relevant between the ages of 16 and 59 when prescription items are not automatically free based on patient age.
 
-To limit risk of inaccurate reporting, a classification of "Not Available" represents data with confidence issues. For medical exemption data this includes where the calculated age would be less than 15 or greater than 60.
+An age band of 'Not Available' has been used where the applicants age could not be confidently assigned from the available data. For medical exemption data this includes where the calculated age would be less than 15 or greater than 60.
 
 ##### 2.3.3.3 ICB base population
 For ICB reporting, rates have been calculated per 10,000 base population. This base population is based estimated patient counts, aged 16-59, receiving any NHS prescription items during the reported time period.
@@ -236,7 +236,7 @@ Applications that are still ongoing or were abandoned before completion are only
 ##### 2.3.4.2 Age
 The age reported will represent the age of the applicant at the time of application. Figures are reported in 5 year age bands. The PPC provides support with NHS prescription charges and therefore is only relevant between the ages of 16 and 59 when prescription items are not automatically free based on patient age.
 
-To limit risk of inaccurate reporting, a classification of "Not Available" represents data with confidence issues. For PPC data this includes where the calculated age would be less than 15 or greater than 60.
+An age band of 'Not Available' has been used where the applicants age could not be confidently assigned from the available data. For PPC data this includes where the calculated age would be less than 15 or greater than 60.
 
 ##### 2.3.4.3 ICB base population
 For ICB reporting, rates have been calculated per 10,000 base population. This base population is based estimated patient counts, aged 16-59, receiving any NHS prescription items during the reported time period.
@@ -252,12 +252,12 @@ Applications that are still ongoing or were abandoned before completion are only
 ##### 2.3.5.2 Age
 The age reported will represent the age of the applicant at the time of application. Figures are reported in 5 year age bands. The HRT PPC provides support with NHS prescription charges and therefore is only relevant between the ages of 16 and 59 when prescription items are not automatically free based on patient age.
 
-To limit risk of inaccurate reporting, a classification of "Not Available" represents data with confidence issues. For HRT PPC data this includes where the calculated age would be less than 15 or greater than 60.
+An age band of 'Not Available' has been used where the applicants age could not be confidently assigned from the available data. For HRT PPC data this includes where the calculated age would be less than 15 or greater than 60.
 
 ##### 2.3.5.3 ICB base population
 For ICB reporting, rates have been calculated per 10,000 base population. This base population is based estimated patient counts, aged 16-59, receiving any NHS prescription items for drugs that were eligible for support by the HRT PPC during the reported time period.
 
-#### 2.3.6 NHS tax credit exemption certificates
+#### 2.3.6 NHS Tax Credit Exemption Certificates
 Reporting reflects data available in the NHSBSA Data Warehouse environment as of `r format(as.Date(config$extract_date_hes,"%Y%m%d"),"%d %B %Y")`.
 
 ##### 2.3.6.1 Date restrictions and exclusions applied
@@ -268,7 +268,7 @@ For analysis based on demographics such as age and location, data relates to the
 ##### 2.3.6.2 Age
 The age reported will represent the age of the applicant at the time of application. Figures are reported in 5 year age bands, with applicants aged 65 and over grouped as 65+.
 
-To limit risk of inaccurate reporting, a classification of "Not Available" represents data with confidence issues. For NHS Low Income Scheme data this includes where the calculated age would be less than 15 or greater than 90.
+An age band of 'Not Available' has been used where the applicants age could not be confidently assigned from the available data. For NHS Low Income Scheme data this includes where the calculated age would be less than 15 or greater than 90.
 
 ##### 2.3.6.3 ICB base population
 For ICB reporting, rates have been calculated per 10,000 base population. This base population is based on mid-year population estimates published by ONS for 2022, limited to population aged 16 and above.
@@ -313,11 +313,11 @@ For population baseline figures for certificates other than HRT PPC, no drug res
 
 #### 2.4.2 ONS published population estimates
 
-Maternity exemption certificates, NHS tax credit exemption certificates and the NHS Low Income Scheme provide support with a range of health costs. For these services the base population is based on population counts as published by ONS.
+Maternity exemption certificates, NHS Tax Credit Exemption Certificates and the NHS Low Income Scheme provide support with a range of health costs. For these services the base population is based on population counts as published by ONS.
 
 The population estimates were sourced from [population estimates for health geographies dataset published by ONS](https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/clinicalcommissioninggroupmidyearpopulationestimates).
 
-These population estimates are based on mid-year estimates, with 2022 being the latest available year at time of reporting. Figures published by ONS include a breakdown by age and gender. Data has been aggregated to include the most appropriate combination of age and gender for the service being reported. For NHS tax credit exemption certificates and the NHS Low Income Scheme population figures are based on people aged 16 and over. For maternity exemption certificates the population figures are based on the female population aged 15-45.
+These population estimates are based on mid-year estimates, with 2022 being the latest available year at time of reporting. Figures published by ONS include a breakdown by age and gender. Data has been aggregated to include the most appropriate combination of age and gender for the service being reported. For NHS Tax Credit Exemption Certificates and the NHS Low Income Scheme population figures are based on people aged 16 and over. For maternity exemption certificates the population figures are based on the female population aged 15-45.
 
 #### 2.4.3 ONS live birth statistics
 
@@ -481,7 +481,7 @@ A risk assessment around potential disclosure of personal identifiable informati
 
 **Age**
 
-Age, and therefore age bands, have been calculated based on the applicant's date of birth and the date the application was received. Where the calculated age would suggest potential data quality issues, data has been reported as "Not Available".
+Age, and therefore age bands, have been calculated based on the applicant's date of birth and the date the application was received. An age band of 'Not Available' has been used where the applicants age could not be confidently assigned from the available data.
 
 **IMD Quintile**
 

@@ -104,7 +104,7 @@ caveat_lis_hbd11: "Some HC3 certificates may include a HBD11 letter. These repre
 caveat_mat_country: "As a maternity exemption certificate provides support with NHS prescription charges, support is generally applicable to applicants from England only."
 caveat_mat_duration_method: "Certificate duration has been grouped into categories based on the number of months between the start and end date for the certificate, rounded to nearest number of months."
 caveat_mat_duration_restriction: "Certificate duration reported as 'Not Available' where duration could not be confidently assigned from the available data."
-caveat_mat_duration_notes: "Certificates are valid upto one year after the birth of the child. Therefore, certificate duration will reflect how early in pregnancy the application was received. A certificate duration of less than a year would represent certificates issued after the birth of the child."
+caveat_mat_duration_notes: "Certificates are valid upto one year from the baby's due date or the birth of the baby. Therefore, certificate duration will reflect how early in pregnancy the application was received. A certificate duration of less than a year would represent certificates issued after the due date or birth of the child."
 caveat_mat_age_group: "Age is calculated at the point of application, in 5 year age bands, with applicants aged 45 and over grouped as 45+."
 caveat_mat_live_births: "For context data includes live birth figures, based on data published by ONS."
 caveat_mat_base_population: "Base population figures represent mid-year population estimates published by ONS for females aged 15 to 45."
@@ -118,7 +118,7 @@ caveat_ppc_type_unknown: "A certificate type of 'Not Available' has been used wh
 caveat_ppc_age_group: "Age is calculated at the point of application, in 5 year age bands."
 caveat_ppc_base_population: "Base population figures represent estimated number of patients, aged 16-59, receiving NHS prescriptions. Patient counts are limited to patients receiving electronic prescribing where a date of birth was available and the patient could be assigned to a ICB based on their captured postcode."
 
-caveat_hrtppc_start: "The HRT PPC was introduced in April 2023."
+caveat_hrtppc_start: "The HRT PPC was introduced on 1 April 2023."
 caveat_hrtppc_country: "As a HRT PPC provides support with NHS prescription charges, support is generally applicable to applicants from England only."
 caveat_hrtppc_postdate: "When applying for a HRT PPC, applicants can choose the start date for the certificate. This can be up to one calendar month before or after the application is submitted."
 caveat_hrtppc_age_group: "Age is calculated at the point of application, in 5 year age bands."

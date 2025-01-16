@@ -1,24 +1,122 @@
 publication_top_name: "Help with Health Costs (HwHC)"
-publication_sub_name: "2019/20 to 2023/24"
+publication_sub_name: "2018/19 to 2023/24"
 publication_date: "20 June 2024"
 responsible_statistician: "Steven Buckley"
 stats_survey_link: "https://online1.snapsurveys.com/Official_Statistics_Feedback"
 publication_table_title: "Help with Health Costs (HwHC) - 2019/20 to 2023/24"
+publication_title: "help-with-health-costs"
+methodology_title: "help-with-health-costs-methodology"
+output_type: "html_document" # html_document / word_document
 
 # data table criteria
 rebuild_base_data: FALSE
 extract_date_lis: "20240409"
+extract_date_hes: "20240409"
+extract_date_hrt: "20240507"
+extract_px_min_ym: 202304
+extract_px_max_ym: 202403
+extract_px_age_dt: 20230930   # date to use to calculate patient age
 
 # time period criteria
-min_trend_ym_lis: "201904"
+min_trend_ym_lis: "201804"
+min_trend_active_ym_lis: "201904" # need to check impact of deleted records to choose period
 max_trend_ym_lis: "202403"
 min_focus_ym_lis: "202304"
 max_focus_ym_lis: "202403"
+
+min_trend_ym_mat: "201804"
+min_trend_active_ym_mat: "201904" # need to check impact of deleted records to choose period
+max_trend_ym_mat: "202403"
+min_focus_ym_mat: "202304"
+max_focus_ym_mat: "202403"
+
+min_trend_ym_med: "201804"
+min_trend_active_ym_med: "201904" # need to check impact of deleted records to choose period
+max_trend_ym_med: "202403"
+min_focus_ym_med: "202304"
+max_focus_ym_med: "202403"
+
+min_trend_ym_ppc: "201804"
+max_trend_ym_ppc: "202403"
+min_focus_ym_ppc: "202304"
+max_focus_ym_ppc: "202403"
+
+min_trend_ym_tax: "201804"
+max_trend_ym_tax: "202403"
+min_focus_ym_tax: "202304"
+max_focus_ym_tax: "202403"
+
+min_focus_ym_hrt: "202304"
+max_focus_ym_hrt: "202403"
 
 # base population criteria
 ons_pop_year: "2022"
 lis_min_pop_age: 16
 lis_max_pop_age: 90
+mat_min_pop_age: 15
+mat_max_pop_age: 45
+med_min_pop_age: 16
+med_max_pop_age: 59
+ppc_min_pop_age: 16
+ppc_max_pop_age: 59
+tax_min_pop_age: 16
+tax_max_pop_age: 90
+hrt_min_pop_age: 16
+hrt_max_pop_age: 59
+ons_pop_rate_denominator: 10000
+
+# ONS live birth criteria
+ons_births_year: "2021"
+ons_birth_geo_table: "ONS_BIRTHS_GEOGRAPHY_AGEBAND"
+ons_birth_imd_table: "ONS_BIRTHS_IMD"
 
 # ICB classification
 icb_classification: 2023
+
+# Data table caveats
+caveat_country_other: "A country classification of 'Other' will represent applications with a postcode for a country other than England."
+caveat_country_unknown: "A country classification of 'Unknown' will represent applications where the postcode could not be assigned to any country."
+caveat_active_coverage: "The term 'active certifice' refers to the start and end date of the certificate and does not consider if the certificate is being used."
+caveat_age_restriction: "An age band of 'unknown' has been used where the applicants age could not be confidently assigned from the available data."
+caveat_imd_restriction: "IMD quintiles cannot be assigned to applicants that can not be associated to an English postcode."
+caveat_icb_method: "The reported ICB is derived from the postcode held for an applicant."
+caveat_icb_restriction: "ICBs cannot be assigned to applicants that can not be associated to an English postcode."
+caveat_cert_issued: "Results limited to cases where the application has been fully completed, assessed and a certificate issued to the applicant."
+
+caveat_lis_issued: "Results limited to cases where the application has been fully completed, assessed and a decision issued to the applicant."
+caveat_lis_no_cert_fy: "Where no certificate is issued, the financial year is based on the date of application in lieu of no available date of certificate being issued."
+caveat_lis_active_duration: "Certificates can be valid for upto 5 years and therefore some certificates may be represented in figures for multiple years."
+caveat_lis_duration_group: "Certificate duration has been grouped into categories based on time between start and end date for the certificate, rounded to nearest number of months."
+caveat_lis_age_group: "Age is calculated at the point of application, in 5 year age bands, with applicants aged 65 and over grouped as 65+."
+caveat_lis_base_population: "Base population figures represent mid-year population estimates published by ONS for people aged 16 and over."
+
+caveat_mat_country: "Maternity exemption certificates are only available for people living in England."
+caveat_mat_active_duration: "Certificates can be valid during pregnancy and upto one year following birth. Therefore some certificates may be represented in figures for multiple years."
+caveat_mat_duration_method: "Number of months based on difference between due date and date of certificate issue, rounded to the nearest number of months."
+caveat_mat_due_date: "Due date will be supplied during application and therefore may not exactly match delivery date."
+caveat_mat_duration_restriction: "Number of months reported as 'NA' where captured due date was unavailable or would suggest potential data quality issues."
+caveat_mat_age_group: "Age is calculated at the point of application, in 5 year age bands, with applicants aged 45 and over grouped as 45+."
+caveat_mat_live_births: "For context data includes live birth figures, based on data published by ONS."
+caveat_mat_base_population: "Base population figures represent mid-year population estimates published by ONS for females aged 16 to 45."
+
+caveat_med_country: "Medical exemption certificates are only available for people living in England."
+caveat_med_active_duration: "Certificates are usually valid for five years and therefore certificates may be represented in figures for multiple years."
+caveat_med_age_group: "Age is calculated at the point of application, in 5 year age bands."
+caveat_med_base_population: "Base population figures represent estimated number of patients, aged 16-59, receiving NHS prescriptions."
+
+caveat_ppc_country: "Prescription prepayment certificates are only available for people living in England."
+caveat_ppc_type_unknown: "A certificate type of 'N/A' has been used where the certificate type cannot be identified as 3-month or 12-month from the available data."
+caveat_ppc_age_group: "Age is calculated at the point of application, in 5 year age bands."
+caveat_ppc_base_population: "Base population figures represent estimated number of patients, aged 16-59, receiving NHS prescriptions."
+
+caveat_hrtppc_start: "The HRT PPC was introduced in April 2023."
+caveat_hrtppc_country: "HRT PPCs are only available for people living in England."
+caveat_hrtppc_postdate: "When applying for a HRT PPC, applicants can choose the start date for the certificate. This can be up to one calendar month before or after the application is submitted."
+caveat_hrtppc_age_group: "Age is calculated at the point of application, in 5 year age bands."
+caveat_hrtppc_px_data: "For context data in includes the estimated number of patients receiving NHS prescriptions for medications that can be covered by the HRT PPC."
+caveat_hrtppc_base_population: "Base population figures represent estimated number of patients, aged 16-59, receiving NHS prescriptions for medications that can be covered by the HRT PPC."
+
+caveat_tax_issued: "Certificates are issued automatically to eligible individuals identified by HM Revenue and Customs."
+caveat_tax_age_band: "Age is calculated at the point certificate issue, in 5 year age bands, with applicants aged 65 and over grouped as 65+."
+caveat_tax_age_group: "Age is calculated at the point certificate issue, with applicants grouped as either 'Under 40' or '40 and over'."
+caveat_tax_base_population: "Base population figures represent mid-year population estimates published by ONS for people aged 16 and over."

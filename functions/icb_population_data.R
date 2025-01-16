@@ -7,15 +7,15 @@
 #' the geography level and the age range
 #'
 #' @param year population year based on mid-year estimate (2021, 2022)
-#' @param geo geography level to aggregate data by (SICBL, ICB, NHSREG)
 #' @param min_age minimum age to consider in aggregation (0 to 90)
 #' @param max_age maximum age to consider in aggregation (0 to 90)
+#' @param gender character to identify gender to include in reporting (M = Male, F = Female, T = Total)
 #'
 icb_population_data <- function(
     year, 
-    geo, 
     min_age, 
-    max_age
+    max_age,
+    gender
 ){
   
 # Parameter tests ---------------------------------------------------------
@@ -25,21 +25,22 @@ icb_population_data <- function(
     stop("Invalid parameter (year) supplied to icb_population_data: must be year between 2021 and 2022", call. = FALSE)
   }
   
-  # parameter test: geo  
-  if(!(geo %in% c("SICBL", "ICB", "NHSREG"))){
-    stop("Invalid parameter (geo) supplied to icb_population_data: must be one of SICBL, ICB or NHSREG", call. = FALSE)
-  }
-  
-  # parameter test: geo  
+  # parameter test: min_age  
   if(!(min_age %in% seq(0,90))){
     stop("Invalid parameter (min_age) supplied to icb_population_data: must be integer between 0 and 90", call. = FALSE)
   }
   
-  # parameter test: geo  
+  # parameter test: max_age  
   if(!(max_age %in% seq(0,90))){
     stop("Invalid parameter (max_age) supplied to icb_population_data: must be integer between 0 and 90", call. = FALSE)
   }
   
+  # parameter test: gender  
+  if(!(gender %in% c("M", "F", "T"))){
+    stop("Invalid parameter (gender) supplied to icb_population_data: must be one of M, F or T (M=male/F=female/T=total)", call. = FALSE)
+  }
+  
+
 
 # Data Collection ---------------------------------------------------------
 
@@ -109,7 +110,7 @@ icb_population_data <- function(
   # filter data by supplied age range
   pop_data <- pop_data |> 
     dplyr::filter(Age >= min_age & Age <= max_age) |> 
-    dplyr::mutate(AgeRange = paste0(min_age, "-", max_age))
+    dplyr::mutate(PopulationAgeRange = paste0(min_age, "-", max_age))
   
   # pivot to have columns for each gender (plus total)
   pop_data <- pop_data |> 
@@ -117,22 +118,25 @@ icb_population_data <- function(
       names_from = Gender,
       values_from = Population
     ) |> 
-    dplyr::mutate(Total = M + F) |> 
-    dplyr::rename(
-      Male = M,
-      Female = F
-    )
+    dplyr::mutate(T = M + F)
   
   # apply grouping based on chosen geography
   pop_data <- pop_data |>
-    dplyr::group_by(.data[[geo]], AgeRange) |> 
+    dplyr::group_by(ICB, PopulationAgeRange) |> 
     dplyr::summarise(
-      Male = sum(Male),
-      Female = sum(Female),
-      Total = sum(Total),
+      M = sum(M),
+      F = sum(F),
+      T = sum(T),
       .groups = "keep"
     ) |> 
     dplyr::ungroup()
+  
+  # return only the chosen gender results
+  pop_data <- pop_data |>
+    dplyr::select(
+      ICB,
+      BASE_POPULATION := {{ gender }}
+    )
   
   # return the formatted dataset
   return(pop_data)

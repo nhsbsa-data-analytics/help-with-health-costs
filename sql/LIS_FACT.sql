@@ -42,7 +42,6 @@ DEPENDENCIES:
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------SCRIPT START----------------------------------------------------------------------------------------------------------------------
 
-
 create table LIS_FACT compress for query high as
 with 
 base as
@@ -123,15 +122,17 @@ where       1=1
 )
 
 select      ID,
+            'LIS'                                                                               as SERVICE_AREA,
+            'NHS Low Income Scheme'                                                             as SERVICE_AREA_NAME,
             CASE_REF,
             --Recode CERTIFICATE_TYPE to only show HC2/HC3 if a H2/HC3 was issued
             --this will handle cases where the data shows HC3 for HBD11s where no certificate was actually issued
-            CERTIFICATE_TYPE                                                                    as CERTIFICATE_TYPE_DW,
+            CERTIFICATE_TYPE,
             case
                 when CERTIFICATE_ISSUED_FLAG = 1
                 then CERTIFICATE_TYPE
                 else 'No certificate issued'
-            end                                                                                 as CERTIFICATE_TYPE,
+            end                                                                                 as CERTIFICATE_SUBTYPE,
             LETTER_TYPE_CODE,
             HC2_FLAG,
             HC3_FLAG,
@@ -142,13 +143,13 @@ select      ID,
                 else null
             end                                                                                 as CERTIFICATE_DURATION_MONTHS,
             case
-                when CERTIFICATE_ISSUED_FLAG != 1   then null
+                when CERTIFICATE_ISSUED_FLAG != 1   then 'N/A'
                 when round(months_between(CERTIFICATE_EXPIRY_DATE, CERTIFICATE_START_DATE),0) < 6   then '0 to 5 months'
                 when round(months_between(CERTIFICATE_EXPIRY_DATE, CERTIFICATE_START_DATE),0) = 6   then '06 months'
                 when round(months_between(CERTIFICATE_EXPIRY_DATE, CERTIFICATE_START_DATE),0) < 12  then '07 to 11 months'
                 when round(months_between(CERTIFICATE_EXPIRY_DATE, CERTIFICATE_START_DATE),0) = 12  then '12 months'
                 when round(months_between(CERTIFICATE_EXPIRY_DATE, CERTIFICATE_START_DATE),0) > 12  then '13 months +'
-                else null
+                else 'N/A'
             end                                                                                 as CERTIFICATE_DURATION,
             APPLICATION_COMPLETE_FLAG,
             ABOVE_HC3_SUPPORT_THRESHOLD_FLAG,
@@ -156,18 +157,18 @@ select      ID,
             BAND_5YEARS,
             BAND_10YEARS,
             case
-                when CERTIFICATE_HOLDER_AGE < 15    then 'Unknown'
-                when CERTIFICATE_HOLDER_AGE > 99    then 'Unknown'
+                when CERTIFICATE_HOLDER_AGE < 15    then 'N/A'
+                when CERTIFICATE_HOLDER_AGE > 99    then 'N/A'
                 when CERTIFICATE_HOLDER_AGE >= 65   then '65+'
                                                     else BAND_5YEARS
-            end                                                                                 as AGE_BAND,
+            end                                                                                 as CUSTOM_AGE_BAND,
             CLIENT_GROUP_ID,
             CLIENT_GROUP_DESC,
             LSOA,
             --remove ONS code for non-England areas
-            case when substr(ICB,1,1) = 'E' then ICB else null end                              as ICB,
-            ICB_CODE,
-            ICB_NAME,
+            case when substr(ICB,1,1) = 'E' then ICB else 'N/A' end                             as ICB,
+            nvl(ICB_CODE,'N/A')                                                                 as ICB_CODE,
+            nvl(ICB_NAME,'N/A')                                                                 as ICB_NAME,
             IMD_DECILE,
             case
                 when IMD_DECILE in (1,2)    then 1

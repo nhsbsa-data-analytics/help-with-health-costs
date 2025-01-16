@@ -6,6 +6,7 @@ Version 1.0
 
 AMENDMENTS:
 	2024-03-25  : Steven Buckley    : Initial script created
+    2024-04-22  : Steven Buckley    : Revised script to fit in pipeline approach
 
 
 DESCRIPTION:
@@ -41,50 +42,101 @@ DEPENDENCIES:
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------SCRIPT START----------------------------------------------------------------------------------------------------------------------
 
-
-drop table HES_FACT purge;
 create table HES_FACT compress for query high as
-select      hcd.CERTIFICATE_NUMBER,
+select      standard_hash(hcd.CERTIFICATE_NUMBER, 'SHA256')                                                                                     as ID,
+            hcd.CERTIFICATE_TYPE                                                                                                                as SERVICE_AREA,
             hcd.CERTIFICATE_TYPE,
+            case
+                when hcd.CERTIFICATE_TYPE = 'MAT' then 'Maternity exemption certificate'
+                when hcd.CERTIFICATE_TYPE = 'MED' then 'Medical exemption certificate'
+                when hcd.CERTIFICATE_TYPE = 'PPC' then 'NHS Prescription Prepayment Certificate'
+                when hcd.CERTIFICATE_TYPE = 'TAX' then 'NHS tax credit exemption certificate'
+            end                                                                                                                                 as SERVICE_AREA_NAME,
+            case
+                when hcd.CERTIFICATE_TYPE != 'PPC'  then 'N/A'
+                when CERTIFICATE_DURATION = 3       then '3-month'
+                when CERTIFICATE_DURATION = 12      then '12-month'
+                                                    else 'N/A'
+            end                                                                                                                                 as CERTIFICATE_SUBTYPE,
             hcd.CERTIFICATE_DURATION,
             hapf.CERTIFICATE_ISSUED_FLAG,
             hapf.CERTIFICATE_STATUS,
             hcsd.CERTIFICATE_STATUS_DESC,
-            case when hapf.CERTIFICATE_STATUS in (97,99) then 1 else 0 end                                  as CERTIFICATE_CANCELLED_FLAG,
+            case when hapf.CERTIFICATE_STATUS in (97,99) then 1 else 0 end                                                                      as CERTIFICATE_CANCELLED_FLAG,
             --applicant/holder information
             hcd.CERTIFICATE_HOLDER_AGE,
-            hapf.POSTCODE,
-            pcd.LSOA11                                                                                      as LSOA,
-            pcd.ICB,
-            pcd.ICB23CDH,
-            pcd.ICB23NM, 
+            age.BAND_5YEARS,
+            age.BAND_10YEARS,
+            --calculate custom age band
+            case
+                -- for MATEX, MEDEX and PPC exclude any ages outside of expected range 15-59 (likely errors)
+                --for MATEX anything above 45 group as 45+
+                when hcd.CERTIFICATE_TYPE is null                                                           then 'N/A'
+                when hcd.CERTIFICATE_HOLDER_AGE is null                                                     then 'N/A'
+                when hcd.CERTIFICATE_TYPE in ('MAT','MED','PPC','TAX') and hcd.CERTIFICATE_HOLDER_AGE <= 14 then 'N/A'
+                when hcd.CERTIFICATE_TYPE in ('MAT','MED','PPC') and hcd.CERTIFICATE_HOLDER_AGE >= 60       then 'N/A'
+                when hcd.CERTIFICATE_TYPE in ('TAX') and hcd.CERTIFICATE_HOLDER_AGE > 90                    then 'N/A'
+                when hcd.CERTIFICATE_TYPE = 'MAT' and hcd.CERTIFICATE_HOLDER_AGE >= 45                      then '45+'
+                when hcd.CERTIFICATE_TYPE = 'TAX' and hcd.CERTIFICATE_HOLDER_AGE >= 65                      then '65+'
+                                                                                                            else age.BAND_5YEARS
+            end                                                                                                                                 as CUSTOM_AGE_BAND,
+            pcd.LSOA11                                                                                                                          as LSOA,
+            --remove ONS code for non-England areas
+            case when substr(pcd.ICB,1,1) = 'E' then ICB else 'N/A' end                                                                         as ICB,
+            nvl(pcd.ICB23CDH,'N/A')                                                                                                             as ICB_CODE,
+            nvl(pcd.ICB23NM,'N/A')                                                                                                              as ICB_NAME, 
             pcd.IMD_DECILE,
+            case
+                when pcd.IMD_DECILE in (1,2)    then 1
+                when pcd.IMD_DECILE in (3,4)    then 2
+                when pcd.IMD_DECILE in (5,6)    then 3
+                when pcd.IMD_DECILE in (7,8)    then 4
+                when pcd.IMD_DECILE in (9,10)   then 5
+                                            else null
+            end                                                                                                                                 as IMD_QUINTILE,
             case
                 when pcd.CTRY = 'E92000001' then 'England'
                 when pcd.CTRY is null       then 'Unknown'
                                             else 'Other'
-            end                                                                                             as COUNTRY,
+            end                                                                                                                                 as COUNTRY,
             --key dates: application
-            to_date(hapf.APPLICATION_START_DATE_WID, 'YYYYMMDD')                                            as APPLICATION_DATE,
-            substr(hapf.APPLICATION_START_DATE_WID,1,6)                                                     as APPLICATION_YM,
+            to_date(hapf.APPLICATION_START_DATE_WID, 'YYYYMMDD')                                                                                as APPLICATION_DATE,
+            substr(hapf.APPLICATION_START_DATE_WID,1,6)                                                                                         as APPLICATION_YM,
             extract(YEAR from add_months(to_date(hapf.APPLICATION_START_DATE_WID,'YYYYMMDD'), -3))||'/'||
-                extract(YEAR from add_months(to_date(hapf.APPLICATION_START_DATE_WID,'YYYYMMDD'), 9))       as APPLICATION_FY,
+                extract(YEAR from add_months(to_date(hapf.APPLICATION_START_DATE_WID,'YYYYMMDD'), 9))                                           as APPLICATION_FY,
             --key dates: issue
-            to_date(hapf.CERTIFICATE_ISSUED_DATE_WID  default null on conversion error, 'YYYYMMDD')         as ISSUE_DATE,
-            substr(hapf.CERTIFICATE_ISSUED_DATE_WID,1,6)                                                    as ISSUE_YM,
+            to_date(hapf.CERTIFICATE_ISSUED_DATE_WID  default null on conversion error, 'YYYYMMDD')                                             as ISSUE_DATE,
+            substr(hapf.CERTIFICATE_ISSUED_DATE_WID,1,6)                                                                                        as ISSUE_YM,
             extract(YEAR from add_months(to_date(hapf.CERTIFICATE_ISSUED_DATE_WID default null on conversion error,'YYYYMMDD'), -3))||'/'||    
-                extract(YEAR from add_months(to_date(hapf.CERTIFICATE_ISSUED_DATE_WID default null on conversion error,'YYYYMMDD'), 9))      as ISSUE_FY,
+                extract(YEAR from add_months(to_date(hapf.CERTIFICATE_ISSUED_DATE_WID default null on conversion error,'YYYYMMDD'), 9))         as ISSUE_FY,
             --key dates: active
-            to_date(hapf.CERTIFICATE_START_DATE_WID default null on conversion error, 'YYYYMMDD')                                            as CERTIFICATE_START_DATE,
-            to_date(hapf.CERTIFICATE_EXPIRY_DATE_WID default null on conversion error, 'YYYYMMDD')                                           as CERTIFICATE_EXPIRY_DATE
+            to_date(hapf.CERTIFICATE_START_DATE_WID default null on conversion error, 'YYYYMMDD')                                               as CERTIFICATE_START_DATE,
+            substr(hapf.CERTIFICATE_START_DATE_WID, 1,6)                                                                                        as CERTIFICATE_START_YM,
+            to_date(hapf.CERTIFICATE_EXPIRY_DATE_WID default null on conversion error, 'YYYYMMDD')                                              as CERTIFICATE_EXPIRY_DATE,
+            substr(hapf.CERTIFICATE_EXPIRY_DATE_WID, 1,6)                                                                                       as CERTIFICATE_EXPIRY_YM,
+            --certificate duration (only capture where a certificate has been issued)
+            case
+                when hapf.CERTIFICATE_ISSUED_DATE_WID = 19000101 
+                then null
+                else hcd.CERTIFICATE_DURATION
+            end                                                                                                                                 as CERTIFICATE_DURATION_MONTHS,
+            case
+                when        hcd.CERTIFICATE_TYPE != 'MAT'                 
+                    then    null
+                when        hapf.CERTIFICATE_ISSUED_DATE_WID = 19000101 
+                    then null
+                else        round(months_between(to_date(CERTIFICATE_ISSUED_DATE_WID,'YYYYMMDD'), BABY_DUE_DATE),0)
+            end                                                                                                                                 as MONTHS_BETWEEN_DUE_DATE_AND_ISSUE
 from        DIM.HES_CERTIFICATE_DIM             hcd
-inner join  AML.HES_APPLICATION_PROCESS_FACT    hapf    on  hcd.CERTIFICATE_NUMBER  =   hapf.CERTIFICATE_NUMBER
-inner join  DIM.HES_CERTIFICATE_STATUS_DIM      hcsd    on  hapf.CERTIFICATE_STATUS =   hcsd.CERTIFICATE_STATUS
+inner join  AML.HES_APPLICATION_PROCESS_FACT    hapf    on  hcd.CERTIFICATE_NUMBER                              =   hapf.CERTIFICATE_NUMBER
+inner join  DIM.HES_CERTIFICATE_STATUS_DIM      hcsd    on  hapf.CERTIFICATE_STATUS                             =   hcsd.CERTIFICATE_STATUS
 left join   GRALI.ONS_NSPL_MAY_23               pcd     on  regexp_replace(upper(hapf.POSTCODE),'[^A-Z0-9]','') = regexp_replace(upper(pcd.PCD),'[^A-Z0-9]','')
+left join   DIM.AGE_DIM                         age     on  hcd.CERTIFICATE_HOLDER_AGE                          =   age.AGE
 where       1=1
-    --limit to single record per certificate based on a specific date
-    and     hapf.DW_ACTIVE_IND = 1
-    
+    --limit to records as of a set date supplied at runtime
+    and     hapf.DW_DATE_CREATED <= to_date(&&p_extract_date,'YYYYMMDD')
+    and     nvl(hapf.DW_DATE_UPDATED,to_date(99991231,'YYYYMMDD')) > to_date(&&p_extract_date,'YYYYMMDD')
 ;
+
 ---------------------SCRIPT END-----------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------

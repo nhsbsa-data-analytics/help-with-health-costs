@@ -1,7 +1,7 @@
 #' get_hes_issue_data
 #'
-#' collect issued certificate data from the HES dataset
-#' This dataset covers PPC, MATEX, MEDEX and Tax Credits so service areas should be specified by a parameter
+#' collect issued certificate data from the HES datasets
+#' This dataset covers multiple services so service area should be specified by a parameter
 #' additional parameters will identify the time period for analysis and which fields to group results by
 #'
 #' @param db_connection active database connection
@@ -10,9 +10,8 @@
 #' @param min_ym first month for analysis (format YYYYMM)
 #' @param max_ym last month for analysis (format YYYYMM)
 #' @param group_list list of fields to group results by
-#' @param cert_only TRUE/FALSE (default = FALSE) limit to only outcomes where a certificate was issued (LIS applicable)
 #'
-get_hes_issue_data <- function(db_connection, db_table_name, service_area, min_ym, max_ym, group_list, cert_only = FALSE) {
+get_hes_issue_data <- function(db_connection, db_table_name, service_area, min_ym, max_ym, group_list) {
   
   # Test Parameters ---------------------------------------------------------
   
@@ -60,22 +59,10 @@ get_hes_issue_data <- function(db_connection, db_table_name, service_area, min_y
     dplyr::filter(
       SERVICE_AREA == toupper(service_area),
       ISSUE_YM >= min_ym,
-      ISSUE_YM <= max_ym
-    )
-  
-  # apply outcome filter based on service
-  # for LIS include complete applications
-  # for other services used issued certificates
-  if(service_area == 'LIS' & cert_only == FALSE){
-    df_issue <- df_issue |> 
-      dplyr::filter(APPLICATION_COMPLETE_FLAG == 1)
-  } else {
-    df_issue <- df_issue |> 
-      dplyr::filter(CERTIFICATE_ISSUED_FLAG == 1)
-  }
-  
-  # summarise, splitting by supplied field list
-  df_issue <- df_issue |>  
+      ISSUE_YM <= max_ym,
+      CERTIFICATE_ISSUED_FLAG == 1
+    ) |> 
+    # summarise, splitting by supplied field list
     dplyr::group_by(across(all_of(group_list))) |> 
     dplyr::summarise(ISSUED_CERTS = n(), .groups = "keep") |> 
     dplyr::ungroup() |> 

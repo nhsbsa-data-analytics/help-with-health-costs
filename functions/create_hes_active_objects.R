@@ -1,7 +1,7 @@
 #' create_hes_active_objects
 #'
 #' Create objects to summarise the HES active certificates data
-#' Output will include a line chart, supporting download data and data for supplementary datasets
+#' Output will include a line chart, a table, supporting download data and data for supplementary datasets
 #' 
 #' Data will be based on issued certificates active for one or more days in a financial year, using the get_hes_active_data function to extract data
 #' 
@@ -19,14 +19,17 @@ create_hes_active_objects <- function(db_connection, db_table_name, service_area
   # if certificate sub-types are required slightly different objects will be required to allow for this
   if(subtype_split == TRUE){
     
+    # create the data object for the visualisations
+    obj_chart_data <- get_hes_active_data(con, db_table_name, service_area, min_ym, max_ym, c('CERTIFICATE_SUBTYPE', 'FINANCIAL_YEAR')) |> 
+      dplyr::filter(CERTIFICATE_SUBTYPE != 'Not Available') |> 
+      dplyr::arrange(CERTIFICATE_SUBTYPE, FINANCIAL_YEAR)
+    
     # create the chart using a grouped chart object
-    obj_chart <- get_hes_active_data(con, db_table_name, service_area, min_ym, max_ym, c('CERTIFICATE_SUBTYPE', 'FINANCIAL_YEAR')) |> 
-      dplyr::filter(CERTIFICATE_SUBTYPE != 'N/A') |> 
-      dplyr::arrange(FINANCIAL_YEAR, CERTIFICATE_SUBTYPE) |> 
-      dplyr::mutate(ACTIVE_CERTS_SF = signif(ACTIVE_CERTS,3)) |> 
+    obj_chart <- obj_chart_data |> 
+      dplyr::mutate(ACTIVE_CERTS = signif(ACTIVE_CERTS,3)) |> 
       nhsbsaVis::group_chart_hc(
         x = FINANCIAL_YEAR,
-        y = ACTIVE_CERTS_SF,
+        y = ACTIVE_CERTS,
         type = "line",
         group = "CERTIFICATE_SUBTYPE",
         xLab = "Financial Year",
@@ -38,6 +41,14 @@ create_hes_active_objects <- function(db_connection, db_table_name, service_area
         enabled = T,
         shared = T,
         sort = T
+      )
+    
+    # create the table object
+    obj_table <- obj_chart_data |> 
+      rename_df_fields() |> 
+      knitr::kable(
+        align = "llr",
+        format.args = list(big.mark = ",")
       )
     
     # create the support datasets
@@ -61,13 +72,16 @@ create_hes_active_objects <- function(db_connection, db_table_name, service_area
     
   } else {
     
+    # create the data object for the visualisations
+    obj_chart_data <- get_hes_active_data(con, db_table_name, service_area, min_ym, max_ym, c('FINANCIAL_YEAR')) |>
+      dplyr::arrange(FINANCIAL_YEAR)
+    
     # create the chart using a basic single column chart
-    obj_chart <- get_hes_active_data(con, db_table_name, service_area, min_ym, max_ym, c('FINANCIAL_YEAR')) |>
-      dplyr::arrange(FINANCIAL_YEAR) |> 
-      dplyr::mutate(ACTIVE_CERTS_SF = signif(ACTIVE_CERTS,3)) |> 
+    obj_chart <- obj_chart_data |> 
+      dplyr::mutate(ACTIVE_CERTS = signif(ACTIVE_CERTS,3)) |> 
       nhsbsaVis::basic_chart_hc(
         x = FINANCIAL_YEAR,
-        y = ACTIVE_CERTS_SF,
+        y = ACTIVE_CERTS,
         type = "line",
         xLab = "Financial Year",
         yLab = "Number of active certificates",
@@ -79,6 +93,14 @@ create_hes_active_objects <- function(db_connection, db_table_name, service_area
         enabled = T,
         shared = T,
         sort = T
+      )
+    
+    # create the table object
+    obj_table <- obj_chart_data |> 
+      rename_df_fields() |> 
+      knitr::kable(
+        align = "lr",
+        format.args = list(big.mark = ",")
       )
     
     # create the support datasets
@@ -110,6 +132,6 @@ create_hes_active_objects <- function(db_connection, db_table_name, service_area
   }
   
   # return output
-  return(list("chart" = obj_chart, "chart_data" = obj_chData, "support_data" = obj_suppData))
+  return(list("chart" = obj_chart, "table" = obj_table, "chart_data" = obj_chData, "support_data" = obj_suppData))
   
 }

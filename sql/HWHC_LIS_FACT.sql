@@ -8,7 +8,9 @@ AMENDMENTS:
 	2024-03-25  : Steven Buckley    : Initial script created
     2024-03-28  : Steven Buckley    : Amended code to handle outcomes other than a HC2/HC3 being issued
     2024-04-09  : Steven Buckley    : Added custom fields for CERTIFICATE_DURATION, AGE_BAND and IMD_QUINTILE
-
+    2024-06-04  : Steven Buckley    : Switched source for postcode reference
+                                      Changed N/A to Not Available
+    2024-06-06  : Steven Buckley    : Switched to BUSINESS_DT_ID as the date of application
 
 DESCRIPTION:
     Identify a basic dataset holding key information related to NHS Low Income Scheme (LIS) applications and certificates.
@@ -23,7 +25,7 @@ DESCRIPTION:
 
     During assessment if the applicant would be required to contribute more than the typical maximum cost of treatment they will not get a HC3,
     instead they will get a letter stating that they are over the threshold for support (NB: they can request a HC3 issued with these limits but 
-    this is rare).
+    this is rare). These are captured as a LETTER_TYPE_CODE of 'HBD11' and are treated as a HC3.
 
 
 DEPENDENCIES:
@@ -33,16 +35,16 @@ DEPENDENCIES:
                                     
     DIM.AGE                     :   Reference table providing age band classification lookups
     
-    GRALI.ONS_NSPL_MAY_23       :   Reference table for National Statistics Postcode Lookup (NSPL)
+    OST.ONS_NSPL_MAY_24_11CEN   :   Reference table for National Statistics Postcode Lookup (NSPL)
                                     Contains mapping data from postcode to key geographics and deprivation profile data
-                                    Based on NSPL for May 2023
+                                    Based on NSPL for May 2024
     
 */
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------SCRIPT START----------------------------------------------------------------------------------------------------------------------
 
-create table LIS_FACT compress for query high as
+create table HWHC_LIS_FACT_TEST compress for query high as
 with 
 base as
 (
@@ -96,9 +98,9 @@ select      standard_hash(caf.CASE_REF, 'SHA256')                               
                                             else 'Other'
             end                                                                         as COUNTRY,            
             --key dates: application
-            APPLICATION_START_DT_ID,
-            to_date(caf.APPLICATION_START_DT_ID, 'YYYYMMDD')                            as APPLICATION_DATE,
-            substr(caf.APPLICATION_START_DT_ID,1,6)                                     as APPLICATION_YM,
+            BUSINESS_DT_ID,
+            to_date(caf.BUSINESS_DT_ID, 'YYYYMMDD')                                     as APPLICATION_DATE,
+            substr(caf.BUSINESS_DT_ID,1,6)                                              as APPLICATION_YM,
             --key dates: issue
             to_date(caf.CERTIFICATE_ISSUE_DT_ID, 'YYYYMMDD')                            as ISSUE_DATE,
             substr(caf.CERTIFICATE_ISSUE_DT_ID,1,6)                                     as ISSUE_YM,
@@ -109,7 +111,7 @@ select      standard_hash(caf.CASE_REF, 'SHA256')                               
             substr(caf.VALID_TO_DT_ID, 1,6)                                             as CERTIFICATE_EXPIRY_YM
 from        AML.CRS_APPLICATION_FACT    caf
 inner join  DIM.CRS_CLIENT_GROUP_DIM    ccgd    on  caf.CLIENT_GROUP_ID =   ccgd.CLIENT_GROUP_ID
-left join   GRALI.ONS_NSPL_MAY_23       pcd     on  regexp_replace(upper(caf.POSTCODE),'[^A-Z0-9]','') = regexp_replace(upper(pcd.PCD),'[^A-Z0-9]','')
+left join   OST.ONS_NSPL_MAY_24_11CEN   pcd     on  regexp_replace(upper(caf.POSTCODE),'[^A-Z0-9]','') = regexp_replace(upper(pcd.PCD),'[^A-Z0-9]','')
 left join   DIM.AGE_DIM                 age     on  caf.APPLICANT_AGE   =   age.AGE
 where       1=1
     --limit to records as of a set date supplied at runtime
@@ -126,7 +128,6 @@ select      ID,
             'NHS Low Income Scheme'                                                             as SERVICE_AREA_NAME,
             CASE_REF,
             --Recode CERTIFICATE_TYPE to only show HC2/HC3 if a H2/HC3 was issued
-            --this will handle cases where the data shows HC3 for HBD11s where no certificate was actually issued
             CERTIFICATE_TYPE,
             case
                 when CERTIFICATE_ISSUED_FLAG = 1
@@ -143,13 +144,13 @@ select      ID,
                 else null
             end                                                                                 as CERTIFICATE_DURATION_MONTHS,
             case
-                when CERTIFICATE_ISSUED_FLAG != 1   then 'N/A'
+                when CERTIFICATE_ISSUED_FLAG != 1   then 'Not Available'
                 when round(months_between(CERTIFICATE_EXPIRY_DATE, CERTIFICATE_START_DATE),0) < 6   then '0 to 5 months'
                 when round(months_between(CERTIFICATE_EXPIRY_DATE, CERTIFICATE_START_DATE),0) = 6   then '06 months'
                 when round(months_between(CERTIFICATE_EXPIRY_DATE, CERTIFICATE_START_DATE),0) < 12  then '07 to 11 months'
                 when round(months_between(CERTIFICATE_EXPIRY_DATE, CERTIFICATE_START_DATE),0) = 12  then '12 months'
                 when round(months_between(CERTIFICATE_EXPIRY_DATE, CERTIFICATE_START_DATE),0) > 12  then '13 months +'
-                else 'N/A'
+                else 'Not Available'
             end                                                                                 as CERTIFICATE_DURATION,
             APPLICATION_COMPLETE_FLAG,
             ABOVE_HC3_SUPPORT_THRESHOLD_FLAG,
@@ -157,8 +158,8 @@ select      ID,
             BAND_5YEARS,
             BAND_10YEARS,
             case
-                when CERTIFICATE_HOLDER_AGE < 15    then 'N/A'
-                when CERTIFICATE_HOLDER_AGE > 99    then 'N/A'
+                when CERTIFICATE_HOLDER_AGE < 15    then 'Not Available'
+                when CERTIFICATE_HOLDER_AGE > 99    then 'Not Available'
                 when CERTIFICATE_HOLDER_AGE >= 65   then '65+'
                                                     else BAND_5YEARS
             end                                                                                 as CUSTOM_AGE_BAND,
@@ -166,9 +167,9 @@ select      ID,
             CLIENT_GROUP_DESC,
             LSOA,
             --remove ONS code for non-England areas
-            case when substr(ICB,1,1) = 'E' then ICB else 'N/A' end                             as ICB,
-            nvl(ICB_CODE,'N/A')                                                                 as ICB_CODE,
-            nvl(ICB_NAME,'N/A')                                                                 as ICB_NAME,
+            case when substr(ICB,1,1) = 'E' then ICB else 'Not Available' end                   as ICB,
+            nvl(ICB_CODE,'Not Available')                                                       as ICB_CODE,
+            nvl(ICB_NAME,'Not Available')                                                       as ICB_NAME,
             IMD_DECILE,
             case
                 when IMD_DECILE in (1,2)    then 1
@@ -185,26 +186,10 @@ select      ID,
             extract(YEAR from add_months(APPLICATION_DATE, -3))||'/'||
                 extract(YEAR from add_months(APPLICATION_DATE, 9))                              as APPLICATION_FY,
             --key dates: issue
-            --where a certificate was not issued use the application date as no issue date is captured where a HC2/HC3 is not issued
-            case
-                when CERTIFICATE_ISSUED_FLAG = 1    then ISSUE_DATE
-                when APPLICATION_COMPLETE_FLAG = 1  then APPLICATION_DATE
-                                                    else NULL
-            end                                                                                 as ISSUE_DATE,
-            case
-                when CERTIFICATE_ISSUED_FLAG = 1    then ISSUE_YM
-                when APPLICATION_COMPLETE_FLAG = 1  then APPLICATION_YM
-                                                    else NULL
-            end                                                                                 as ISSUE_YM,
-            case 
-                when CERTIFICATE_ISSUED_FLAG = 1
-                then extract(YEAR from add_months(ISSUE_DATE, -3))||'/'||    
-                        extract(YEAR from add_months(ISSUE_DATE, 9))
-                when APPLICATION_COMPLETE_FLAG = 1
-                then extract(YEAR from add_months(APPLICATION_DATE, -3))||'/'||    
-                        extract(YEAR from add_months(APPLICATION_DATE, 9))
-                else NULL                                               
-            end                                                                                 as ISSUE_FY,
+            ISSUE_DATE,
+            ISSUE_YM,
+            extract(YEAR from add_months(ISSUE_DATE, -3))||'/'||    
+                extract(YEAR from add_months(ISSUE_DATE, 9))                                    as ISSUE_FY,
             --key dates: active
             --where a certificate was not issued make sure dates are null as no certificate to be active
             case

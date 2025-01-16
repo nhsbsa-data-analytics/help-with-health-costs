@@ -1,7 +1,7 @@
 #' create_hes_application_objects
 #'
 #' Create objects to summarise the HES application data
-#' Output will include a line chart, supporting download data and data for supplementary datasets
+#' Output will include a line chart, a table, supporting download data and data for supplementary datasets
 #' 
 #' Data will be based on all applications to a service using  the get_hes_application_data function to extract data
 #' 
@@ -19,14 +19,17 @@ create_hes_application_objects <- function(db_connection, db_table_name, service
   # if certificate sub-types are required slightly different objects will be required to allow for this
   if(subtype_split == TRUE){
     
+    # create the data object for the visualisations
+    obj_chart_data <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('CERTIFICATE_SUBTYPE', 'APPLICATION_FY')) |> 
+      dplyr::filter(CERTIFICATE_SUBTYPE != 'Not Available') |> 
+      dplyr::arrange(CERTIFICATE_SUBTYPE, APPLICATION_FY)
+    
     # create the chart using a grouped chart object
-    obj_chart <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('CERTIFICATE_SUBTYPE', 'APPLICATION_FY')) |> 
-      dplyr::filter(CERTIFICATE_SUBTYPE != 'N/A') |> 
-      dplyr::arrange(APPLICATION_FY, CERTIFICATE_SUBTYPE) |> 
-      dplyr::mutate(APPLICATIONS_SF = signif(APPLICATIONS,3)) |> 
+    obj_chart <- obj_chart_data |> 
+      dplyr::mutate(APPLICATIONS = signif(APPLICATIONS,3)) |> 
       nhsbsaVis::group_chart_hc(
         x = APPLICATION_FY,
-        y = APPLICATIONS_SF,
+        y = APPLICATIONS,
         type = "line",
         group = "CERTIFICATE_SUBTYPE",
         xLab = "Financial Year",
@@ -38,6 +41,14 @@ create_hes_application_objects <- function(db_connection, db_table_name, service
         enabled = T,
         shared = T,
         sort = T
+      )
+    
+    # create the table object
+    obj_table <- obj_chart_data |> 
+      rename_df_fields() |> 
+      knitr::kable(
+        align = "llr",
+        format.args = list(big.mark = ",")
       )
     
     # create the support datasets
@@ -61,13 +72,16 @@ create_hes_application_objects <- function(db_connection, db_table_name, service
     
   } else {
     
+    # create the data object for the visualisations
+    obj_chart_data <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('APPLICATION_FY')) |>
+      dplyr::arrange(APPLICATION_FY)
+    
     # create the chart using a basic single column chart
-    obj_chart <- get_hes_application_data(con, db_table_name, service_area, min_ym, max_ym, c('APPLICATION_FY')) |>
-      dplyr::arrange(APPLICATION_FY) |> 
-      dplyr::mutate(APPLICATIONS_SF = signif(APPLICATIONS,3)) |> 
+    obj_chart <- obj_chart_data |> 
+      dplyr::mutate(APPLICATIONS = signif(APPLICATIONS,3)) |> 
       nhsbsaVis::basic_chart_hc(
         x = APPLICATION_FY,
-        y = APPLICATIONS_SF,
+        y = APPLICATIONS,
         type = "line",
         xLab = "Financial Year",
         yLab = "Number of applications received",
@@ -79,6 +93,14 @@ create_hes_application_objects <- function(db_connection, db_table_name, service
         enabled = T,
         shared = T,
         sort = T
+      )
+    
+    # create the table object
+    obj_table <- obj_chart_data |> 
+      rename_df_fields() |> 
+      knitr::kable(
+        align = "lr",
+        format.args = list(big.mark = ",")
       )
     
     # create the support datasets
@@ -110,6 +132,6 @@ create_hes_application_objects <- function(db_connection, db_table_name, service
   }
   
   # return output
-  return(list("chart" = obj_chart, "chart_data" = obj_chData, "support_data" = obj_suppData))
+  return(list("chart" = obj_chart, "table" = obj_table, "chart_data" = obj_chData, "support_data" = obj_suppData))
   
 }

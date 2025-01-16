@@ -6,6 +6,8 @@ Version 1.0
 
 AMENDMENTS:
 	2024-05-03  : Steven Buckley    : Initial script created
+    2024-06-04  : Steven Buckley    : Switched source for postcode and IMD reference
+                                        Changed N/A to Not Available
     
 
 DESCRIPTION:
@@ -29,31 +31,45 @@ DEPENDENCIES:
     
     DIM.AGE                         :   Reference table providing age band classification lookups
     
-    GRALI.ONS_NSPL_MAY_23           :   Reference table for National Statistics Postcode Lookup (NSPL)
+    OST.ONS_NSPL_MAY_24_11CEN       :   Reference table for National Statistics Postcode Lookup (NSPL)
                                         Contains mapping data from postcode to key geographics and deprivation profile data
-                                        Based on NSPL for May 2023
+                                        Based on NSPL for May 2024
+    
+    OST.IMD_2019                    :   Reference table for Indices of Multiple Deprivation
+                                        Contains mapping data from LSOA to IMD_DECILE
     
 */
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------SCRIPT START----------------------------------------------------------------------------------------------------------------------
 
-create table PX_PAT_FACT_V2 as
+create table HWHC_PX_PAT_FACT as
 
 with
 -----SECTION START: LSOA CLASSIFICATION---------------------------------------------------------------------------------------------------------------
 --using the NSPL identify a single IMD_DECILE and ICB per LSOA11 code
-lsoa_classification as
+lsoa_classification_icb as
 (
 select  /*+ materialize */
         distinct
             LSOA11  as LSOA_CODE,
-            ICB,
-            IMD_DECILE
-from        GRALI.ONS_NSPL_MAY_23
+            ICB
+from        OST.ONS_NSPL_MAY_24_11CEN
 where       1=1
     and     LSOA11 like 'E%'
 )
---select * from lsoa_classification;
+--select * from lsoa_classification_icb;
+
+,
+
+lsoa_classification_imd as
+(
+select  /*+ materialize */
+            LSOA11              as LSOA_CODE,
+            IMD_DECILE,
+            ceil(IMD_DECILE/2)  as IMD_QUINTILE
+from        OST.IMD_2019
+)
+--select * from lsoa_classification_imd;
 -----SECTION END: LSOA CLASSIFICATION-----------------------------------------------------------------------------------------------------------------
 
 ,
@@ -84,9 +100,9 @@ patient_lsoa as
 select      /*+ materialize */
             pl.PATIENT_ID,
             pl.PATIENT_LSOA_CODE,
-            lc.ICB,
-            lc.IMD_DECILE,
-            ceil(lc.IMD_DECILE/2) as IMD_QUINTILE
+            icb.ICB,
+            imd.IMD_DECILE,
+            imd.IMD_QUINTILE
 from        (
             select      PATIENT_ID,
                         PATIENT_LSOA_CODE,
@@ -96,17 +112,19 @@ from        (
                 and     fact.YEAR_MONTH between &&p_min_ym and &&p_max_ym
                 and     fact.PATIENT_IDENTIFIED = 'Y'
                 and     fact.NHS_PAID_FLAG = 'Y'
+                and     nvl(fact.CONSULT_ONLY_IND,'N') != 'Y'
                 and     fact.DISPENSER_COUNTRY_OU = 1
                 and     fact.PATIENT_LSOA_CODE is not null
-            )                   pl
-left join   lsoa_classification lc  on  pl.PATIENT_LSOA_CODE = lc.LSOA_CODE
+            )                       pl
+left join   lsoa_classification_icb icb  on  pl.PATIENT_LSOA_CODE = icb.LSOA_CODE
+left join   lsoa_classification_imd imd  on  pl.PATIENT_LSOA_CODE = imd.LSOA_CODE
 where       1=1
     and     RNK = 1
 group by    pl.PATIENT_ID,
             pl.PATIENT_LSOA_CODE,
-            lc.ICB,
-            lc.IMD_DECILE,
-            ceil(lc.IMD_DECILE/2)
+            icb.ICB,
+            imd.IMD_DECILE,
+            imd.IMD_QUINTILE
 )
 --select * from patient_lsoa;
 -----SECTION END: LATEST LSOA CLASSIFICATION----------------------------------------------------------------------------------------------------------
@@ -124,8 +142,8 @@ select      /*+ materialize */
             age_lkp.BAND_5YEARS,
             age_lkp.BAND_10YEARS,
             case 
-                when px_age.CALC_AGE <16 then 'N/A'
-                when px_age.CALC_AGE >59 then 'N/A'
+                when px_age.CALC_AGE <16 then 'Not Available'
+                when px_age.CALC_AGE >59 then 'Not Available'
                 else age_lkp.BAND_5YEARS
             end as CUSTOM_AGE_BAND
 from        (
@@ -137,6 +155,7 @@ from        (
                 and     fact.YEAR_MONTH between &&p_min_ym and &&p_max_ym
                 and     fact.PATIENT_IDENTIFIED = 'Y'
                 and     fact.NHS_PAID_FLAG = 'Y'
+                and     nvl(fact.CONSULT_ONLY_IND,'N') != 'Y'
                 and     fact.DISPENSER_COUNTRY_OU = 1
                 and     fact.PDS_DOB is not null
             )           px_age
@@ -148,8 +167,8 @@ group by    px_age.PATIENT_ID,
             age_lkp.BAND_5YEARS,
             age_lkp.BAND_10YEARS,
             case 
-                when px_age.CALC_AGE <16 then 'N/A'
-                when px_age.CALC_AGE >59 then 'N/A'
+                when px_age.CALC_AGE <16 then 'Not Available'
+                when px_age.CALC_AGE >59 then 'Not Available'
                 else age_lkp.BAND_5YEARS
             end
 )
@@ -167,10 +186,10 @@ select  /*+ materialize */
             case when fact.PATIENT_IDENTIFIED = 'Y' then 1 else 0 end   as PATIENT_IDENTIFIED_FLAG,
             fact.PATIENT_ID,
             nvl(pa.CALC_AGE,-1)                                         as AGE,
-            nvl(pa.BAND_5YEARS,'N/A')                                   as BAND_5YEARS,
-            nvl(pa.BAND_10YEARS,'N/A')                                  as BAND_10YEARS,
-            nvl(pa.CUSTOM_AGE_BAND,'N/A')                               as CUSTOM_AGE_BAND,
-            nvl(pl.ICB,'N/A')                                           as ICB,
+            nvl(pa.BAND_5YEARS,'Not Available')                         as BAND_5YEARS,
+            nvl(pa.BAND_10YEARS,'Not Available')                        as BAND_10YEARS,
+            nvl(pa.CUSTOM_AGE_BAND,'Not Available')                     as CUSTOM_AGE_BAND,
+            nvl(pl.ICB,'Not Available')                                 as ICB,
             pl.IMD_DECILE,
             pl.IMD_QUINTILE,
             max(cdrd.HRT_FLAG)                                          as HRT_FLAG,
@@ -183,14 +202,15 @@ left join   patient_age                         pa      on  fact.PATIENT_ID     
 where       1=1
     and     fact.YEAR_MONTH between &&p_min_ym and &&p_max_ym
     and     fact.NHS_PAID_FLAG = 'Y'
+    and     nvl(fact.CONSULT_ONLY_IND,'N') != 'Y'
     and     fact.DISPENSER_COUNTRY_OU = 1
 group by    fact.PATIENT_IDENTIFIED,
             fact.PATIENT_ID,
             nvl(pa.CALC_AGE,-1),
-            nvl(pa.BAND_5YEARS,'N/A'),
-            nvl(pa.BAND_10YEARS,'N/A'),
-            nvl(pa.CUSTOM_AGE_BAND,'N/A'),
-            nvl(pl.ICB,'N/A'),
+            nvl(pa.BAND_5YEARS,'Not Available'),
+            nvl(pa.BAND_10YEARS,'Not Available'),
+            nvl(pa.CUSTOM_AGE_BAND,'Not Available'),
+            nvl(pl.ICB,'Not Available'),
             pl.IMD_DECILE,
             pl.IMD_QUINTILE
 )

@@ -30,7 +30,7 @@ create_px_patient_age_objects <- function(
   # Create objects ----------------------------------------------------------
 
   # create the dataset
-  # request data for all ages (-1 to 150) as CUSTOM_AGE_BAND will apply 'N/A' where required
+  # request data for all ages (-1 to 150) as CUSTOM_AGE_BAND will apply 'Not Available' where required
   df <- get_prescription_patient_data(
     db_connection = db_connection, 
     db_table_name = db_table_name, 
@@ -38,7 +38,7 @@ create_px_patient_age_objects <- function(
     max_age = 150, 
     group_list = c("CUSTOM_AGE_BAND")
   ) |> 
-    dplyr::filter(CUSTOM_AGE_BAND != 'N/A') |> 
+    dplyr::filter(CUSTOM_AGE_BAND != 'Not Available') |> 
     dplyr::arrange(CUSTOM_AGE_BAND) |> 
     dplyr::rename(BASE_POPULATION := {{ patient_group }}) |> 
     dplyr::select(CUSTOM_AGE_BAND, BASE_POPULATION)

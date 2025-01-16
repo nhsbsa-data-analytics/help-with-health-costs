@@ -7,6 +7,8 @@ Version 1.0
 AMENDMENTS:
 	2024-03-25  : Steven Buckley    : Initial script created
     2024-04-22  : Steven Buckley    : Revised script to fit in pipeline approach
+    2024-06-04  : Steven Buckley    : Switched source for postcode reference
+                                      Changed N/A to Not Available
 
 
 DESCRIPTION:
@@ -34,15 +36,15 @@ DEPENDENCIES:
                                             
     DIM.HES_CERTIFICATE_STATUS_DIM      :   Reference table containing lookup for status code to description
 
-    GRALI.ONS_NSPL_MAY_23               :   Reference table for National Statistics Postcode Lookup (NSPL)
+    OST.ONS_NSPL_MAY_24_11CEN           :   Reference table for National Statistics Postcode Lookup (NSPL)
                                             Contains mapping data from postcode to key geographics and deprivation profile data
-                                            Based on NSPL for May 2023
+                                            Based on NSPL for May 2024
 */
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------SCRIPT START----------------------------------------------------------------------------------------------------------------------
 
-create table HES_FACT compress for query high as
+create table HWHC_HES_FACT compress for query high as
 with 
 base as
 (
@@ -56,10 +58,10 @@ select      standard_hash(hcd.CERTIFICATE_NUMBER, 'SHA256')                     
                 when hcd.CERTIFICATE_TYPE = 'TAX' then 'NHS tax credit exemption certificate'
             end                                                                                                                                 as SERVICE_AREA_NAME,
             case
-                when hcd.CERTIFICATE_TYPE != 'PPC'  then 'N/A'
+                when hcd.CERTIFICATE_TYPE != 'PPC'  then 'Not Available'
                 when hcd.CERTIFICATE_DURATION = 3   then '3-month'
                 when hcd.CERTIFICATE_DURATION = 12  then '12-month'
-                                                    else 'N/A'
+                                                    else 'Not Available'
             end                                                                                                                                 as CERTIFICATE_SUBTYPE,
             hcd.CERTIFICATE_DURATION,
             hapf.CERTIFICATE_ISSUED_FLAG,
@@ -74,20 +76,20 @@ select      standard_hash(hcd.CERTIFICATE_NUMBER, 'SHA256')                     
             case
                 -- for MATEX, MEDEX and PPC exclude any ages outside of expected range 15-59 (likely errors)
                 --for MATEX anything above 45 group as 45+
-                when hcd.CERTIFICATE_TYPE is null                                                           then 'N/A'
-                when hcd.CERTIFICATE_HOLDER_AGE is null                                                     then 'N/A'
-                when hcd.CERTIFICATE_TYPE in ('MAT','MED','PPC','TAX') and hcd.CERTIFICATE_HOLDER_AGE <= 14 then 'N/A'
-                when hcd.CERTIFICATE_TYPE in ('MAT','MED','PPC') and hcd.CERTIFICATE_HOLDER_AGE >= 60       then 'N/A'
-                when hcd.CERTIFICATE_TYPE in ('TAX') and hcd.CERTIFICATE_HOLDER_AGE > 90                    then 'N/A'
+                when hcd.CERTIFICATE_TYPE is null                                                           then 'Not Available'
+                when hcd.CERTIFICATE_HOLDER_AGE is null                                                     then 'Not Available'
+                when hcd.CERTIFICATE_TYPE in ('MAT','MED','PPC','TAX') and hcd.CERTIFICATE_HOLDER_AGE <= 14 then 'Not Available'
+                when hcd.CERTIFICATE_TYPE in ('MAT','MED','PPC') and hcd.CERTIFICATE_HOLDER_AGE >= 60       then 'Not Available'
+                when hcd.CERTIFICATE_TYPE in ('TAX') and hcd.CERTIFICATE_HOLDER_AGE > 90                    then 'Not Available'
                 when hcd.CERTIFICATE_TYPE = 'MAT' and hcd.CERTIFICATE_HOLDER_AGE >= 45                      then '45+'
                 when hcd.CERTIFICATE_TYPE = 'TAX' and hcd.CERTIFICATE_HOLDER_AGE >= 65                      then '65+'
                                                                                                             else age.BAND_5YEARS
             end                                                                                                                                 as CUSTOM_AGE_BAND,
             pcd.LSOA11                                                                                                                          as LSOA,
             --remove ONS code for non-England areas
-            case when substr(pcd.ICB,1,1) = 'E' then ICB else 'N/A' end                                                                         as ICB,
-            nvl(pcd.ICB23CDH,'N/A')                                                                                                             as ICB_CODE,
-            nvl(pcd.ICB23NM,'N/A')                                                                                                              as ICB_NAME, 
+            case when substr(pcd.ICB,1,1) = 'E' then ICB else 'Not Available' end                                                               as ICB,
+            nvl(pcd.ICB23CDH,'Not Available')                                                                                                   as ICB_CODE,
+            nvl(pcd.ICB23NM,'Not Available')                                                                                                    as ICB_NAME, 
             pcd.IMD_DECILE,
             case
                 when pcd.IMD_DECILE in (1,2)    then 1
@@ -95,7 +97,7 @@ select      standard_hash(hcd.CERTIFICATE_NUMBER, 'SHA256')                     
                 when pcd.IMD_DECILE in (5,6)    then 3
                 when pcd.IMD_DECILE in (7,8)    then 4
                 when pcd.IMD_DECILE in (9,10)   then 5
-                                            else null
+                                                else null
             end                                                                                                                                 as IMD_QUINTILE,
             case
                 when pcd.CTRY = 'E92000001' then 'England'
@@ -121,7 +123,7 @@ select      standard_hash(hcd.CERTIFICATE_NUMBER, 'SHA256')                     
 from        DIM.HES_CERTIFICATE_DIM             hcd
 inner join  AML.HES_APPLICATION_PROCESS_FACT    hapf    on  hcd.CERTIFICATE_NUMBER                              =   hapf.CERTIFICATE_NUMBER
 inner join  DIM.HES_CERTIFICATE_STATUS_DIM      hcsd    on  hapf.CERTIFICATE_STATUS                             =   hcsd.CERTIFICATE_STATUS
-left join   GRALI.ONS_NSPL_MAY_23               pcd     on  regexp_replace(upper(hapf.POSTCODE),'[^A-Z0-9]','') = regexp_replace(upper(pcd.PCD),'[^A-Z0-9]','')
+left join   OST.ONS_NSPL_MAY_24_11CEN           pcd     on  regexp_replace(upper(hapf.POSTCODE),'[^A-Z0-9]','') = regexp_replace(upper(pcd.PCD),'[^A-Z0-9]','')
 left join   DIM.AGE_DIM                         age     on  hcd.CERTIFICATE_HOLDER_AGE                          =   age.AGE
 where       1=1
     --limit to records as of a set date supplied at runtime

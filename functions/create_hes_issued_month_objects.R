@@ -1,7 +1,7 @@
 #' create_hes_issued_month_objects
 #'
 #' Create objects to summarise the HES issued outcomes data
-#' Output will include a line chart, supporting download data and data for supplementary datasets
+#' Output will include a line chart, a table, supporting download data and data for supplementary datasets
 #' 
 #' Data will be based on outcomes issued to the customer, using the get_hes_issue_data function to extract data
 #' 
@@ -19,15 +19,18 @@ create_hes_issued_month_objects <- function(db_connection, db_table_name, servic
   # if certificate sub-types are required slightly different objects will be required to allow for this
   if(subtype_split == TRUE){
     
-    # create the chart using a grouped chart object
-    obj_chart <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('CERTIFICATE_SUBTYPE', 'ISSUE_YM')) |> 
-      dplyr::filter(CERTIFICATE_SUBTYPE != 'N/A') |> 
+    # create the data object for the visualisations
+    obj_chart_data <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('CERTIFICATE_SUBTYPE', 'ISSUE_YM')) |> 
+      dplyr::filter(CERTIFICATE_SUBTYPE != 'Not Available') |> 
       dplyr::arrange(ISSUE_YM, CERTIFICATE_SUBTYPE) |> 
-      dplyr::mutate(ISSUE_YM = paste0(substr(ISSUE_YM,1,4),'-',substr(ISSUE_YM,5,6))) |> 
-      dplyr::mutate(ISSUED_CERTS_SF = signif(ISSUED_CERTS,3)) |> 
+      dplyr::mutate(ISSUE_YM = format(as.Date(paste0(ISSUE_YM,'01'), '%Y%m%d'), '%b-%y'))
+    
+    # create the chart using a grouped chart object
+    obj_chart <- obj_chart_data |> 
+      dplyr::mutate(ISSUED_CERTS = signif(ISSUED_CERTS,3)) |> 
       nhsbsaVis::group_chart_hc(
         x = ISSUE_YM,
-        y = ISSUED_CERTS_SF,
+        y = ISSUED_CERTS,
         type = "line",
         group = "CERTIFICATE_SUBTYPE",
         xLab = "Month",
@@ -41,10 +44,18 @@ create_hes_issued_month_objects <- function(db_connection, db_table_name, servic
         sort = T
       )
     
+    # create the table object
+    obj_table <- obj_chart_data |> 
+      rename_df_fields() |> 
+      knitr::kable(
+        align = "llr",
+        format.args = list(big.mark = ",")
+      )
+    
     # create the support datasets
     obj_chData <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'ISSUE_YM', 'CERTIFICATE_SUBTYPE')) |> 
       dplyr::arrange(ISSUE_YM, CERTIFICATE_SUBTYPE) |> 
-      dplyr::mutate(ISSUE_YM = paste0(substr(ISSUE_YM,1,4),'-',substr(ISSUE_YM,5,6))) |> 
+      dplyr::mutate(ISSUE_YM = format(as.Date(paste0(ISSUE_YM,'01'), '%Y%m%d'), '%b-%y')) |> 
       rename_df_fields()
     
     # for "England only" services use a n/a placeholder for country
@@ -53,26 +64,29 @@ create_hes_issued_month_objects <- function(db_connection, db_table_name, servic
         dplyr::mutate(COUNTRY = 'n/a') |> 
         dplyr::relocate(COUNTRY, .after = ISSUE_YM) |> 
         dplyr::arrange(ISSUE_YM, CERTIFICATE_SUBTYPE) |> 
-        dplyr::mutate(ISSUE_YM = paste0(substr(ISSUE_YM,1,4),'-',substr(ISSUE_YM,5,6))) |> 
+        dplyr::mutate(ISSUE_YM = format(as.Date(paste0(ISSUE_YM,'01'), '%Y%m%d'), '%b-%y')) |> 
         rename_df_fields()
       
     } else {
       obj_suppData <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'ISSUE_YM', 'COUNTRY', 'CERTIFICATE_SUBTYPE')) |> 
         dplyr::arrange(COUNTRY, ISSUE_YM, CERTIFICATE_SUBTYPE) |> 
-        dplyr::mutate(ISSUE_YM = paste0(substr(ISSUE_YM,1,4),'-',substr(ISSUE_YM,5,6))) |> 
+        dplyr::mutate(ISSUE_YM = format(as.Date(paste0(ISSUE_YM,'01'), '%Y%m%d'), '%b-%y')) |> 
         rename_df_fields()
     }
     
   } else {
     
-    # create the chart using a basic single column chart
-    obj_chart <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('ISSUE_YM')) |>
+    # create the data object for the visualisations
+    obj_chart_data <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('ISSUE_YM')) |>
       dplyr::arrange(ISSUE_YM) |> 
-      dplyr::mutate(ISSUE_YM = paste0(substr(ISSUE_YM,1,4),'-',substr(ISSUE_YM,5,6))) |> 
-      dplyr::mutate(ISSUED_CERTS_SF = signif(ISSUED_CERTS,3)) |> 
+      dplyr::mutate(ISSUE_YM = format(as.Date(paste0(ISSUE_YM,'01'), '%Y%m%d'), '%b-%y'))
+    
+    # create the chart using a basic single column chart
+    obj_chart <- obj_chart_data |> 
+      dplyr::mutate(ISSUED_CERTS = signif(ISSUED_CERTS,3)) |> 
       nhsbsaVis::basic_chart_hc(
         x = ISSUE_YM,
-        y = ISSUED_CERTS_SF,
+        y = ISSUED_CERTS,
         type = "line",
         xLab = "Month",
         yLab = "Number of certificates issued",
@@ -86,10 +100,18 @@ create_hes_issued_month_objects <- function(db_connection, db_table_name, servic
         sort = T
       )
     
+    # create the table object
+    obj_table <- obj_chart_data |> 
+      rename_df_fields() |> 
+      knitr::kable(
+        align = "lr",
+        format.args = list(big.mark = ",")
+      )
+    
     # create the support datasets
     obj_chData <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'ISSUE_YM')) |> 
       dplyr::arrange(ISSUE_YM) |> 
-      dplyr::mutate(ISSUE_YM = paste0(substr(ISSUE_YM,1,4),'-',substr(ISSUE_YM,5,6))) |> 
+      dplyr::mutate(ISSUE_YM = format(as.Date(paste0(ISSUE_YM,'01'), '%Y%m%d'), '%b-%y')) |> 
       rename_df_fields()
     
     # for "England only" services use a n/a placeholder for country
@@ -98,12 +120,12 @@ create_hes_issued_month_objects <- function(db_connection, db_table_name, servic
         dplyr::mutate(COUNTRY = 'n/a') |> 
         dplyr::relocate(COUNTRY, .after = ISSUE_YM) |> 
         dplyr::arrange(ISSUE_YM) |> 
-        dplyr::mutate(ISSUE_YM = paste0(substr(ISSUE_YM,1,4),'-',substr(ISSUE_YM,5,6))) |> 
+        dplyr::mutate(ISSUE_YM = format(as.Date(paste0(ISSUE_YM,'01'), '%Y%m%d'), '%b-%y')) |> 
         rename_df_fields()
     } else {
       obj_suppData <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'ISSUE_YM', 'COUNTRY')) |> 
         dplyr::arrange(COUNTRY, ISSUE_YM) |> 
-        dplyr::mutate(ISSUE_YM = paste0(substr(ISSUE_YM,1,4),'-',substr(ISSUE_YM,5,6))) |> 
+        dplyr::mutate(ISSUE_YM = format(as.Date(paste0(ISSUE_YM,'01'), '%Y%m%d'), '%b-%y')) |> 
         rename_df_fields()
     }
   }
@@ -133,6 +155,6 @@ create_hes_issued_month_objects <- function(db_connection, db_table_name, servic
   }
   
   # return output
-  return(list("chart" = obj_chart, "chart_data" = obj_chData, "support_data" = obj_suppData))
+  return(list("chart" = obj_chart, "table" = obj_table, "chart_data" = obj_chData, "support_data" = obj_suppData))
   
 }

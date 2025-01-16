@@ -1,0 +1,155 @@
+---
+title: "`r config$publication_top_name`"
+pagetitle: Help with Health Costs 
+always_allow_html: true
+output:
+  word_document:
+    toc: yes
+    toc_depth: '3'
+  html_document:
+    anchor_sections: no
+    css: www/style.css
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      collapsed: no
+---
+
+<script>
+  $(document).ready(function() {
+    $('#header').prepend('<img src=`r knitr::image_uri("www/bsa_logo.svg")` alt=\"NHSBSA logo\" style=\"position:absolute; top: 0; right: 0; padding: 10px; width: 25%;\">');
+  });
+</script>
+
+<style type="text/css">  body, td {
+    font-size: 16px;
+    font-family: sans-serif;
+  }
+  .list-group-item.active {
+    background-color: #005EB8!important;
+    border-color: #005EB8!important;
+  }
+    a {
+        color: #005EB8!important;
+    }
+    .tocify {
+        border-radius: 0px!important;
+    }
+</style>
+  <html lang="en">
+
+```{r setup, include=FALSE}
+# set code chunk options to disable echo by default
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      message = FALSE)
+
+```
+
+<main>
+
+# `r config$publication_sub_name` {.toc-ignore}
+
+Published `r config$publication_date` 
+
+## Key findings
+
+T.B.C
+
+---
+
+## 1. Introduction
+### 1.1. Background {.toc-ignore} 
+
+The NHSBSA administer a range of services to help people with the health costs, include help with:
+* NHS prescription costs
+* NHS dental costs
+* sight tests, glasses and contact lenses
+* travel to receive NHS treatment
+* NHS wigs and fabric supports
+
+Full details of the schemes available can be found on the [NHS Help with Health Costs webpage](https://www.nhsbsa.nhs.uk/nhs-help-health-costs).
+
+Help with health costs currently issue the following five varieties of certificate which give differing level of help with health costs, as detailed in the individual sections below. 
+
+* [NHS Prescription Prepayment certificate (PPC)](https://www.nhsbsa.nhs.uk/help-nhs-prescription-costs/nhs-prescription-prepayment-certificate-ppc)
+* [NHS Tax credit exemption certificate](https://www.nhsbsa.nhs.uk/exemption-certificates/nhs-tax-credit-exemption-certificates)
+* [Medical exemption certificate](https://www.nhsbsa.nhs.uk/check-if-you-have-nhs-exemption/medical-exemption-certificates)
+* [Maternity exemptioncertificate](https://www.nhsbsa.nhs.uk/check-if-you-have-nhs-exemption/maternity-exemption-certificates)
+* [NHS Low Income Scheme (LIS)](https://www.nhsbsa.nhs.uk/nhs-low-income-scheme)
+* [NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT PPC)](https://www.nhsbsa.nhs.uk/help-nhs-prescription-costs/nhs-hormone-replacement-therapy-prescription-prepayment-certificate-hrt-ppc)
+
+These statistics provide estimates of applications received and certificates issued for the financial years 2019/20 to 2023/24. The financial year runs from April 1 to March 31. 
+
+---
+
+## 2. Results and commentary
+
+T.B.C
+
+---
+
+## 3 About these statistics
+
+### 3.1 Statistical Disclosure Control (SDC) {.toc-ignore}
+
+Statistical disclosure control has been applied to these statistics. Volume figures have been redacted in the supporting summary tables if they relate to fewer than 5 items. Further information about our statistical disclosure control protocol [can be found on our website](https://www.nhsbsa.nhs.uk/policies-and-procedures).
+
+### 3.2. Rounding {.toc-ignore}
+
+The high-level figures in this statistical summary have been rounded where appropriate for clarity. In most cases rounding has been to two significant figures in the key findings and information boxes and three significant figures in the main text. This is to make this narrative as accessible as possible to all readers. The summary tables released with this publication allow users to investigate this data at lower levels of granularity. Figures in the supplementary tables have not been rounded.
+
+### 3.3. Index of deprivation {.toc-ignore}
+
+The [English Indices of Deprivation 2019](https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019) have been used to provide a measure of patient deprivation. The English Indices of Deprivation are an official national measure of deprivation that follows an established methodological framework to capture a wide range of individuals' living conditions.
+
+The reported IMD quintile, where 1 is the most deprived and 5 the least deprived, is derived from the postcode currently held for an applicant. There are a small number of records each year that we have reported as having an unknown IMD quintile. These are applicants with no fixed abode or with british forces addresses, or where we have been unable to match the applicant postcode to a postcode in the [National Statistics Postcode Lookup (NSPL) - May 2022](https://geoportal.statistics.gov.uk/datasets/national-statistics-postcode-lookup-may-2022/about).
+
+IMD quintiles are calculated by ranking census lower-layer super output areas (LSOAs) from most deprived to least deprived and dividing them into equal groups. These range from the most deprived 20% (quintile 1) of small areas nationally to the least deprived 20% (quintile 5) of small areas nationally.
+
+
+---
+
+## 4 Accessibility
+
+If you need information on this website in a different format like accessible PDF, large print, easy read, audio recording or braille, you can contact us by:
+
+**Email**: accessibility@nhsbsa.nhs.uk
+
+**Phone**: 0191 203 5318
+
+[Find out about call charges](https://www.nhsbsa.nhs.uk/contact-us/call-charges-and-phone-numbers)
+
+We’ll consider your request and get back to you in 5 working days.
+
+These contact details are only for accessibility queries. This inbox is not for technical queries or IT problems. If you have a query that is not about accessibility, go to the ‘Contact us’ section of this page.
+
+View our [Accessibility statement for Official Statistics Narratives](https://www.nhsbsa.nhs.uk/accessibility-statement-official-statistics-narratives).
+
+---
+
+## 5 Feedback and contact us
+
+Feedback is important to us; we welcome any questions and comments relating to these statistics. 
+
+You can complete a [short survey about this publication](`r config$stats_survey_link`)  to help us improve the Official Statistics that we produce. All responses will remain anonymous and individuals will not be identifiable in any report that we produce.
+
+You can view our [privacy policy](https://www.nhsbsa.nhs.uk/our-policies/privacy) on our website to see how your data is used and stored.
+
+You can contact us by:
+
+**Email:** statistics@nhsbsa.nhs.uk
+
+**You can also write to us at:**
+
+NHSBSA - Statistics  
+NHS Business Services Authority  
+Stella House  
+Goldcrest Way  
+Newburn Riverside  
+Newcastle upon Tyne  
+NE15 8NY
+
+**Responsible statistician:** `r config$responsible_statistician`
+
+</main>

@@ -92,17 +92,17 @@ select  /*+ materialize */
             case
                 when SERVICE_AREA != 'MAT'              
                     then CERTIFICATE_SUBTYPE
-                when CERTIFICATE_DURATION_MONTHS < 12   
+                when CERTIFICATE_DURATION < 12   
                     then '11 months or less'
-                when CERTIFICATE_DURATION_MONTHS >= 20
+                when CERTIFICATE_DURATION >= 20
                     then '20 to 22 months'
-                when CERTIFICATE_DURATION_MONTHS >= 18
+                when CERTIFICATE_DURATION >= 18
                     then '18 to 19 months'
-                when CERTIFICATE_DURATION_MONTHS >= 16
+                when CERTIFICATE_DURATION >= 16
                     then '16 to 17 months'
-                when CERTIFICATE_DURATION_MONTHS >= 14
+                when CERTIFICATE_DURATION >= 14
                     then '14 to 15 months'
-                when CERTIFICATE_DURATION_MONTHS >= 12
+                when CERTIFICATE_DURATION >= 12
                     then '12 to 13 months'
                 else 'Not Available'
             end                                             as CERTIFICATE_DURATION,
@@ -129,17 +129,17 @@ group by    ISSUE_FY,
             case
                 when SERVICE_AREA != 'MAT'              
                     then CERTIFICATE_SUBTYPE
-                when CERTIFICATE_DURATION_MONTHS < 12   
+                when CERTIFICATE_DURATION < 12   
                     then '11 months or less'
-                when CERTIFICATE_DURATION_MONTHS >= 20
+                when CERTIFICATE_DURATION >= 20
                     then '20 to 22 months'
-                when CERTIFICATE_DURATION_MONTHS >= 18
+                when CERTIFICATE_DURATION >= 18
                     then '18 to 19 months'
-                when CERTIFICATE_DURATION_MONTHS >= 16
+                when CERTIFICATE_DURATION >= 16
                     then '16 to 17 months'
-                when CERTIFICATE_DURATION_MONTHS >= 14
+                when CERTIFICATE_DURATION >= 14
                     then '14 to 15 months'
-                when CERTIFICATE_DURATION_MONTHS >= 12
+                when CERTIFICATE_DURATION >= 12
                     then '12 to 13 months'
                 else 'Not Available'
             end,

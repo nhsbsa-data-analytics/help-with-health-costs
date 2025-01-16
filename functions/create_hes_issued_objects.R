@@ -52,21 +52,21 @@ create_hes_issued_objects <- function(db_connection, db_table_name, service_area
       )
     
     # create the support datasets
-    obj_chData <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'ISSUE_FY', 'CERTIFICATE_SUBTYPE')) |> 
-      dplyr::arrange(ISSUE_FY, CERTIFICATE_SUBTYPE) |> 
+    obj_chData <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'CERTIFICATE_SUBTYPE', 'ISSUE_FY')) |> 
+      dplyr::arrange(CERTIFICATE_SUBTYPE, ISSUE_FY) |> 
       rename_df_fields()
     
     # for "England only" services use a n/a placeholder for country
     if(service_area %in% c("MAT","MED","PPC","HRTPPC")){
-      obj_suppData <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'ISSUE_FY', 'CERTIFICATE_SUBTYPE')) |> 
+      obj_suppData <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'CERTIFICATE_SUBTYPE', 'ISSUE_FY')) |> 
         dplyr::mutate(COUNTRY = 'n/a') |> 
         dplyr::relocate(COUNTRY, .after = ISSUE_FY) |> 
-        dplyr::arrange(ISSUE_FY, CERTIFICATE_SUBTYPE) |> 
+        dplyr::arrange(CERTIFICATE_SUBTYPE, ISSUE_FY) |> 
         rename_df_fields()
       
     } else {
-      obj_suppData <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'ISSUE_FY', 'COUNTRY', 'CERTIFICATE_SUBTYPE')) |> 
-        dplyr::arrange(COUNTRY, ISSUE_FY, CERTIFICATE_SUBTYPE) |> 
+      obj_suppData <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'CERTIFICATE_SUBTYPE', 'COUNTRY', 'ISSUE_FY')) |> 
+        dplyr::arrange(CERTIFICATE_SUBTYPE, COUNTRY, ISSUE_FY) |> 
         rename_df_fields()
     }
     
@@ -116,7 +116,7 @@ create_hes_issued_objects <- function(db_connection, db_table_name, service_area
         dplyr::arrange(ISSUE_FY) |> 
         rename_df_fields()
     } else {
-      obj_suppData <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'ISSUE_FY', 'COUNTRY')) |> 
+      obj_suppData <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c('SERVICE_AREA_NAME', 'COUNTRY', 'ISSUE_FY')) |> 
         dplyr::arrange(COUNTRY, ISSUE_FY) |> 
         rename_df_fields()
     }

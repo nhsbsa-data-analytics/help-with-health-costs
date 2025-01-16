@@ -136,7 +136,13 @@ select      ID,
             CERTIFICATE_TYPE,
             SERVICE_AREA_NAME,
             CERTIFICATE_SUBTYPE,
-            CERTIFICATE_ISSUED_FLAG,
+            --handle small number of PPC claims without a certificate type that should be excluded from issued certificate counts
+            --manually adjust the CERTIFICATE_ISSUED_FLAG to 0 if a PPC certificate does not have a duration of 3 or 12
+            case
+                when CERTIFICATE_TYPE = 'PPC' and CERTIFICATE_DURATION not in (3,12)
+                then 0
+                else CERTIFICATE_ISSUED_FLAG
+            end                                 as CERTIFICATE_ISSUED_FLAG,
             CERTIFICATE_STATUS,
             CERTIFICATE_STATUS_DESC,
             CERTIFICATE_CANCELLED_FLAG,
@@ -176,7 +182,7 @@ select      ID,
                 when    CERTIFICATE_TYPE = 'MAT' 
                     and round(months_between(CERTIFICATE_EXPIRY_DATE, CERTIFICATE_START_DATE),0) > 22   then null
                 else    round(months_between(CERTIFICATE_EXPIRY_DATE, CERTIFICATE_START_DATE),0)
-            end                                                                                                                                 as CERTIFICATE_DURATION_MONTHS,
+            end                                                                                                                                 as CERTIFICATE_DURATION,
             --months between issue and due date
             --to replace with duration
             case

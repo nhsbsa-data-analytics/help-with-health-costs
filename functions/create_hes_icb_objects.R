@@ -8,52 +8,31 @@
 #' The base dataset uses the following columns to assign people to geographic areas: ICB, ICB_NAME
 #' 
 #' A baseline population figure will be used to standardise data and prevent area size impacting results.
-#' The baseline population to use will be determined by the base_population_source parameter.
-#' If "PX" is chosen, the db_px_patient_table and px_population_type parameters must be supplied to define which table and 
-#' field to take population data from. This table will already be aggregated to relevant CUSTOM_AGE
-#' If "ONS" is chose the ons_population_... parameters must be populated to be passed to the icb_population_data function. This will 
-#' be used to extract population estimates published by ONS.
 #' 
 #' Parameters supplied to function will define the time period for which data will be produced
 #'
 #' @param db_connection active database connection
 #' @param db_table_name database table containing application level data
 #' @param service_area service area to collate data for, which must be one of: MAT, MED, PPC, TAX, LIS, HRTPPC
-#' @param min_ym first month for analysis (format YYYYMM)
-#' @param max_ym last month for analysis (format YYYYMM)
+#' @param min_ym first month for full dataset (format YYYYMM)
+#' @param max_ym last month for full dataset analysis (format YYYYMM)
+#' @param focus_fy financial year for narrative analysis (format YYYY/YYYY)
 #' @param subtype_split (TRUE/FALSE) Boolean parameter to define is certificate subtypes should be included
-#' @param base_population_source (PX / ONS) definition of source for baseline population figures
-#' @param population_min_age minimum age to consider in population aggregation (0 to 90)
-#' @param population_max_age maximum age to consider in population aggregation (0 to 90)
-#' @param db_px_patient_table database table containing patient count data with data already aggregation to relevant groupings
-#' @param px_population_type (PATIENT_COUNT / HRT_PATIENT_COUNT) 
-#' @param ons_population_year population year based on mid-year estimate (2021, 2022)
-#' @param ons_population_gender character to identify gender to include in population reporting (M = Male, F = Female, T = Total)
+#' @param population_db_table database table containing base population level data
 #'
 create_hes_icb_objects <- function(
     db_connection,
     db_table_name,
     service_area,
-    min_ym, 
+    min_ym,
     max_ym,
+    focus_fy,
     subtype_split = FALSE,
-    base_population_source,
-    population_min_age,
-    population_max_age,
-    db_px_patient_table = NULL,
-    px_population_type = NULL,
-    ons_population_year = NULL,
-    ons_population_gender = NULL
+    population_db_table
 ){
   
 
   # Parameter Tests: --------------------------------------------------------
-  
-  # Test Parameter: db_table
-  # abort if supplied table does not exist
-  if(DBI::dbExistsTable(conn = db_connection, name = DBI::Id(schema = toupper(db_connection@info$username), table = db_table_name)) == FALSE){
-    stop(paste0("Invalid parameter (db_table_name) supplied to create_hes_icb_objects: ", db_table_name, " does not exist!"), call. = FALSE)
-  }
   
   # Test Parameter: service_area
   # abort if invalid service_area has been supplied
@@ -81,81 +60,16 @@ create_hes_icb_objects <- function(
     stop("Invalid parameter (max_ym) supplied to create_hes_icb_objects: Must be valid year_month (YYYYMM) between 201504 and current month", call. = FALSE)
   }
   
-  # Test Parameter: base_population_source
-  # abort if invalid base_population_source has been supplied
-  if(!toupper(base_population_source) %in% c('PX', 'ONS')){
-    stop("Invalid parameter (base_population_source) supplied to create_hes_icb_objects: Must be one of: PX, ONS", call. = FALSE)
-  } 
-  # if PX is chosen check a valid table has been supplied
-  if(toupper(base_population_source) == 'PX'){
-    if(DBI::dbExistsTable(conn = db_connection, name = DBI::Id(schema = toupper(db_connection@info$username), table = db_table_name)) == FALSE){
-      stop(paste0("Invalid parameter (db_px_patient_table) supplied to create_hes_icb_objects: ", db_px_patient_table, " does not exist!"), call. = FALSE)
-    }
-  }
-  # if ONS is chosen check the additional parameters have been supplied
-  if(toupper(base_population_source) == 'ONS'){
-    if(is.null(ons_population_year)){stop(paste0("Parameter missing (create_hes_icb_objects): ons_population_year required for ONS baseline population"), call. = FALSE)}
-    if(is.null(ons_population_gender)){stop(paste0("Parameter missing (create_hes_icb_objects): ons_population_gender required for ONS baseline population"), call. = FALSE)}
-  }
-  
 
   # Calculate baseline population data --------------------------------------
-  if(base_population_source == 'PX'){
-    
-    # create the population data object
-    population_data <- get_prescription_patient_data(
-      db_connection = db_connection,
-      db_table_name = db_px_patient_table,
-      min_age = population_min_age,
-      max_age = population_max_age,
-      group_list = c("ICB")
-    ) |> 
-      dplyr::filter(ICB != 'Not Available') |> 
-      dplyr::rename(BASE_POPULATION := {{ px_population_type }}) |> 
-      dplyr::select(ICB, BASE_POPULATION)
-    
-    # create the population definition text object to be used as custom label
-    population_text = paste0(
-      "Population estimate (population aged ",
-      population_min_age,
-      ifelse(population_max_age==90,"+", paste0(" to ", population_max_age)),
-      " with NHS prescribing",
-      switch(
-        px_population_type,
-        "PATIENT_COUNT" = "",
-        "HRT_PATIENT_COUNT" = " of HRT PPC qualifying medication"
-      ),
-      ")"
-    )
-  }
+  population_data <- dplyr::tbl(
+    con, 
+    from = dbplyr::in_schema(toupper(con@info$username), population_db_table)
+  ) |> 
+    # filter to service area and time periods
+    dplyr::filter(SERVICE_AREA == toupper(service_area)) |> 
+    dplyr::collect()
   
-  if(base_population_source == 'ONS'){
-    
-    # create the population data object
-    population_data <- icb_population_data(
-      year = ons_population_year,
-      min_age = population_min_age, 
-      max_age = population_max_age,
-      gender = ons_population_gender
-    )
-    
-    # create the population definition text object to be used as custom label
-    population_text = paste0(
-      "ONS population estimate (",
-      ons_population_year,
-      switch(
-        ons_population_gender,
-        "M" = " male",
-        "F" = " female",
-        "T" = ""
-      ),
-      " population aged ",
-      population_min_age,
-      ifelse(population_max_age==90,"+", paste0(" to ", population_max_age)),
-      ")"
-    )
-  }
-
   
   # Create output objects ---------------------------------------------------
 
@@ -177,10 +91,12 @@ create_hes_icb_objects <- function(
   # the map/chart will be limited to only certificates issued to the applicant (excluding other outcome responses for services like LIS)
   # create a single dataset based on issued certificates combined to population data
   # all figures can be aggregated to country and ICB
-  df <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, aggCols) |> 
+  df_issue <- get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, aggCols)
+    
+  df <- df_issue |>
     dplyr::left_join(
       y = population_data,
-      by = "ICB"
+      by = c("ISSUE_FY" = "FINANCIAL_YEAR","ICB" = "GEO_CODE", "SERVICE_AREA_NAME" = "SERVICE_AREA_NAME")
     ) |> 
     dplyr::mutate(ISSUED_CERTS_PER_POP = ISSUED_CERTS / BASE_POPULATION * config$ons_pop_rate_denominator) |> 
     dplyr::mutate(
@@ -191,6 +107,7 @@ create_hes_icb_objects <- function(
   
   # create chart object
   obj_chart <- df |>
+    dplyr::filter(ISSUE_FY == focus_fy) |> 
     dplyr::filter(ICB != 'Not Available') |> 
     dplyr::arrange(desc(ISSUED_CERTS_PER_POP)) |> 
     nhsbsaVis::basic_chart_hc(
@@ -209,7 +126,7 @@ create_hes_icb_objects <- function(
       pointFormat = paste0(
         metric_text,": {point.ISSUED_CERTS_PER_POP_SF:,.0f} <br>",
         "Certificates issued: {point.ISSUED_CERTS_SF:,.0f} <br>",
-        population_text,": {point.BASE_POPULATION_SF:,.0f}"
+        "Base Population: {point.POP_TYPE}: {point.BASE_POPULATION_SF:,.0f}"
       )
     ) |> 
     highcharter::hc_xAxis(labels = list(enabled = FALSE)) |> 
@@ -218,7 +135,7 @@ create_hes_icb_objects <- function(
   # Map:
   obj_map <- basic_map_hc(
     geo_data = get_icb_map_boundaries(config$icb_classification),
-    df = df,
+    df = df |> dplyr::filter(ISSUE_FY == focus_fy),
     ons_code_field = "ICB",
     area_name_field = "ICB_NAME",
     value_field = "ISSUED_CERTS_PER_POP",
@@ -230,12 +147,16 @@ create_hes_icb_objects <- function(
       "<b>ICB:</b> {point.ICB_NAME}<br>",
       "<b>",metric_text,":</b> {point.ISSUED_CERTS_PER_POP_SF:,.0f}<br>",
       "<b>Certificates issued:</b> {point.ISSUED_CERTS_SF:,.0f}<br>",
-      "<b>",population_text,":</b> {point.BASE_POPULATION_SF:,.0f}"
+      "<b>Base Population: {point.POP_TYPE}:</b> {point.BASE_POPULATION_SF:,.0f}"
     )
   )
   
+  # build a column header for the population
+  population_text <- paste0("Population:",unique(na.omit(df[df$ISSUE_FY == focus_fy,]$POP_TYPE)))
+  
   # create the table object
   obj_table <- df |> 
+    dplyr::filter(ISSUE_FY == focus_fy) |> 
     dplyr::filter(ICB != 'Not Available') |> 
     dplyr::select(ICB_NAME, ISSUED_CERTS_PER_POP_SF,ISSUED_CERTS,BASE_POPULATION) |> 
     dplyr::arrange(ICB_NAME) |> 
@@ -251,12 +172,11 @@ create_hes_icb_objects <- function(
     )
   
   # create support data
-  obj_chData <- df
+  obj_suppData <- df
   
-  # remove wanted fields (ONS coding and rounded number fields)
   if(subtype_split == TRUE){
     # for split certificate types additional columns should show the breakdown by certificate subtype
-    obj_chData <- df |>
+    obj_suppData <- df |>
       dplyr::left_join(
         y = get_hes_issue_data(con, db_table_name, service_area, min_ym, max_ym, c(aggCols, "CERTIFICATE_SUBTYPE")) |>
           dplyr::select(all_of(c(pvtJoinCols,"CERTIFICATE_SUBTYPE","ISSUED_CERTS"))) |> 
@@ -269,19 +189,28 @@ create_hes_icb_objects <- function(
         by = pvtJoinCols
       )
   }
-   
-  # remove unwanted fields and rename fields
-  obj_chData <- obj_chData |> 
-    dplyr::arrange(ICB) |> 
-    dplyr::select(-ICB, -ISSUED_CERTS_SF, -BASE_POPULATION_SF, -ISSUED_CERTS_PER_POP) |> 
+  
+  # remove unwanted fields
+  obj_suppData <- obj_suppData |> 
+    dplyr::arrange(ISSUE_FY, ICB_NAME) |> 
+    dplyr::select(-ICB, -ISSUED_CERTS_SF, -BASE_POPULATION_SF, -ISSUED_CERTS_PER_POP, -SERVICE_AREA) |> 
     # apply custom naming that could change based on parameters
     dplyr::rename(
-      {{population_text}} := BASE_POPULATION,
+      "Base Population Classification" = POP_TYPE,
+      "Base Population" = BASE_POPULATION,
       {{metric_text}} := ISSUED_CERTS_PER_POP_SF
-    ) |> 
+    )
+  
+  # create subset for chart data
+  obj_chData <- obj_suppData |> 
+    dplyr::filter(ISSUE_FY == focus_fy) |> 
+    rename_df_fields()
+  
+  # rename fields
+  obj_suppData <- obj_suppData |> 
     rename_df_fields()
     
   # return output
-  return(list("chart" = obj_chart, "map" = obj_map, "table" = obj_table, "chart_data" = obj_chData, "support_data" = obj_chData))
+  return(list("chart" = obj_chart, "map" = obj_map, "table" = obj_table, "chart_data" = obj_chData, "support_data" = obj_suppData))
 
 }

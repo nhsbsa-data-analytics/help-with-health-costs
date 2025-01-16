@@ -18,6 +18,7 @@ infoBox_border <- function(
   border-left: 5px solid ", borderColour,"!important;
   background-color: ", backgroundColour,"!important;
   padding: 10px;
+  margin-bottom: 20px;
   width: ", width,"!important;
   display: inline-block;
   vertical-align: top;

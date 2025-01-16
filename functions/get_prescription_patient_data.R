@@ -20,12 +20,6 @@ get_prescription_patient_data <- function(
   
   # Test Parameters ---------------------------------------------------------
   
-  # Test Parameter: db_table
-  # abort if supplied table does not exist
-  if(DBI::dbExistsTable(conn = db_connection, name = DBI::Id(schema = toupper(db_connection@info$username), table = db_table_name)) == FALSE){
-    stop(paste0("Invalid parameter (db_table_name) supplied to get_prescription_patient_data: ", db_table_name, " does not exist!"), call. = FALSE)
-  }
-  
   # parameter test: min_age  
   if(!(min_age %in% seq(-1,150))){
     stop("Invalid parameter (min_age) supplied to get_prescription_patient_data: must be integer between -1 and 150", call. = FALSE)

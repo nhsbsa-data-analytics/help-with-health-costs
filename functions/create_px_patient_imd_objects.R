@@ -24,12 +24,6 @@ create_px_patient_imd_objects <- function(
   
   # Test Parameters ---------------------------------------------------------
   
-  # Test Parameter: patient_group
-  # abort if invalid parameter
-  if(DBI::dbExistsTable(conn = db_connection, name = DBI::Id(schema = toupper(db_connection@info$username), table = db_table_name)) == FALSE){
-    stop("Invalid parameter (patient_group) supplied to create_px_patient_imd_objects: Must be either PATIENT_COUNT or HRT_PATIENT_COUNT", call. = FALSE)
-  }
-  
   # parameter test: min_age  
   if(!(min_age %in% seq(0,90))){
     stop("Invalid parameter (min_age) supplied to create_px_patient_imd_objects: must be integer between 0 and 90", call. = FALSE)

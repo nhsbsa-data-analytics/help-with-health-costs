@@ -15,12 +15,6 @@ get_hes_issue_data <- function(db_connection, db_table_name, service_area, min_y
   
   # Test Parameters ---------------------------------------------------------
   
-  # Test Parameter: db_table
-  # abort if supplied table does not exist
-  if(DBI::dbExistsTable(conn = db_connection, name = DBI::Id(schema = toupper(db_connection@info$username), table = db_table_name)) == FALSE){
-    stop(paste0("Invalid parameter (db_table_name) supplied to get_hes_issue_data: ", db_table_name, " does not exist!"), call. = FALSE)
-  }
-  
   # Test Parameter: service_area
   # abort if invalid service_area has been supplied
   if(!toupper(service_area) %in% c('MAT', 'MED', 'PPC', 'TAX', 'LIS','HRTPPC')){

@@ -18,15 +18,6 @@ create_px_patient_age_objects <- function(
     patient_group = 'PATIENT_COUNT'
 ){
   
-  # Test Parameters ---------------------------------------------------------
-  
-  # Test Parameter: patient_group
-  # abort if invalid parameter
-  if(DBI::dbExistsTable(conn = db_connection, name = DBI::Id(schema = toupper(db_connection@info$username), table = db_table_name)) == FALSE){
-    stop("Invalid parameter (patient_group) supplied to create_px_patient_age_objects: Must be either PATIENT_COUNT or HRT_PATIENT_COUNT", call. = FALSE)
-  }
-  
-
   # Create objects ----------------------------------------------------------
 
   # create the dataset

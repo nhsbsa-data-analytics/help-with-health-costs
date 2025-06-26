@@ -12,7 +12,7 @@
 #' @param aggregation_level (IMD_DECILE or IMD_QUINTILE) aggregation level to summarise data
 #' @param year live birth year based on calendar year figures (2013 to 2021)
 #'
-get_ons_live_birth_imd_data <- function(db_connection, db_table_name, aggregation_level = 'IMD_DECILE', year = 2021){
+get_ons_live_birth_imd_data <- function(db_connection, db_table_name, aggregation_level = 'IMD_DECILE', year = 2023){
   
   # Parameter tests ---------------------------------------------------------
   
@@ -22,8 +22,8 @@ get_ons_live_birth_imd_data <- function(db_connection, db_table_name, aggregatio
   }
   
   # parameter test: year  
-  if(!(year >= 2013 & year <= 2021)){
-    stop("Invalid parameter (year) supplied to get_ons_live_birth_imd_data: must be year between 2013 and 2021", call. = FALSE)
+  if(!(year >= 2013 & year <= 2023)){
+    stop("Invalid parameter (year) supplied to get_ons_live_birth_imd_data: must be year between 2013 and 2023", call. = FALSE)
   }
   
   # Data Collection ---------------------------------------------------------

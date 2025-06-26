@@ -1,4 +1,4 @@
-#' create_px_patient_age_objects
+#' create_px_patient_age_objects_CY
 #'
 #' Create objects to summarise the NHS prescription age data
 #' Output will include a column chart by custom age bands, supporting download data and data for supplementary datasets
@@ -10,13 +10,11 @@
 #'
 #' @param db_connection active database connection
 #' @param db_table_name database table containing application level data
-#' @param focus_fy financial year for narrative analysis (format YYYY/YYYY)
 #' @param patient_group PATIENT_COUNT or HRT_PATIENT_COUNT
 #'
-create_px_patient_age_objects <- function(
+create_px_patient_age_objects_cy <- function(
     db_connection, 
-    db_table_name, 
-    focus_fy,
+    db_table_name,
     patient_group = 'PATIENT_COUNT'
 ){
   
@@ -29,42 +27,17 @@ create_px_patient_age_objects <- function(
     db_table_name = db_table_name, 
     min_age = -1, 
     max_age = 150, 
-    group_list = c("FINANCIAL_YEAR", "CUSTOM_AGE_BAND")
+    group_list = c("CALENDAR_YEAR", "CUSTOM_AGE_BAND")
   ) |> 
     dplyr::filter(CUSTOM_AGE_BAND != 'Not Available') |> 
-    dplyr::arrange(FINANCIAL_YEAR, CUSTOM_AGE_BAND) |> 
+    dplyr::arrange(CALENDAR_YEAR, CUSTOM_AGE_BAND) |> 
     dplyr::rename(BASE_POPULATION := {{ patient_group }}) |> 
-    dplyr::select(FINANCIAL_YEAR, CUSTOM_AGE_BAND, BASE_POPULATION)
-  
-  #create chart data filtered to single focus year
-  chart_df <- df |>
-  dplyr::filter(FINANCIAL_YEAR == focus_fy)
-  
-  # create the chart object
-  obj_chart <- chart_df |> 
-    dplyr::mutate(BASE_POPULATION_SF = signif(BASE_POPULATION,3)) |> 
-    nhsbsaVis::basic_chart_hc(
-      x = CUSTOM_AGE_BAND,
-      y = BASE_POPULATION_SF,
-      type = "column",
-      xLab = "Age Band",
-      yLab = "Esimated patient count",
-      seriesName = "Esimated patient count",
-      title = "",
-      dlOn = FALSE
-    ) |> 
-    highcharter::hc_tooltip(
-      enabled = T,
-      shared = T,
-      sort = T
-    ) |> 
-    highcharter::hc_yAxis(labels = list(enabled = TRUE))
+    dplyr::select(CALENDAR_YEAR, CUSTOM_AGE_BAND, BASE_POPULATION)
   
   # rename the field names in dataset
-  chart_df <- rename_df_fields(chart_df)
   df <- rename_df_fields(df)
   
   # return output
-  return(list("chart" = obj_chart, "chart_data" = chart_df, "support_data" = df))
+  return(list("support_data" = df))
   
 }

@@ -64,16 +64,20 @@ The NHSBSA administer a range of services to help people with the health costs, 
 
 Full details of these schemes are available on the [NHS Help with Health Costs webpage](https://www.nhsbsa.nhs.uk/nhs-help-health-costs).
 
-Six different certificate schemes are available, with different levels of help with health costs:
+Six different certificate schemes are included in this publication, with different levels of help with health costs:
 
 * [Maternity exemption certificates](https://www.nhsbsa.nhs.uk/check-if-you-have-nhs-exemption/maternity-exemption-certificates)
 * [Medical exemption certificates](https://www.nhsbsa.nhs.uk/check-if-you-have-nhs-exemption/medical-exemption-certificates)
-* [NHS Tax Credit Exemption Certificates](https://www.nhsbsa.nhs.uk/exemption-certificates/nhs-tax-credit-exemption-certificates)
 * [NHS Low Income Scheme](https://www.nhsbsa.nhs.uk/nhs-low-income-scheme)
 * [NHS Prescription Prepayment certificate     (PPC)](https://www.nhsbsa.nhs.uk/help-nhs-prescription-costs/nhs-prescription-prepayment-certificate-ppc)
 * [NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT     PPC)](https://www.nhsbsa.nhs.uk/help-nhs-prescription-costs/nhs-hormone-replacement-therapy-prescription-prepayment-certificate-hrt-ppc)
+* [NHS Tax Credit Exemption Certificates](https://www.nhsbsa.nhs.uk/exemption-certificates/nhs-tax-credit-exemption-certificates)
 
-These statistics provide estimates of volumes related to these certificate schemes. Data covers the financial years 2019/2020 to 2023/24, where the financial year runs from April 1 to March 31. The time period covered by these statistics includes the Coronavirus (COVID-19) pandemic period. It is worth noting that during this time period there was a reduction in face to face primary care consultations, referrals, new prescriptions and diagnoses due to the COVID-19 pandemic and national lockdowns.  
+Tax Credit payments made by HMRC ended on 5 April 2025, so the NHS Tax Credit exemption certificate scheme is no longer issuing certificates. Data on the tax credit scheme in 2024/25 has been included in the 2024/25 release.
+
+These statistics provide estimates of volumes related to these certificate schemes. Data covers the financial years 2019/2020 to 2024/25, where the financial year runs from April 1 to March 31. 
+
+The time period covered by these statistics includes the Coronavirus (COVID-19) pandemic period. It is worth noting that during this time period there was a reduction in face-to-face primary care consultations, referrals, new prescriptions and diagnoses due to the COVID-19 pandemic and national lockdowns.  
 
 #### Users and uses
 This publication can have a wide range of uses, including:
@@ -82,7 +86,7 @@ This publication can have a wide range of uses, including:
 * monitoring the uptake of NHS Help with Health Costs schemes
 * allowing scrutiny by the public and stakeholders
 
-The NHS Business Services Authority (NHSBSA) administer services providing help with health costs. The data that forms the basis of these statistics is collected as a by-product of this process.
+The NHS Business Services Authority (NHSBSA) administers services providing help with health costs. The data that forms the basis of these statistics is collected as a by-product of this process.
 
 ## 2. Methodology
 
@@ -93,13 +97,13 @@ Reported ages represent the age of the applicant when they submitted the applica
 
 Some certificates may also provide support for partners and dependent children. In these cases, the age will represent the age of the lead applicant only.
 
-It may not be possible to calculate an age if the applicant's date of birth was not supplied or was incorrect. If the captured date of birth looks incorrect, the age will classified as "Not Available". Age restrictions will differ between services, as defined in the relevant "methodology" sections.
+It may not be possible to calculate an age if the applicant's date of birth was not supplied or was incorrect. If the captured date of birth appears incorrect, the age will classified as "Not Available". Age restrictions will differ between services, as defined in the relevant "methodology" sections.
 
 Due to the method used to calculate age using the applicants date of birth, some data may change between releases. Historic age data may change if a person updates their data to correct inaccuracies with their date of birth.
 
 #### 2.1.2  Location (Country/Integrated Care Board)
 
-These statistics use the [National Statistics Postcode Lookup (NSPL) - May 2024](https://geoportal.statistics.gov.uk/datasets/521edce4159a451a932539b7fc786322/about) to identify Integrated Care Board (ICB) and country for each individual. This uses the captured postcode information supplied for the application/certificate.
+These statistics use the [National Statistics Postcode Lookup (NSPL) - August 2024](https://geoportal.statistics.gov.uk/datasets/c5afedb9204a47e99559a4880feddcb1/about) to identify Integrated Care Board (ICB) and country for each individual. This uses the captured postcode information supplied for the application/certificate.
 
 Postcodes are typically provided during the application process. Some applicant's may then update postcode details when addresses change. The postcode used for these statistics will represent the latest known postcode information.
 
@@ -113,7 +117,7 @@ Due to the method used to assign location, some data may change between releases
 * if the NSPL reclassifies a postcode against a different area in the new NSPL edition
 
 #### 2.1.3  Deprivation
-Deprivation reporting uses the [English Indices of Deprivation 2019](https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019). In particular, the headline Index of Multiple Deprivation (IMD). IMD data combines with the [National Statistics Postcode Lookup (NSPL) - May 2024](https://geoportal.statistics.gov.uk/datasets/521edce4159a451a932539b7fc786322/about) using lower-layer super output area (LSOA) 2011. This identifies the general deprivation for an applicant's postcode.
+Deprivation reporting uses the [English Indices of Deprivation 2019](https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019). In particular, the headline Index of Multiple Deprivation (IMD). IMD data combines with the [National Statistics Postcode Lookup (NSPL) - August 2024](https://geoportal.statistics.gov.uk/datasets/c5afedb9204a47e99559a4880feddcb1/about) using lower-layer super output area (LSOA) 2011. This identifies the general deprivation for an applicant's postcode.
 
 As deprivation is based on indices calculated for England only, reporting is limited to applicants that can be identified with an English postcode.
 
@@ -136,11 +140,11 @@ A single applicant could submit multiple applications during the same period. Ea
 For the NHS Low Income Scheme and NHS Tax Credit Exemption Certificates, a single application could cover multiple people. However, the figures in this report represent certificate level data and therefore figures will represent a single application, regardless of how many individuals were included on the application.
 
 #### 2.2.2 Issued certificate counts
-Where a count of issued certificates has been provided this will only include cases where the application has been completed and a certificate issued to the applicant.
+Where a count of issued certificates has been provided this will only include cases where the application has been completed and a certificate issued to the applicant. The data on certificates issued in this publication may not be comparable from other sources. Differences can occur if data has been extracted on a different date, or uses a different methodology to assign the year of issue or month of issue.
 
 These counts are based solely on certificates issued by NHSBSA. There is no ability to identify if the certificate was received and then used by the applicant.
 
-Some certificates may be reissued if the certificate holder changes there personal information or requests a replacement due to damage or loss of a certificate. These additional (reissued) certificates will not be included in any certificate counts. However, if a certificate holder submits a completely new application, and receives an additional certificate, this will be counted alongside all other issued certificates.
+Some certificates may be reissued if the certificate holder changes their personal information or requests a replacement due to damage or loss of a certificate. These additional (reissued) certificates will not be included in any certificate counts. However, if a certificate holder submits a completely new application, and receives an additional certificate, this will be counted alongside all other issued certificates.
 
 For the NHS Low Income Scheme and NHS Tax Credit Exemption Certificates, a single certificate could represent multiple people. However, the figures in this report represent certificate level data and therefore figures will represent a certificate, regardless of how many individuals are covered.
 
@@ -150,15 +154,15 @@ For the NHS Low Income Scheme and NHS Tax Credit Exemption Certificates, a singl
 Reporting reflects data available in the NHSBSA Data Warehouse environment as of `r format(as.Date(config$extract_date_lis,"%Y%m%d"),"%d %B %Y")`.
 
 ##### 2.3.1.1 Date restrictions and exclusions applied
-The number of applications and issued outcomes cover the period 2018/19 to 2023/24.
+The number of applications and issued outcomes cover the period 2018/19 to 2024/25.
 
-For analysis based on demographics such as age and location, data relates to the latest financial year of 2023/24.
+For analysis based on demographics such as age and location, data relates to the latest financial year of 2024/25.
 
 The following restrictions apply to all reporting relating to NHS Low Income Scheme:
 
 * Limited to HC1 applications submitted to NHS Low Income Scheme.
-* Excluding any HC5 (refund only) applications.
-* Excluding any data relating to certificates issued to asylum seekers assisted by UK Visas and Immigration (UKVI). For these individuals a HC2 is automatically issued as part of the support they receive.
+* Excludes any HC5 (refund only) applications.
+* Excludes any data relating to certificates issued to asylum seekers assisted by UK Visas and Immigration (UKVI). For these individuals a HC2 is automatically issued as part of the support they receive.
 
 ##### 2.3.1.2 Certificates issued
 Applications are only considered as complete if the data shows an outcome has been issued to the applicant. Applications that are currently in progress are not included. Applications abandoned before completion are only included in figures relating to applications received.
@@ -171,7 +175,7 @@ The age reported will represent the age of the applicant at the time of applicat
 An age band of 'Not Available' has been used where the applicants age could not be confidently assigned from the available data. For NHS Low Income Scheme data this includes where the calculated age would be less than 15 or greater than 99.
 
 ##### 2.3.1.4 Certificate duration
-Duration is the number of months between the start and expiry date for a certificate. To simplify reporting, age bands reported represent the most common scenarios.
+Duration is the number of months between the start and expiry date for a certificate. To simplify reporting, the duration bands reported represent the most common scenarios.
 
 ##### 2.3.1.5 ICB base population
 For ICB reporting, rates have been calculated per 10,000 base population. This base population is based on mid-year population estimates published by ONS for 2022, limited to population aged 16 and above. 
@@ -180,9 +184,9 @@ For ICB reporting, rates have been calculated per 10,000 base population. This b
 Reporting reflects data available in the NHSBSA Data Warehouse environment as of `r format(as.Date(config$extract_date_hes,"%Y%m%d"),"%d %B %Y")`.
 
 ##### 2.3.2.1 Date restrictions and exclusions applied
-The number of applications and issued outcomes cover the period 2018/19 to 2023/24.
+The number of applications and issued outcomes cover the period 2018/19 to 2024/25.
 
-For analysis based on demographics such as age and location, data relates to the latest financial year of 2023/24.
+For analysis based on demographics such as age and location, data relates to the latest financial year of 2024/25.
 
 Applications that are still ongoing or were abandoned before completion are only included in figures relating to applications received.
 
@@ -209,9 +213,9 @@ For ICB reporting, rates have been calculated per 10,000 base population. This b
 Reporting reflects data available in the NHSBSA Data Warehouse environment as of `r format(as.Date(config$extract_date_hes,"%Y%m%d"),"%d %B %Y")`.
 
 ##### 2.3.3.1 Date restrictions and exclusions applied
-The number of applications and issued outcomes cover the period 2018/19 to 2023/24.
+The number of applications and issued outcomes cover the period 2018/19 to 2024/25.
 
-For analysis based on demographics such as age and location, data relates to the latest financial year of 2023/24.
+For analysis based on demographics such as age and location, data relates to the latest financial year of 2024/25.
 
 Applications that are still ongoing or were abandoned before completion are only included in figures relating to applications received.
 
@@ -221,15 +225,15 @@ The age reported will represent the age of the applicant at the time of applicat
 An age band of 'Not Available' has been used where the applicants age could not be confidently assigned from the available data. For medical exemption data this includes where the calculated age would be less than 15 or greater than 60.
 
 ##### 2.3.3.3 ICB base population
-For ICB reporting, rates have been calculated per 10,000 base population. This base population is based estimated patient counts, aged 16-59, receiving any NHS prescription items during the reported time period.
+For ICB reporting, rates have been calculated per 10,000 base population. This base population is based on estimated patient counts, aged 16-59, receiving any NHS prescription items during the reported time period.
 
 #### 2.3.4 NHS Prescription Prepayment Certificate (PPC)
 Reporting reflects data available in the NHSBSA Data Warehouse environment as of `r format(as.Date(config$extract_date_hes,"%Y%m%d"),"%d %B %Y")`.
 
 ##### 2.3.4.1 Date restrictions and exclusions applied
-The number of applications and issued outcomes cover the period 2018/19 to 2023/24.
+The number of applications and issued outcomes cover the period 2018/19 to 2024/25.
 
-For analysis based on demographics such as age and location, data relates to the latest financial year of 2023/24.
+For analysis based on demographics such as age and location, data relates to the latest financial year of 2024/25.
 
 Applications that are still ongoing or were abandoned before completion are only included in figures relating to applications received.
 
@@ -239,31 +243,31 @@ The age reported will represent the age of the applicant at the time of applicat
 An age band of 'Not Available' has been used where the applicants age could not be confidently assigned from the available data. For PPC data this includes where the calculated age would be less than 15 or greater than 60.
 
 ##### 2.3.4.3 ICB base population
-For ICB reporting, rates have been calculated per 10,000 base population. This base population is based estimated patient counts, aged 16-59, receiving any NHS prescription items during the reported time period.
+For ICB reporting, rates have been calculated per 10,000 base population. This base population is based on estimated patient counts, aged 16-59, receiving any NHS prescription items during the reported time period.
 
 #### 2.3.5 NHS Hormone Replacement Therapy Prescription Prepayment Certificate (HRT PPC)
 Reporting reflects data available in the NHSBSA Data Warehouse environment as of `r format(as.Date(config$extract_date_hrt,"%Y%m%d"),"%d %B %Y")`.
 
 ##### 2.3.5.1 Date restrictions and exclusions applied
-The HRT PPC was introduced in April 2023. All analysis in this publication reflects activity during 2023/24.
+The HRT PPC was introduced in April 2023. Analysis in this publication reflects activity during 2023/24 and 2024/25.
 
-Applications that are still ongoing or were abandoned before completion are only included in figures relating to applications received.
+Applications that are still ongoing or were abandoned before completion are only included in figures relating to applications received. Historical data for certificates issued has changed since 2023/24 by a small number of certificates. This is due to changes relating to issue date in the NHSBSA data warehouse.
 
 ##### 2.3.5.2 Age
-The age reported will represent the age of the applicant at the time of application. Figures are reported in 5 year age bands. The HRT PPC provides support with NHS prescription charges and therefore is only relevant between the ages of 16 and 59 when prescription items are not automatically free based on patient age.
+The age reported will represent the age of the applicant at the time of application, and figures are reported in 5 year age bands. The HRT PPC provides support with NHS prescription charges. Therefore, it is only relevant between the ages of 16 and 59 when prescription items are not automatically free based on patient age.
 
 An age band of 'Not Available' has been used where the applicants age could not be confidently assigned from the available data. For HRT PPC data this includes where the calculated age would be less than 15 or greater than 60.
 
 ##### 2.3.5.3 ICB base population
-For ICB reporting, rates have been calculated per 10,000 base population. This base population is based estimated patient counts, aged 16-59, receiving any NHS prescription items for drugs that were eligible for support by the HRT PPC during the reported time period.
+For ICB reporting, rates have been calculated per 10,000 base population. This base population is based on estimated patient counts, aged 16-59, receiving any NHS prescription items for drugs that were eligible for support by the HRT PPC during the reported time period.
 
 #### 2.3.6 NHS Tax Credit Exemption Certificates
 Reporting reflects data available in the NHSBSA Data Warehouse environment as of `r format(as.Date(config$extract_date_hes,"%Y%m%d"),"%d %B %Y")`.
 
 ##### 2.3.6.1 Date restrictions and exclusions applied
-The number of issued certificates cover the period 2018/19 to 2023/24.
+The number of issued certificates cover the period 2018/19 to 2024/25.
 
-For analysis based on demographics such as age and location, data relates to the latest financial year of 2023/24.
+For analysis based on demographics such as age and location, data relates to the latest financial year of 2024/25.
 
 ##### 2.3.6.2 Age
 The age reported will represent the age of the applicant at the time of application. Figures are reported in 5 year age bands, with applicants aged 65 and over grouped as 65+.
@@ -287,7 +291,7 @@ The estimated patient counts included in this publication may omit patients whos
 
 ##### 2.4.1.1 Geographic area identification
 
-For prescribing via the Electronic Prescription Service (EPS), the patient's residential address is captured from the prescription data. This address is then assigned to a lower-layer super output area (LSOA) 2011. The LSOA can then be used to identify both the ICB and the deprivation profile (see section 2.1.3) based on mapping available in the [National Statistics Postcode Lookup (NSPL) - May 2024](https://geoportal.statistics.gov.uk/datasets/521edce4159a451a932539b7fc786322/about).
+For prescribing via the Electronic Prescription Service (EPS), the patient's residential address is captured from the prescription data. This address is then assigned to a lower-layer super output area (LSOA) 2011. The LSOA can then be used to identify both the ICB and the deprivation profile (see section 2.1.3) based on mapping available in the [National Statistics Postcode Lookup (NSPL) - August 2024](https://geoportal.statistics.gov.uk/datasets/c5afedb9204a47e99559a4880feddcb1/about).
 
 LSOA is only captured for prescriptions via EPS. For patients receiving both paper and EPS prescribing, the LSOA data is based on their EPS activity only.
 
@@ -295,7 +299,7 @@ Some patients may be captured with data against multiple residential addresses. 
 
 ##### 2.4.1.2 Patient age
 
-To report a patient’s age consistently across a financial year these statistics classify a patient based on their age on the 30th of September of that given financial year. This uses date of birth information from Personal Demographic Service (PDS) for verified NHS numbers only. 
+To report a patient’s age consistently across a financial year these statistics classify a patient based on their age on 30 September of that given financial year. For calendar year tables, the patient age as of 30 June of the given calendar year will be used. This uses date of birth information from Personal Demographic Service (PDS) for verified NHS numbers only. 
 
 Information relating to NHS numbers that have not been verified by PDS were excluded from patient counts as these patients could not be accurately assigned to an age group. 
 
@@ -317,20 +321,18 @@ Maternity exemption certificates, NHS Tax Credit Exemption Certificates and the 
 
 The population estimates were sourced from [population estimates for health geographies dataset published by ONS](https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/clinicalcommissioninggroupmidyearpopulationestimates).
 
-These population estimates are based on mid-year estimates, with 2022 being the latest available year at time of reporting. Figures published by ONS include a breakdown by age and gender. Data has been aggregated to include the most appropriate combination of age and gender for the service being reported. For NHS Tax Credit Exemption Certificates and the NHS Low Income Scheme population figures are based on people aged 16 and over. For maternity exemption certificates the population figures are based on the female population aged 15-45.
+These population estimates are based on mid-year estimates by Integrated Care Board (ICB), with 2022 being the latest available year at time of reporting. Figures published by ONS include a breakdown by age and gender. Data has been aggregated to include the most appropriate combination of age and gender for the service being reported. For NHS Tax Credit Exemption Certificates and the NHS Low Income Scheme population figures are based on people aged 16 and over. For maternity exemption certificates the population figures are based on the female population aged 15-45.
 
 #### 2.4.3 ONS live birth statistics
 
-To provide context for the maternity exemption certificate some live birth statistics have been reported. These figures were sourced from data published by ONS. It is not suitable, or possible, to use these figures as an accurate representation of the number of potential claims for maternity exemption certificates. Therefore this figures should only be considered as additional context.
+To provide context for the maternity exemption certificate some live birth statistics have been included. This data is sourced from figures published by the ONS. It is not suitable, or possible, to use these figures as an accurate representation of the number of potential claims for maternity exemption certificates. Therefore this figures should only be considered as additional context.
 
 There are some considerations to recognise when comparing live births statistics with maternity exemption certificate data:
 
 * Live births will not include all pregnancies which could be eligible for a maternity exemption certificate.
-* The time periods can not be accurately aligned. ONS publish live birth statistics by calendar year, with 2021 being the latest available year (at time of reporting) for the breakdowns required in this publication. Additionally, maternity exemption certificates cover a period longer than a single year as they cover both the pregnancy and upto one year following birth.
+* The time periods can not be accurately aligned. ONS publish live birth statistics by calendar year, with 2023 being the latest available year (at time of reporting) for the breakdowns required in this publication. Additionally, maternity exemption certificates cover a period longer than a single year as they cover both the pregnancy and up to one year following birth.
 
-The distribution of live births by age of mother was sourced from [ONS nomis tool query for live births by characteristics of mother](https://www.nomisweb.co.uk/query/construct/summary.asp?mode=construct&version=0&dataset=203).
-
-The distribution of live births by IMD decile was sourced from [birth characteristics dataset published by ONS (see worksheet 12)](https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/birthsdeathsandmarriages/livebirths/datasets/birthcharacteristicsinenglandandwales/2021/birthcharacteristics2021workbooknew.xlsx).
+The distribution of live births by age of mother and live births by IMD decile were sourced from the [2023 birth registrations dataset published by ONS](https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/livebirths/datasets/birthsinenglandandwalesbirthregistrations). This data was then aggregated up from deciles to quintiles.
 
 ## 3. Strengths and limitations
 
@@ -382,7 +384,7 @@ This is an assessment of the quality of these statistics against the European st
 
 ***This dimension covers the degree to which the product meets user need in both coverage and content***
   
-The HwHC publication summarises the number of certificates issued by NHSBSA to provide support to individuals with their health costs. We believe that this can be used to inform policy decisions at a national and local level, by the public to scrutinise uptake of NHS Help with Health Costs services, and by academia and applied health researchers for matters relating to public health. The NHSBSA also routinely receives Freedom of Information requests and parliamentary questions about this subject matter. 
+The HwHC publication summarises the number of certificates issued by NHSBSA to provide support to individuals with their health costs. We believe that this can be used to inform policy decisions at a national and local level, by the public to scrutinise uptake of NHS Help with Health Costs services, and by academia and applied health researchers for matters relating to public health. The NHSBSA also routinely receives Freedom of Information (FOI) requests and parliamentary questions about this subject matter. 
 
 We will be gathering feedback from users of these statistics on an on-going basis to help shape them and ensure that they remain relevant and useful.
 
@@ -431,7 +433,7 @@ A decision was made to allow a window of a couple of months following the end of
   
 The statistical summary narrative for this publication is presented as an HTML webpage, with supporting documentation also released in HTML format. Summary data and additional analysis is presented in tables in Excel files.
 
-A supporting online dashboard has also been created to allow some interrogation of the available data.
+A supporting online dashboard has also been created to allow some exploration of the available data.
 
 The R code used to produce the newest release of the HwHC publication is also available from the [NHSBSA GitHub](https://github.com/nhsbsa-data-analytics).
 
@@ -473,7 +475,7 @@ The procedures and policy used to ensure sound confidentiality, security and tra
 
 Trustworthy statistics and the data behind them are an important part of well-informed decision making, and are vital to support improvement across the wider health and social care system. It is accepted, however, that where statistics provide information on small numbers of individuals, the NHS Business Services Authority have a duty under data protection law to avoid directly or indirectly revealing any personal details. In addition, NHSBSA staff members are required to adhere to relevant NHS data confidentiality guidelines.
 
-The NHSBSA has robust confidentiality and security policies that were adhered to during the production of these statistics. More information on these policies and how we follow them can be found in our [Confidentiality and Access Statement](https://www.nhsbsa.nhs.uk/sites/default/files/2021-05/Confidentiality_and_Access_Statement_v002.pdf).
+The NHSBSA has robust confidentiality and security policies that were adhered to during the production of these statistics. More information on these policies and how we follow them can be found in our [Confidentiality and Access Statement](https://www.nhsbsa.nhs.uk/policies-and-procedures).
 
 A risk assessment around potential disclosure of personal identifiable information through these statistics was carried out during their production. In line with the NHSBSA’s Statistical Disclosure Control Policy, information where a count of individuals less than five can be inferred, has been redacted.
 
@@ -487,13 +489,13 @@ Age, and therefore age bands, have been calculated based on the applicant's date
 
 The [English Indices of Deprivation 2019](https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019) have been used to provide a measure of deprivation. The English Indices of Deprivation are an official national measure of deprivation that follows an established methodological framework to capture a wide range of individuals' living conditions.
 
-The reported IMD quintile, where 1 is the most deprived and 5 the least deprived, is derived from the postcode currently held for an applicant. There are a small number of records each year that we have reported as having an unknown IMD quintile. These are applicants with no fixed abode or with british forces addresses, or where we have been unable to match the applicant postcode to an English postcode in the [National Statistics Postcode Lookup (NSPL) - May 2023](https://geoportal.statistics.gov.uk/datasets/379c875939ec4fc4bb48ed32711eb042/about).
+The reported IMD quintile, where 1 is the most deprived and 5 the least deprived, is derived from the postcode currently held for an applicant. There are a small number of records each year that we have reported as having an unknown IMD quintile. These are applicants with no fixed abode or with british forces addresses, or where we have been unable to match the applicant postcode to an English postcode in the [National Statistics Postcode Lookup (NSPL) - August 2024](https://geoportal.statistics.gov.uk/datasets/c5afedb9204a47e99559a4880feddcb1/about).
 
 IMD quintiles are calculated by ranking census lower-layer super output areas (LSOAs) from most deprived to least deprived and dividing them into equal groups. These range from the most deprived 20% (quintile 1) of small areas nationally to the least deprived 20% (quintile 5) of small areas nationally.
 
 **Integrated Care Board (ICB)**
 
-Integrated care boards (ICBs) are a statutory NHS organisation responsible for developing a plan in collaboration with NHS trusts/foundation trusts and other system partners for meeting the health needs of the population, managing the NHS budget and arranging for the provision of health services in the defined area. They took over the functions of Clinical Commissioning Groups (CCG) in July 2022.
+Integrated care boards (ICBs) are a statutory NHS organisation responsible for developing a plan in collaboration with NHS trusts/foundation trusts and other system partners for meeting the health needs of the population, managing the NHS budget and arranging for the provision of health services in the defined area. They took over the functions of Clinical Commissioning Groups (CCGs) in July 2022.
 
 **Number of applications**
 

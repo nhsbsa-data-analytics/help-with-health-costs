@@ -1808,7 +1808,7 @@ tax_icb_objs_cy$support_data <- tax_icb_objs_cy$support_data |>
 DBI::dbDisconnect(con)
 
 
-# 5. Data tables ---------------------------------------------------------------
+# 5. Data tables - Financial year ----------------------------------------------
 
 # data tables for spreadsheet outputs
 # formatted according to accessibility standards
@@ -1890,9 +1890,9 @@ meta_descs <-
     "Name of NHSBSA administered NHS Help with Health Costs service. More information on these services can be found in the background and methodology document for this publication.",
     "Financial year the activity can be assigned to, which runs from April to March. For example, 2024/25 covers April 2024 to March 2025. For reporting of number of applications, this will represent the financial year the application was received. For reporting of issued certificates, this will represent the financial year in which the certificate was issued.",
     "Country classification based on the applicants residential address, using mapping via the National Statistics Postcode Lookup (NSPL) - August 2024. Not included for services typically available to English residents only.",
-    "Where the applicants residential address can be aligned to an English postcode via the National Statistics Postcode Lookup (NSPL) - August 2024",
-    "Where the applicants residential address can be assigned to a country other than England via the National Statistics Postcode Lookup (NSPL) - August 2024, the country will be recorded as 'Other'.",
-    "Where the applicants residential address cannot be assigned to any country via the National Statistics Postcode Lookup (NSPL) - August 2024, the country will be recorded as 'Unknown'.",
+    "Where the applicant's residential address can be aligned to an English postcode via the National Statistics Postcode Lookup (NSPL) - August 2024",
+    "Where the applicant's residential address can be assigned to a country other than England via the National Statistics Postcode Lookup (NSPL) - August 2024, the country will be recorded as 'Other'.",
+    "Where the applicant's residential address cannot be assigned to any country via the National Statistics Postcode Lookup (NSPL) - August 2024, the country will be recorded as 'Unknown'.",
     "Where distinct certificate types are available, this field will show which certificate was applicable.",
     "HC2 certificates provide full help with health costs, including free NHS prescriptions.",
     "HC3 certificates provide limited help with health costs. A HC3 certificate will show how much the holder has to pay towards health costs.",
@@ -2491,13 +2491,11 @@ openxlsx::saveWorkbook(wb,
                        "outputs/hwhc_tables.xlsx",
                        overwrite = TRUE)
 
-# 6. Data tables ---------------------------------------------------------------
+# 6. Data tables - Calendar year -----------------------------------------------
 
 # data tables for spreadsheet outputs
 # formatted according to accessibility standards
 # user may need to update file name to write outputs to in future releases
-
-#Calendar year tables
 
 # 6.1 Define sheets and metadata -----------------------------------------------
 
@@ -2574,9 +2572,9 @@ meta_descs <-
     "Name of NHSBSA administered NHS Help with Health Costs service. More information on these services can be found in the background and methodology document for this publication.",
     "Calendar year the activity can be assigned to. For reporting of number of applications, this will represent the calendar year the application was received. For reporting of issued certificates, this will represent the calendar year in which the certificate was issued.",
     "Country classification based on the applicants residential address, using mapping via the National Statistics Postcode Lookup (NSPL) - August 2024. Not included for services typically available to English residents only.",
-    "Where the applicants residential address can be aligned to an English postcode via the National Statistics Postcode Lookup (NSPL) - August 2024",
-    "Where the applicants residential address can be assigned to a country other than England via the National Statistics Postcode Lookup (NSPL) - August 2024, the country will be recorded as 'Other'.",
-    "Where the applicants residential address cannot be assigned to any country via the National Statistics Postcode Lookup (NSPL) - August 2024, the country will be recorded as 'Unknown'.",
+    "Where the applicant's residential address can be aligned to an English postcode via the National Statistics Postcode Lookup (NSPL) - August 2024",
+    "Where the applicant's residential address can be assigned to a country other than England via the National Statistics Postcode Lookup (NSPL) - August 2024, the country will be recorded as 'Other'.",
+    "Where the applicant's residential address cannot be assigned to any country via the National Statistics Postcode Lookup (NSPL) - August 2024, the country will be recorded as 'Unknown'.",
     "Where distinct certificate types are available, this field will show which certificate was applicable.",
     "HC2 certificates provide full help with health costs, including free NHS prescriptions.",
     "HC3 certificates provide limited help with health costs. A HC3 certificate will show how much the holder has to pay towards health costs.",

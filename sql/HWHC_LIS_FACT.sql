@@ -11,6 +11,8 @@ AMENDMENTS:
     2024-06-04  : Steven Buckley    : Switched source for postcode reference
                                       Changed N/A to Not Available
     2024-06-06  : Steven Buckley    : Switched to BUSINESS_DT_ID as the date of application
+    2025-04-11  : Grace Libby       : Changed NSPL version used to Aug 24 (2011 census LSOAs)
+    2025-06-06  : Grace Libby       : Added APPLICATION_CY and ISSUE_CY calendar year columns
 
 DESCRIPTION:
     Identify a basic dataset holding key information related to NHS Low Income Scheme (LIS) applications and certificates.
@@ -35,16 +37,16 @@ DEPENDENCIES:
                                     
     DIM.AGE                     :   Reference table providing age band classification lookups
     
-    OST.ONS_NSPL_MAY_24_11CEN   :   Reference table for National Statistics Postcode Lookup (NSPL)
+    OST.ONS_NSPL_AUG_24_11CEN   :   Reference table for National Statistics Postcode Lookup (NSPL)
                                     Contains mapping data from postcode to key geographics and deprivation profile data
-                                    Based on NSPL for May 2024
+                                    Based on NSPL for August 2024
     
 */
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------SCRIPT START----------------------------------------------------------------------------------------------------------------------
 
-create table HWHC_LIS_FACT_TEST compress for query high as
+create table HWHC_LIS_FACT compress for query high as
 with 
 base as
 (
@@ -111,7 +113,7 @@ select      standard_hash(caf.CASE_REF, 'SHA256')                               
             substr(caf.VALID_TO_DT_ID, 1,6)                                             as CERTIFICATE_EXPIRY_YM
 from        AML.CRS_APPLICATION_FACT    caf
 inner join  DIM.CRS_CLIENT_GROUP_DIM    ccgd    on  caf.CLIENT_GROUP_ID =   ccgd.CLIENT_GROUP_ID
-left join   OST.ONS_NSPL_MAY_24_11CEN   pcd     on  regexp_replace(upper(caf.POSTCODE),'[^A-Z0-9]','') = regexp_replace(upper(pcd.PCD),'[^A-Z0-9]','')
+left join   OST.ONS_NSPL_AUG_24_11CEN   pcd     on  regexp_replace(upper(caf.POSTCODE),'[^A-Z0-9]','') = regexp_replace(upper(pcd.PCD),'[^A-Z0-9]','')
 left join   DIM.AGE_DIM                 age     on  caf.APPLICANT_AGE   =   age.AGE
 where       1=1
     --limit to records as of a set date supplied at runtime
@@ -185,11 +187,13 @@ select      ID,
             APPLICATION_YM,
             extract(YEAR from add_months(APPLICATION_DATE, -3))||'/'||
                 extract(YEAR from add_months(APPLICATION_DATE, 9))                              as APPLICATION_FY,
+            extract(YEAR from APPLICATION_DATE)                                                 as APPLICATION_CY,
             --key dates: issue
             ISSUE_DATE,
             ISSUE_YM,
             extract(YEAR from add_months(ISSUE_DATE, -3))||'/'||    
                 extract(YEAR from add_months(ISSUE_DATE, 9))                                    as ISSUE_FY,
+            extract(YEAR from ISSUE_DATE)                                                       as ISSUE_CY,
             --key dates: active
             --where a certificate was not issued make sure dates are null as no certificate to be active
             case

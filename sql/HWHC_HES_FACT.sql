@@ -9,6 +9,8 @@ AMENDMENTS:
     2024-04-22  : Steven Buckley    : Revised script to fit in pipeline approach
     2024-06-04  : Steven Buckley    : Switched source for postcode reference
                                       Changed N/A to Not Available
+    2025-04-25  : Grace Libby       : Changed NSPL version used to Aug 24 (2011 census LSOAs) 
+    2025-06-06  : Grace Libby       : Added APPLICATION_CY and ISSUE_CY calendar year columns
 
 
 DESCRIPTION:
@@ -36,9 +38,9 @@ DEPENDENCIES:
                                             
     DIM.HES_CERTIFICATE_STATUS_DIM      :   Reference table containing lookup for status code to description
 
-    OST.ONS_NSPL_MAY_24_11CEN           :   Reference table for National Statistics Postcode Lookup (NSPL)
+    OST.ONS_NSPL_AUG_24_11CEN           :   Reference table for National Statistics Postcode Lookup (NSPL)
                                             Contains mapping data from postcode to key geographics and deprivation profile data
-                                            Based on NSPL for May 2024
+                                            Based on NSPL for August 2024
 */
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -109,11 +111,13 @@ select      standard_hash(hcd.CERTIFICATE_NUMBER, 'SHA256')                     
             substr(hapf.APPLICATION_START_DATE_WID,1,6)                                                                                         as APPLICATION_YM,
             extract(YEAR from add_months(to_date(hapf.APPLICATION_START_DATE_WID,'YYYYMMDD'), -3))||'/'||
                 extract(YEAR from add_months(to_date(hapf.APPLICATION_START_DATE_WID,'YYYYMMDD'), 9))                                           as APPLICATION_FY,
+            extract(YEAR from (to_date(hapf.APPLICATION_START_DATE_WID,'YYYYMMDD')))                                                            as APPLICATION_CY,
             --key dates: issue
-            to_date(hapf.CERTIFICATE_ISSUED_DATE_WID  default null on conversion error, 'YYYYMMDD')                                             as ISSUE_DATE,
+            to_date(hapf.CERTIFICATE_ISSUED_DATE_WID default null on conversion error, 'YYYYMMDD')                                              as ISSUE_DATE,
             substr(hapf.CERTIFICATE_ISSUED_DATE_WID,1,6)                                                                                        as ISSUE_YM,
             extract(YEAR from add_months(to_date(hapf.CERTIFICATE_ISSUED_DATE_WID default null on conversion error,'YYYYMMDD'), -3))||'/'||    
                 extract(YEAR from add_months(to_date(hapf.CERTIFICATE_ISSUED_DATE_WID default null on conversion error,'YYYYMMDD'), 9))         as ISSUE_FY,
+            extract(YEAR from (to_date(hapf.CERTIFICATE_ISSUED_DATE_WID default null on conversion error,'YYYYMMDD')))                          as ISSUE_CY,
             --key dates: active
             to_date(hapf.CERTIFICATE_START_DATE_WID default null on conversion error, 'YYYYMMDD')                                               as CERTIFICATE_START_DATE,
             substr(hapf.CERTIFICATE_START_DATE_WID, 1,6)                                                                                        as CERTIFICATE_START_YM,
@@ -123,7 +127,7 @@ select      standard_hash(hcd.CERTIFICATE_NUMBER, 'SHA256')                     
 from        DIM.HES_CERTIFICATE_DIM             hcd
 inner join  AML.HES_APPLICATION_PROCESS_FACT    hapf    on  hcd.CERTIFICATE_NUMBER                              =   hapf.CERTIFICATE_NUMBER
 inner join  DIM.HES_CERTIFICATE_STATUS_DIM      hcsd    on  hapf.CERTIFICATE_STATUS                             =   hcsd.CERTIFICATE_STATUS
-left join   OST.ONS_NSPL_MAY_24_11CEN           pcd     on  regexp_replace(upper(hapf.POSTCODE),'[^A-Z0-9]','') = regexp_replace(upper(pcd.PCD),'[^A-Z0-9]','')
+left join   OST.ONS_NSPL_AUG_24_11CEN           pcd     on  regexp_replace(upper(hapf.POSTCODE),'[^A-Z0-9]','') = regexp_replace(upper(pcd.PCD),'[^A-Z0-9]','')
 left join   DIM.AGE_DIM                         age     on  hcd.CERTIFICATE_HOLDER_AGE                          =   age.AGE
 where       1=1
     --limit to records as of a set date supplied at runtime
@@ -160,9 +164,11 @@ select      ID,
             APPLICATION_DATE,
             APPLICATION_YM,
             APPLICATION_FY,
+            APPLICATION_CY,
             ISSUE_DATE,
             ISSUE_YM,
             ISSUE_FY,
+            ISSUE_CY,
             CERTIFICATE_START_DATE,
             CERTIFICATE_START_YM,
             CERTIFICATE_EXPIRY_DATE,

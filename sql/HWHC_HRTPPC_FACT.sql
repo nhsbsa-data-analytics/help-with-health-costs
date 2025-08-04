@@ -13,6 +13,8 @@ AMENDMENTS:
     2024-06-06  : Steven Buckley    : Adjust code to flag issued certificates
                                         Warehouse change removed ISSUED status to replace with ACTIVE/EXPIRED
                                         Switched to exclude PENDING and FAILED to limit impact of future changes
+    2025-04-11  : Grace Libby       : Changed NSPL version used to Aug 24 (2011 census LSOAs)
+    2025-06-06  : Grace Libby       : Added APPLICATION_CY and ISSUE_CY calendar year columns
 
 
 DESCRIPTION:
@@ -37,9 +39,9 @@ DEPENDENCIES:
                                             Each application/certificate could have multiple records
                                             Includes key dates and certificate outcome/status
 
-    OST.ONS_NSPL_MAY_24_11CEN           :   Reference table for National Statistics Postcode Lookup (NSPL)
+    OST.ONS_NSPL_AUG_24_11CEN           :   Reference table for National Statistics Postcode Lookup (NSPL)
                                             Contains mapping data from postcode to key geographics and deprivation profile data
-                                            Based on NSPL for May 2024
+                                            Based on NSPL for August 2024
 */
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -92,11 +94,13 @@ select      hapf.CERTIFICATE_ID                                                 
             substr(hapf.APPLICATION_DATE_SID,1,6)                                                           as APPLICATION_YM,
             extract(YEAR from add_months(to_date(hapf.APPLICATION_DATE_SID,'YYYYMMDD'), -3))||'/'||
                 extract(YEAR from add_months(to_date(hapf.APPLICATION_DATE_SID,'YYYYMMDD'), 9))             as APPLICATION_FY,
+            extract(YEAR from (to_date(hapf.APPLICATION_DATE_SID,'YYYYMMDD')))                              as APPLICATION_CY,
             --key dates: issue
             to_date(hapf.CERTIFICATE_ACTIVE_DATE_SID, 'YYYYMMDD')                                           as ISSUE_DATE,
             substr(hapf.CERTIFICATE_ACTIVE_DATE_SID,1,6)                                                    as ISSUE_YM,
             extract(YEAR from add_months(to_date(hapf.CERTIFICATE_ACTIVE_DATE_SID,'YYYYMMDD'), -3))||'/'||    
                 extract(YEAR from add_months(to_date(hapf.CERTIFICATE_ACTIVE_DATE_SID,'YYYYMMDD'), 9))      as ISSUE_FY,
+            extract(YEAR from (to_date(hapf.CERTIFICATE_ACTIVE_DATE_SID,'YYYYMMDD')))                       as ISSUE_CY,
             --key dates: active
             to_date(hapf.CERTIFICATE_START_DATE_SID, 'YYYYMMDD')                                            as CERTIFICATE_START_DATE,
             to_date(hapf.CERTIFICATE_END_DATE_SID, 'YYYYMMDD')                                              as CERTIFICATE_EXPIRY_DATE,
@@ -108,7 +112,7 @@ select      hapf.CERTIFICATE_ID                                                 
             end                                                                                             as FLAG_START_FOLLOWING_MONTH
 from        AML.HRT_APPLICATION_PROCESS_FACT    hapf
 inner join  DIM.HRT_CERTIFICATE_DIM             hcd     on  hapf.CERTIFICATE_ID                                 =   hcd.CERTIFICATE_ID
-left join   OST.ONS_NSPL_MAY_24_11CEN           pcd     on  regexp_replace(upper(hapf.POSTCODE),'[^A-Z0-9]','') =   regexp_replace(upper(pcd.PCD),'[^A-Z0-9]','')
+left join   OST.ONS_NSPL_AUG_24_11CEN           pcd     on  regexp_replace(upper(hapf.POSTCODE),'[^A-Z0-9]','') =   regexp_replace(upper(pcd.PCD),'[^A-Z0-9]','')
 left join   DIM.AGE_DIM                         age     on  hapf.AGE_ON_APPLICATION                             =   age.AGE
 where       1=1
     --limit to records as of a set date supplied at runtime

@@ -5,14 +5,11 @@ Version 1.0
 
 
 AMENDMENTS:
-	2024-05-03  : Steven Buckley    : Initial script created
-    2024-06-04  : Steven Buckley    : Switched source for postcode reference
-                                        Changed N/A to Not Available
-    2025-04-25  : Grace Libby       : Changed NSPL version used to Aug 24 (2011 census LSOAs)                                    
+2025-06-06  : Grace Libby : Initial script created, based on HWHC_PX_PAT_FY_ICB.sql                                    
     
 
 DESCRIPTION:
-    Identify a patient summary dataset to get estimated patient counts split by financial year:
+    Identify a patient summary dataset to get estimated patient counts split by calendar year:
         AGE
             use the PDS_DOB field to calculate an age as of date supplied as parameter
             use the latest prescription from the time period
@@ -20,12 +17,12 @@ DESCRIPTION:
             use the NSPL to map ICB to the patients LSOA as captured from EPS data
             use the latest prescription from the time period
     
-    Count the overall number of patient and also the number of patients receiving prescription items for HRT qualifying medication
+    Count the overall number of patients and also the number of patients receiving prescription items for HRT qualifying medication
         Use drugs ever classified as HRT qualifying during the period
         
 EXECUTION NOTES:
     Performance if trying to run this script for multiple years is very poor.
-    Script may need to be executed for a single financial year at a time
+    Script may need to be executed for a single calendar year at a time
 
 DEPENDENCIES:
 	AML.PX_FORM_ITEM_ELEM_COMB_FACT_AV :"Fact" table view containing records during certificate lifecycle
@@ -42,7 +39,7 @@ DEPENDENCIES:
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------SCRIPT START----------------------------------------------------------------------------------------------------------------------
 
-create table HWHC_PX_PAT_FY_ICB as
+create table HWHC_PX_PAT_CY_ICB as
 
 with
 -----SECTION START: LSOA CLASSIFICATION---------------------------------------------------------------------------------------------------------------
@@ -86,16 +83,16 @@ group by    RECORD_ID
 patient_lsoa as
 (
 select  /*+ materialize */
-            pl.FINANCIAL_YEAR,
+            pl.CALENDAR_YEAR,
             pl.PATIENT_ID,
             pl.PATIENT_LSOA_CODE,
             lc.ICB
 from        (
-            select      ymd.FINANCIAL_YEAR,
+            select      ymd.CALENDAR_YEAR,
                         fact.PATIENT_ID,
                         fact.PATIENT_LSOA_CODE,
                         rank() over (
-                                    partition by    ymd.FINANCIAL_YEAR, 
+                                    partition by    ymd.CALENDAR_YEAR, 
                                                     fact.PATIENT_ID 
                                     order by        fact.YEAR_MONTH desc, 
                                                     fact.PRESCRIBED_DATE desc, 
@@ -114,7 +111,7 @@ from        (
 left join   lsoa_classification_icb lc  on  pl.PATIENT_LSOA_CODE = lc.LSOA_CODE
 where       1=1
     and     RNK = 1
-group by    pl.FINANCIAL_YEAR,
+group by    pl.CALENDAR_YEAR,
             pl.PATIENT_ID,
             pl.PATIENT_LSOA_CODE,
             lc.ICB
@@ -124,21 +121,21 @@ group by    pl.FINANCIAL_YEAR,
 
 ,
 
------SECTION START: FINANCIAL_YEAR AGE DATE-----------------------------------------------------------------------------------------------------------
---Identify the date to calculate age at for each financial year
---This will be the 30th September during the financial year
-fy_age_date as
+-----SECTION START: CALENDAR_YEAR AGE DATE-----------------------------------------------------------------------------------------------------------
+--Identify the date to calculate age at for each calendar year
+--This will be the 30th June during the calendar year
+cy_age_date as
 (
 select  /*+ materialize */
-            FINANCIAL_YEAR,
-            min(CALENDAR_YEAR)||'0930' as CALC_AGE_DATE
+            CALENDAR_YEAR,
+            min(CALENDAR_YEAR)||'0630' as CALC_AGE_DATE
 from        DIM.YEAR_MONTH_DIM
 where       1=1
     and     YEAR_MONTH between &&p_min_ym and &&p_max_ym
-group by    FINANCIAL_YEAR
+group by    CALENDAR_YEAR
 )
---select * from fy_age_date;
------SECTION END: FINANCIAL_YEAR AGE DATE-------------------------------------------------------------------------------------------------------------
+--select * from cy_age_date;
+-----SECTION END: CALENDAR_YEAR AGE DATE-------------------------------------------------------------------------------------------------------------
 
 ,
 
@@ -148,15 +145,15 @@ group by    FINANCIAL_YEAR
 patient_age as
 (
 select  /*+ materialize */
-            px_age.FINANCIAL_YEAR,
+            px_age.CALENDAR_YEAR,
             px_age.PATIENT_ID,
             px_age.CALC_AGE
 from        (
-            select      ymd.FINANCIAL_YEAR,
+            select      ymd.CALENDAR_YEAR,
                         fact.PATIENT_ID,
                         trunc((fad.CALC_AGE_DATE - to_number(to_char(fact.PDS_DOB,'YYYYMMDD')))/10000)   as CALC_AGE,
                         rank() over (
-                                    partition by    ymd.FINANCIAL_YEAR, 
+                                    partition by    ymd.CALENDAR_YEAR, 
                                                     fact.PATIENT_ID 
                                     order by        fact.YEAR_MONTH desc, 
                                                     fact.PRESCRIBED_DATE desc, 
@@ -164,7 +161,7 @@ from        (
                                     )                                                                                                       as RNK
             from        AML.PX_FORM_ITEM_ELEM_COMB_FACT_AV  fact
             inner join  DIM.YEAR_MONTH_DIM                  ymd on  fact.YEAR_MONTH     =   ymd.YEAR_MONTH
-            inner join  fy_age_date                         fad on  ymd.FINANCIAL_YEAR  =   fad.FINANCIAL_YEAR
+            inner join  cy_age_date                         fad on  ymd.CALENDAR_YEAR  =   fad.CALENDAR_YEAR
             where       1=1
                 and     fact.YEAR_MONTH between &&p_min_ym and &&p_max_ym
                 and     fact.PATIENT_IDENTIFIED = 'Y'
@@ -175,7 +172,7 @@ from        (
             )           px_age
 where       1=1
     and     px_age.RNK = 1
-group by    px_age.FINANCIAL_YEAR,
+group by    px_age.CALENDAR_YEAR,
             px_age.PATIENT_ID,
             px_age.CALC_AGE
 )
@@ -190,7 +187,7 @@ group by    px_age.FINANCIAL_YEAR,
 pat_summary as
 (
 select  /*+ materialize */
-            ymd.FINANCIAL_YEAR,
+            ymd.CALENDAR_YEAR,
             case when fact.PATIENT_IDENTIFIED = 'Y' then 1 else 0 end   as PATIENT_IDENTIFIED_FLAG,
             fact.PATIENT_ID,
             nvl(pa.CALC_AGE,-1)                                         as AGE,
@@ -201,16 +198,16 @@ select  /*+ materialize */
 from        AML.PX_FORM_ITEM_ELEM_COMB_FACT_AV  fact
 inner join  DIM.YEAR_MONTH_DIM                  ymd     on  fact.YEAR_MONTH                 =   ymd.YEAR_MONTH
 inner join                                      cdrd    on  fact.CALC_PREC_DRUG_RECORD_ID   =   cdrd.RECORD_ID
-left join   patient_lsoa                        pl      on  ymd.FINANCIAL_YEAR              =   pl.FINANCIAL_YEAR
+left join   patient_lsoa                        pl      on  ymd.CALENDAR_YEAR              =   pl.CALENDAR_YEAR
                                                         and fact.PATIENT_ID                 =   pl.PATIENT_ID
-left join   patient_age                         pa      on  ymd.FINANCIAL_YEAR              =   pa.FINANCIAL_YEAR
+left join   patient_age                         pa      on  ymd.CALENDAR_YEAR              =   pa.CALENDAR_YEAR
                                                         and fact.PATIENT_ID                 =   pa.PATIENT_ID
 where       1=1
     and     fact.YEAR_MONTH between &&p_min_ym and &&p_max_ym
     and     fact.NHS_PAID_FLAG = 'Y'
     and     nvl(fact.CONSULT_ONLY_IND,'N') != 'Y'
     and     fact.DISPENSER_COUNTRY_OU = 1
-group by    ymd.FINANCIAL_YEAR,
+group by    ymd.CALENDAR_YEAR,
             fact.PATIENT_IDENTIFIED,
             fact.PATIENT_ID,
             nvl(pa.CALC_AGE,-1),
@@ -221,7 +218,7 @@ group by    ymd.FINANCIAL_YEAR,
 
 -----OUTPUT-------------------------------------------------------------------------------------------------------------------------------------------
 --aggregate patient counts by the different combinations of age and location field
-select      FINANCIAL_YEAR,
+select      CALENDAR_YEAR,
             ICB,
             sum(PATIENT_IDENTIFIED_FLAG)                as PATIENT_COUNT,
             sum(PATIENT_IDENTIFIED_FLAG * HRT_FLAG)     as HRT_PATIENT_COUNT,
@@ -249,7 +246,7 @@ select      FINANCIAL_YEAR,
                     else 0
                 end)                                    as HRT_PATIENT_ITEMS_16_59
 from        pat_summary
-group by    FINANCIAL_YEAR,
+group by    CALENDAR_YEAR,
             ICB
 ;
 ---------------------SCRIPT END-----------------------------------------------------------------------------------------------------------------------

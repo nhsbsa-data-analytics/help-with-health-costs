@@ -1,75 +1,102 @@
 publication_top_name: "NHS Help with Health Costs (HwHC)"
-publication_sub_name: "2018/19 to 2023/24"
-publication_date: "20 June 2024"
-responsible_statistician: "Steven Buckley"
+publication_sub_name: "2018/19 to 2024/25"
+publication_date: "26 June 2025"
+responsible_statistician: ""
 stats_survey_link: "https://online1.snapsurveys.com/Official_Statistics_Feedback"
-publication_table_title: "Help with Health Costs (HwHC) - 2018/19 to 2023/24"
+publication_table_title: "Help with Health Costs (HwHC) - 2018/19 to 2024/25"
+publication_table_title_cy: "Help with Health Costs (HwHC) - 2018 to 2024"
 publication_title: "help-with-health-costs"
 methodology_title: "help-with-health-costs-methodology"
 output_type: "word_document" # html_document / word_document
 
 # data table criteria
-rebuild_base_lis_data: FALSE
-extract_date_lis: "20240607"
+rebuild_base_lis_data: TRUE
+extract_date_lis: "20250603"
 
-rebuild_base_hes_data: FALSE
-extract_date_hes: "20240607"
+rebuild_base_hes_data: TRUE
+extract_date_hes: "20250603"
 
-rebuild_base_hrt_data: FALSE
-extract_date_hrt: "20240607"
+rebuild_base_hrt_data: TRUE
+extract_date_hrt: "20250603"
 
-rebuild_base_px_data: FALSE
-extract_px_min_ym: 202304
-extract_px_max_ym: 202403
-extract_px_age_dt: 20230930   # date to use to calculate patient age
+rebuild_base_px_data: TRUE
+extract_px_min_ym: 202404
+extract_px_max_ym: 202503
+extract_px_age_dt: 20240930   # date to use to calculate patient age
+extract_px_min_ym_cy: 202401  # extract min month for calendar year tables
+extract_px_max_ym_cy: 202412  # extract max month for calendar year tables
+extract_px_age_dt_cy: 20240630 # date to use to calculate patient age for mid calendar year
 
 # PowerBI criteria
-rebuild_powerbi_data: FALSE
-rebuild_prescription_population_data: FALSE
+rebuild_powerbi_data: TRUE
+rebuild_prescription_population_data: TRUE
 powerbi_min_ym_lis: "201804"
-powerbi_max_ym_lis: "202403"
+powerbi_max_ym_lis: "202503"
 powerbi_min_ym_hes: "201804"
-powerbi_max_ym_hes: "202403"
+powerbi_max_ym_hes: "202503"
 powerbi_min_ym_hrtppc: "202304"
-powerbi_max_ym_hrtppc: "202403"
-px_pop_data_fy_list: "18_19,19_20,20_21,21_22,22_23,23_24" # provide as comma seperated list
-px_pop_data_fy_min_ym: "201804,201904,202004,202104,202204,202304" # provide as comma seperated list
-px_pop_data_fy_max_ym: "201903,202003,202103,202203,202303,202403" # provide as comma seperated list
+powerbi_max_ym_hrtppc: "202503"
+
+powerbi_min_ym_lis_cy: "201801"
+powerbi_max_ym_lis_cy: "202412"
+
+px_pop_data_fy_list: "18_19,19_20,20_21,21_22,22_23,23_24,24_25" # provide as comma separated list
+px_pop_data_fy_min_ym: "201804,201904,202004,202104,202204,202304,202404" # provide as comma separated list
+px_pop_data_fy_max_ym: "201903,202003,202103,202203,202303,202403,202503" # provide as comma separated list
+
+px_pop_data_cy_list: "2018,2019,2020,2021,2022,2023,2024" # provide as comma separated list
+px_pop_data_cy_min_ym: "201801,201901,202001,202101,202201,202301,202401" # provide as comma separated list
+px_pop_data_cy_max_ym: "201812,201912,202012,202112,202212,202312,202412" # provide as comma separated list
 
 # time period criteria
 min_trend_ym_lis: "201804"
-max_trend_ym_lis: "202403"
-min_focus_ym_lis: "202304"
-max_focus_ym_lis: "202403"
-focus_fy_lis: "2023/2024"
+max_trend_ym_lis: "202503"
+min_trend_ym_lis_cy: "201801" # for calendar year supporting tables
+max_trend_ym_lis_cy: "202412" # for calendar year supporting tables
+min_focus_ym_lis: "202404"
+max_focus_ym_lis: "202503"
+focus_fy_lis: "2024/2025"
 
 min_trend_ym_mat: "201804"
-max_trend_ym_mat: "202403"
-min_focus_ym_mat: "202304"
-max_focus_ym_mat: "202403"
-focus_fy_mat: "2023/2024"
+max_trend_ym_mat: "202503"
+min_trend_ym_mat_cy: "201801" # for calendar year supporting tables
+max_trend_ym_mat_cy: "202412" # for calendar year supporting tables
+min_focus_ym_mat: "202404"
+max_focus_ym_mat: "202503"
+focus_fy_mat: "2024/2025"
 
 min_trend_ym_med: "201804"
-max_trend_ym_med: "202403"
-min_focus_ym_med: "202304"
-max_focus_ym_med: "202403"
-focus_fy_med: "2023/2024"
+max_trend_ym_med: "202503"
+min_trend_ym_med_cy: "201801" # for calendar year supporting tables
+max_trend_ym_med_cy: "202412" # for calendar year supporting tables
+min_focus_ym_med: "202404"
+max_focus_ym_med: "202503"
+focus_fy_med: "2024/2025"
 
 min_trend_ym_ppc: "201804"
-max_trend_ym_ppc: "202403"
-min_focus_ym_ppc: "202304"
-max_focus_ym_ppc: "202403"
-focus_fy_ppc: "2023/2024"
+max_trend_ym_ppc: "202503"
+min_trend_ym_ppc_cy: "201801" # for calendar year supporting tables
+max_trend_ym_ppc_cy: "202412" # for calendar year supporting tables
+min_focus_ym_ppc: "202404"
+max_focus_ym_ppc: "202503"
+focus_fy_ppc: "2024/2025"
 
 min_trend_ym_tax: "201804"
-max_trend_ym_tax: "202403"
-min_focus_ym_tax: "202304"
-max_focus_ym_tax: "202403"
-focus_fy_tax: "2023/2024"
+max_trend_ym_tax: "202503"
+min_trend_ym_tax_cy: "201801" # for calendar year supporting tables
+max_trend_ym_tax_cy: "202412" # for calendar year supporting tables
+min_focus_ym_tax: "202404"
+max_focus_ym_tax: "202503"
+focus_fy_tax: "2024/2025"
 
-min_focus_ym_hrt: "202304"
-max_focus_ym_hrt: "202403"
-focus_fy_hrt: "2023/2024"
+min_trend_ym_hrt: "202304"
+max_trend_ym_hrt: "202503"
+min_trend_ym_hrt_cy: "202304" # for calendar year supporting tables - HRTPPC service start
+max_trend_ym_hrt_cy: "202412" # for calendar year supporting tables
+min_focus_ym_hrt: "202404"
+max_focus_ym_hrt: "202503"
+focus_fy_hrt: "2024/2025"
+chart_focus_ym: "Apr-24" # to limit selected charts to past 12 months
 
 # base population criteria
 hrt_min_pop_age: 16
@@ -77,7 +104,7 @@ hrt_max_pop_age: 59
 ons_pop_rate_denominator: 10000
 
 # ONS live birth criteria
-ons_births_year: "2021"
+ons_births_year: "2023"
 ons_birth_geo_table: "ONS_BIRTHS_GEOGRAPHY_AGEBAND"
 ons_birth_imd_table: "ONS_BIRTHS_IMD"
 
@@ -87,27 +114,27 @@ icb_classification: 2023
 # Data table caveats
 caveat_country_other: "A country classification of 'Other' will represent applications with a postcode for a country other than England."
 caveat_country_unknown: "A country classification of 'Unknown' will represent applications where the postcode could not be assigned to any country."
-caveat_age_restriction: "An age band of 'Not Available' has been used where the applicants age could not be confidently assigned from the available data."
-caveat_imd_restriction: "IMD quintiles reported as 'Not Available' where applicants can not be associated to an English postcode."
+caveat_age_restriction: "An age band of 'Not Available' has been used where the applicant's age could not be confidently assigned from the available data."
+caveat_imd_restriction: "IMD quintiles are reported as 'Not Available' where applicants cannot be associated to an English postcode."
 caveat_icb_method: "The reported ICB is derived from the postcode held for an applicant."
-caveat_icb_restriction: "ICBs cannot be assigned to applicants that can not be associated to an English postcode."
-caveat_icb_missing_data: "Data is not available for base population, and therefore calculated rates per 10,000 population, for data where an ICB location cannot be assigned."
-caveat_cert_issued: "Results limited to cases where the application has been fully completed, assessed and a certificate issued to the applicant."
+caveat_icb_restriction: "ICBs cannot be assigned to applicants that cannot be associated to an English postcode."
+caveat_icb_missing_data: "For data where an ICB location cannot be assigned, data is not available for base population, and therefore calculated rates per 10,000 population are not available. These cells will appear blank."
+caveat_cert_issued: "Data is limited to cases where the application has been fully completed, assessed and a certificate issued to the applicant."
 
-caveat_lis_issued: "Results limited to cases where the application has been fully completed, assessed and a decision issued to the applicant."
+caveat_lis_issued: "Data is limited to cases where the application has been fully completed, assessed and a decision issued to the applicant."
 caveat_lis_duration_group: "Certificate duration has been grouped into categories based on the number of months between the start and end date for the certificate, rounded to nearest number of months."
-caveat_lis_duration_notes: "The circumstances of the applicant will determine the duration of the certificate. This will reflect the chances of circumstances changing, with some common scenarios: Pensioners receiving full help may receive a 5 year certificate. Non final-year students may receive a 12 month certificate. Applicants in receipt of non-means tested benefit may receive a 12 month certificate. Applicants earning a wage may receive a 6 month certificate. Students nearing the end of their course may receive a short term certificate until the end of their course."
+caveat_lis_duration_notes: "The circumstances of the applicant will determine the duration of the certificate. This will reflect the chances of circumstances changing, with some common scenarios. For example, Pensioners receiving full help may receive a 5 year certificate, and non final-year students may receive a 12 month certificate. Applicants in receipt of non-means tested benefit may receive a 12 month certificate. Applicants earning a wage may receive a 6 month certificate. Students nearing the end of their course may receive a short term certificate until the end of their course."
 caveat_lis_age_group: "Age is calculated at the point of application, in 5 year age bands, with applicants aged 65 and over grouped as 65+."
-caveat_lis_base_population: "Base population figures represent mid-year population estimates published by ONS for people aged 16 and over."
+caveat_lis_base_population: "Base population figures represent mid-year population estimates published by ONS for people aged 16 and over. The latest year available at time of publishing was 2022."
 caveat_lis_hbd11: "Some HC3 certificates may include a HBD11 letter. These represent circumstances where the certificate holders required contribution to health costs may exceed the maximum cost of NHS dental treatment."
 
 caveat_mat_country: "As a maternity exemption certificate provides support with NHS prescription charges, support is generally applicable to applicants from England only."
 caveat_mat_duration_method: "Certificate duration has been grouped into categories based on the number of months between the start and end date for the certificate, rounded to nearest number of months."
-caveat_mat_duration_restriction: "Certificate duration reported as 'Not Available' where duration could not be confidently assigned from the available data."
-caveat_mat_duration_notes: "Certificates are valid upto one year from the baby's due date or the birth of the baby. Therefore, certificate duration will reflect how early in pregnancy the application was received. A certificate duration of less than a year would represent certificates issued after the due date or birth of the child."
+caveat_mat_duration_restriction: "Certificate duration has been reported as 'Not Available' where duration could not be confidently assigned from the available data."
+caveat_mat_duration_notes: "Certificates are valid for up to one year from the baby's due date or the birth of the baby. Therefore, certificate duration will reflect how early in pregnancy the application was received. A certificate duration of less than a year would represent certificates issued after the due date or birth of the child."
 caveat_mat_age_group: "Age is calculated at the point of application, in 5 year age bands, with applicants aged 45 and over grouped as 45+."
 caveat_mat_live_births: "For context data includes live birth figures, based on data published by ONS."
-caveat_mat_base_population: "Base population figures represent mid-year population estimates published by ONS for females aged 15 to 45."
+caveat_mat_base_population: "Base population figures represent mid-year population estimates published by ONS for females aged 15 to 45. The latest year available at time of publishing was 2022."
 
 caveat_med_country: "As a medical exemption certificate provides support with NHS prescription charges, support is generally applicable to applicants from England only."
 caveat_med_age_group: "Age is calculated at the point of application, in 5 year age bands."
@@ -119,13 +146,14 @@ caveat_ppc_age_group: "Age is calculated at the point of application, in 5 year 
 caveat_ppc_base_population: "Base population figures represent estimated number of patients, aged 16-59, receiving NHS prescriptions. Patient counts are limited to patients receiving electronic prescribing where a date of birth was available and the patient could be assigned to a ICB based on their captured postcode."
 
 caveat_hrtppc_start: "The HRT PPC was introduced on 1 April 2023."
-caveat_hrtppc_country: "As a HRT PPC provides support with NHS prescription charges, support is generally applicable to applicants from England only."
-caveat_hrtppc_postdate: "When applying for a HRT PPC, applicants can choose the start date for the certificate. This can be up to one calendar month before or after the application is submitted."
+caveat_hrtppc_country: "As an HRT PPC provides support with NHS prescription charges, support is generally applicable to applicants from England only."
+caveat_hrtppc_postdate: "When applying for an HRT PPC, applicants can choose the start date for the certificate. This can be up to one calendar month before or after the application is submitted."
 caveat_hrtppc_age_group: "Age is calculated at the point of application, in 5 year age bands."
-caveat_hrtppc_px_data: "For context data in includes the estimated number of patients receiving NHS prescriptions for medications that can be covered by the HRT PPC."
+caveat_hrtppc_px_data: "The estimated number of patients receiving NHS prescriptions for medications that can be covered by the HRT PPC has been included for context."
 caveat_hrtppc_base_population: "Base population figures represent estimated number of patients, aged 16-59, receiving NHS prescriptions for medications that can be covered by the HRT PPC. Patient counts are limited to patients receiving electronic prescribing where a date of birth was available and the patient could be assigned to a ICB based on their captured postcode. Prescribing limited to medications flagged as eligible for support via the HRT PPC at any point during the reporting period."
 
-caveat_tax_issued: "Certificates are issued automatically to eligible individuals identified by HM Revenue and Customs."
+caveat_tax_end: "Tax Credit payments made by HMRC ended on 5 April 2025 and people receiving tax credits were moved to Universal Credit."
+caveat_tax_issued: "Certificates were issued automatically to eligible individuals identified by HM Revenue and Customs."
 caveat_tax_age_band: "Age is calculated at the point certificate issue, in 5 year age bands, with applicants aged 65 and over grouped as 65+."
 caveat_tax_age_group: "Age is calculated at the point certificate issue, with applicants grouped as either 'Under 40' or '40 and over'."
-caveat_tax_base_population: "Base population figures represent mid-year population estimates published by ONS for people aged 16 and over."
+caveat_tax_base_population: "Base population figures represent mid-year population estimates published by ONS for people aged 16 and over. The latest year available at time of publishing was 2022."

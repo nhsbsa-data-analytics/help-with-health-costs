@@ -8,6 +8,7 @@ AMENDMENTS:
 	2024-05-03  : Steven Buckley    : Initial script created
     2024-06-04  : Steven Buckley    : Switched source for postcode and IMD reference
                                         Changed N/A to Not Available
+    2025-04-25  : Grace Libby       : Changed NSPL version used to Aug 24 (2011 census LSOAs) 
     
 
 DESCRIPTION:
@@ -19,11 +20,11 @@ DESCRIPTION:
             use the NSPL to map ICB and IMD to the patients LSOA as captured from EPS data
             use the latest prescription from the time period
     
-    Count the overall number of patient and also the number of patients receiving prescription items for HRT qualifying medication
+    Count the overall number of patients and also the number of patients receiving prescription items for HRT qualifying medication
         Use drugs ever classified as HRT qualifying during the period
 
 DEPENDENCIES:
-	AML.PX_FORM_ITEM_ELEM_COMB_FACT :   "Fact" table containing records during certificate lifecycle
+	AML.PX_FORM_ITEM_ELEM_COMB_FACT_AV :  "Fact" table view containing records during certificate lifecycle
                                         Each application/certificate could have multiple records
                                         Includes key dates and certificate outcome/status
                                     
@@ -31,9 +32,9 @@ DEPENDENCIES:
     
     DIM.AGE                         :   Reference table providing age band classification lookups
     
-    OST.ONS_NSPL_MAY_24_11CEN       :   Reference table for National Statistics Postcode Lookup (NSPL)
+    OST.ONS_NSPL_AUG_24_11CEN       :   Reference table for National Statistics Postcode Lookup (NSPL)
                                         Contains mapping data from postcode to key geographics and deprivation profile data
-                                        Based on NSPL for May 2024
+                                        Based on NSPL for August 2024
     
     OST.IMD_2019                    :   Reference table for Indices of Multiple Deprivation
                                         Contains mapping data from LSOA to IMD_DECILE
@@ -42,7 +43,7 @@ DEPENDENCIES:
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------SCRIPT START----------------------------------------------------------------------------------------------------------------------
 
-create table HWHC_PX_PAT_FACT as
+create table HWHC_PX_PAT_FACT_FY as
 
 with
 -----SECTION START: LSOA CLASSIFICATION---------------------------------------------------------------------------------------------------------------
@@ -53,7 +54,7 @@ select  /*+ materialize */
         distinct
             LSOA11  as LSOA_CODE,
             ICB
-from        OST.ONS_NSPL_MAY_24_11CEN
+from        OST.ONS_NSPL_AUG_24_11CEN
 where       1=1
     and     LSOA11 like 'E%'
 )
@@ -98,16 +99,25 @@ group by    RECORD_ID
 patient_lsoa as
 (
 select      /*+ materialize */
+            pl.FINANCIAL_YEAR,
             pl.PATIENT_ID,
             pl.PATIENT_LSOA_CODE,
             icb.ICB,
             imd.IMD_DECILE,
             imd.IMD_QUINTILE
 from        (
-            select      PATIENT_ID,
-                        PATIENT_LSOA_CODE,
-                        rank() over (partition by PATIENT_ID order by YEAR_MONTH desc, PRESCRIBED_DATE desc, PATIENT_LSOA_CODE) as RNK
-            from        AML.PX_FORM_ITEM_ELEM_COMB_FACT     fact
+            select      ymd.FINANCIAL_YEAR,
+                        fact.PATIENT_ID,
+                        fact.PATIENT_LSOA_CODE,
+                        rank() over (
+                                    partition by  ymd.FINANCIAL_YEAR,
+                                                  fact.PATIENT_ID
+                                    order by      fact.YEAR_MONTH desc,
+                                                  fact.PRESCRIBED_DATE desc,
+                                                  fact.PATIENT_LSOA_CODE
+                                                  ) as RNK
+            from        AML.PX_FORM_ITEM_ELEM_COMB_FACT_AV     fact
+            inner join  DIM.YEAR_MONTH_DIM                  ymd on  fact.YEAR_MONTH = ymd.YEAR_MONTH
             where       1=1
                 and     fact.YEAR_MONTH between &&p_min_ym and &&p_max_ym
                 and     fact.PATIENT_IDENTIFIED = 'Y'
@@ -120,7 +130,8 @@ left join   lsoa_classification_icb icb  on  pl.PATIENT_LSOA_CODE = icb.LSOA_COD
 left join   lsoa_classification_imd imd  on  pl.PATIENT_LSOA_CODE = imd.LSOA_CODE
 where       1=1
     and     RNK = 1
-group by    pl.PATIENT_ID,
+group by    pl.FINANCIAL_YEAR,
+            pl.PATIENT_ID,
             pl.PATIENT_LSOA_CODE,
             icb.ICB,
             imd.IMD_DECILE,
@@ -137,6 +148,7 @@ group by    pl.PATIENT_ID,
 patient_age as
 (
 select      /*+ materialize */
+            px_age.FINANCIAL_YEAR,
             px_age.PATIENT_ID,
             px_age.CALC_AGE,
             age_lkp.BAND_5YEARS,
@@ -147,10 +159,20 @@ select      /*+ materialize */
                 else age_lkp.BAND_5YEARS
             end as CUSTOM_AGE_BAND
 from        (
-            select      PATIENT_ID,
+            select      ymd.FINANCIAL_YEAR,
+                        fact.PATIENT_ID,
                         trunc((&&p_age_date - to_number(to_char(PDS_DOB,'YYYYMMDD')))/10000)   as CALC_AGE,
-                        rank() over (partition by PATIENT_ID order by YEAR_MONTH desc, PRESCRIBED_DATE desc, trunc((&&p_age_date - to_number(to_char(pds_dob,'YYYYMMDD')))/10000) desc) as RNK
-            from        AML.PX_FORM_ITEM_ELEM_COMB_FACT     fact
+                        rank() over (
+                                    partition by  ymd.FINANCIAL_YEAR,
+                                                  fact.PATIENT_ID
+                                                  order by fact.YEAR_MONTH desc,
+                                                  fact.PRESCRIBED_DATE desc,
+                                                  trunc((&&p_age_date - to_number(to_char(pds_dob,'YYYYMMDD')))/10000) desc
+                                    )
+                                                  as RNK
+            from        AML.PX_FORM_ITEM_ELEM_COMB_FACT_AV     fact
+            inner join  DIM.YEAR_MONTH_DIM                  ymd on  fact.YEAR_MONTH     =   ymd.YEAR_MONTH
+            inner join  fy_age_date                         fad on  ymd.FINANCIAL_YEAR  =   fad.FINANCIAL_YEAR
             where       1=1
                 and     fact.YEAR_MONTH between &&p_min_ym and &&p_max_ym
                 and     fact.PATIENT_IDENTIFIED = 'Y'
@@ -162,7 +184,8 @@ from        (
 left join   DIM.AGE_DIM age_lkp on  px_age.CALC_AGE = age_lkp.AGE
 where       1=1
     and     px_age.RNK = 1
-group by    px_age.PATIENT_ID,
+group by    px_age.FINANCIAL_YEAR,
+            px_age.PATIENT_ID,
             px_age.CALC_AGE,
             age_lkp.BAND_5YEARS,
             age_lkp.BAND_10YEARS,
@@ -183,6 +206,7 @@ group by    px_age.PATIENT_ID,
 pat_summary as
 (
 select  /*+ materialize */
+            ymd.FINANCIAL_YEAR,
             case when fact.PATIENT_IDENTIFIED = 'Y' then 1 else 0 end   as PATIENT_IDENTIFIED_FLAG,
             fact.PATIENT_ID,
             nvl(pa.CALC_AGE,-1)                                         as AGE,
@@ -195,16 +219,20 @@ select  /*+ materialize */
             max(cdrd.HRT_FLAG)                                          as HRT_FLAG,
             sum(fact.ITEM_COUNT)                                        as ITEMS,
             sum(fact.ITEM_COUNT * cdrd.HRT_FLAG)                        as HRT_ITEMS
-from        AML.PX_FORM_ITEM_ELEM_COMB_FACT     fact
+from        AML.PX_FORM_ITEM_ELEM_COMB_FACT_AV     fact
+inner join  DIM.YEAR_MONTH_DIM                  ymd     on  fact.YEAR_MONTH                 =   ymd.YEAR_MONTH
 inner join                                      cdrd    on  fact.CALC_PREC_DRUG_RECORD_ID   =   cdrd.RECORD_ID
-left join   patient_lsoa                        pl      on  fact.PATIENT_ID                 =   pl.PATIENT_ID
-left join   patient_age                         pa      on  fact.PATIENT_ID                 =   pa.PATIENT_ID
+left join   patient_lsoa                        pl      on  ymd.FINANCIAL_YEAR              =   pl.FINANCIAL_YEAR
+                                                        and fact.PATIENT_ID                 =   pl.PATIENT_ID
+left join   patient_age                         pa      on  ymd.FINANCIAL_YEAR              =   pa.FINANCIAL_YEAR
+                                                        and fact.PATIENT_ID                 =   pa.PATIENT_ID
 where       1=1
     and     fact.YEAR_MONTH between &&p_min_ym and &&p_max_ym
     and     fact.NHS_PAID_FLAG = 'Y'
     and     nvl(fact.CONSULT_ONLY_IND,'N') != 'Y'
     and     fact.DISPENSER_COUNTRY_OU = 1
-group by    fact.PATIENT_IDENTIFIED,
+group by    ymd.FINANCIAL_YEAR,
+            fact.PATIENT_IDENTIFIED,
             fact.PATIENT_ID,
             nvl(pa.CALC_AGE,-1),
             nvl(pa.BAND_5YEARS,'Not Available'),
@@ -219,7 +247,8 @@ group by    fact.PATIENT_IDENTIFIED,
 
 -----OUTPUT-------------------------------------------------------------------------------------------------------------------------------------------
 --aggregate patient counts by the different combinations of age and location field
-select      AGE,
+select      FINANCIAL_YEAR,
+            AGE,
             BAND_5YEARS,
             BAND_10YEARS,
             CUSTOM_AGE_BAND,
@@ -232,7 +261,8 @@ select      AGE,
             sum(PATIENT_IDENTIFIED_FLAG * ITEMS)        as PATIENT_ITEMS,
             sum(PATIENT_IDENTIFIED_FLAG * HRT_ITEMS)    as PATIENT_HRT_ITEMS
 from        pat_summary
-group by    AGE,
+group by    FINANCIAL_YEAR,
+            AGE,
             BAND_5YEARS,
             BAND_10YEARS,
             CUSTOM_AGE_BAND,

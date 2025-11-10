@@ -9,7 +9,7 @@ AMENDMENTS:
     2024-06-04  : Steven Buckley    : Switched source for postcode and IMD reference
                                         Changed N/A to Not Available
     2025-04-25  : Grace Libby       : Changed NSPL version used to Aug 24 (2011 census LSOAs) 
-    
+    2025-11-10  : Grace Libby       : Removed unused table join to 'fy_age_date' from line 184
 
 DESCRIPTION:
     Identify a patient summary dataset to get estimated patient counts split by:
@@ -181,7 +181,6 @@ from        (
                                                   as RNK
             from        AML.PX_FORM_ITEM_ELEM_COMB_FACT_AV     fact
             inner join  DIM.YEAR_MONTH_DIM                  ymd on  fact.YEAR_MONTH     =   ymd.YEAR_MONTH
-            inner join  fy_age_date                         fad on  ymd.FINANCIAL_YEAR  =   fad.FINANCIAL_YEAR
             where       1=1
                 and     fact.YEAR_MONTH between &&p_min_ym and &&p_max_ym
                 and     fact.PATIENT_IDENTIFIED = 'Y'

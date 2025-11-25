@@ -5,11 +5,7 @@ Version 1.0
 
 
 AMENDMENTS:
-	2024-05-03  : Steven Buckley    : Initial script created
-    2024-06-04  : Steven Buckley    : Switched source for postcode and IMD reference
-                                        Changed N/A to Not Available
-    2025-04-25  : Grace Libby       : Changed NSPL version used to Aug 24 (2011 census LSOAs) 
-    
+	2025-11-10  : Grace Libby : Initial script created from copy of HWHC_PX_PAT_FACT_multiple_years
 
 DESCRIPTION:
     Identify a patient summary dataset to get estimated patient counts split by:
@@ -30,7 +26,7 @@ DEPENDENCIES:
                                     
     DIM.CDR_EP_DRUG_BNF_DIM         :   "Dimension" table containing drug classification information
     
-    DIM.AGE                         :   Reference table providing age band classification lookups
+    DIM.AGE_DIM                         :   Reference table providing age band classification lookups
     
     OST.ONS_NSPL_AUG_24_11CEN       :   Reference table for National Statistics Postcode Lookup (NSPL)
                                         Contains mapping data from postcode to key geographics and deprivation profile data
@@ -46,13 +42,13 @@ DEPENDENCIES:
 --TO DO: amend code to account for multiple years of HRTPPC available
 --for current code, build code twice using specified years then join tables
 
--- for HWHC_PX_PAT_FACT_FY_2324
--- for HWHC_PX_PAT_FACT_FY_2425
+-- for HWHC_PX_PAT_FACT_CY_23
+-- for HWHC_PX_PAT_FACT_CY_24
 
---create table HWHC_PX_PAT_FACT_FY_2324 as
---create table HWHC_PX_PAT_FACT_FY_2425 as
+--create table HWHC_PX_PAT_FACT_CY_23 as
+--create table HWHC_PX_PAT_FACT_CY_24 as
 
-create table HWHC_PX_PAT_FACT_FY as
+create table HWHC_PX_PAT_FACT_CY as -- replace with either line 48 or 49
 
 with
 -----SECTION START: LSOA CLASSIFICATION---------------------------------------------------------------------------------------------------------------
@@ -94,7 +90,7 @@ select  /*+ materialize */
             max(case when HRT_FLAG = 'Y' then 1 else 0 end) as HRT_FLAG
 from        DIM.CDR_EP_DRUG_BNF_DIM
 where       1=1
-    and     YEAR_MONTH between &&p_min_ym and &&p_max_ym
+    and     YEAR_MONTH between &&p_min_ym_cy and &&p_max_ym_cy
 group by    RECORD_ID
 )
 --select * from cdrd;
@@ -108,18 +104,18 @@ group by    RECORD_ID
 patient_lsoa as
 (
 select      /*+ materialize */
-            pl.FINANCIAL_YEAR,
+            pl.CALENDAR_YEAR,
             pl.PATIENT_ID,
             pl.PATIENT_LSOA_CODE,
             icb.ICB,
             imd.IMD_DECILE,
             imd.IMD_QUINTILE
 from        (
-            select      ymd.FINANCIAL_YEAR,
+            select      ymd.CALENDAR_YEAR,
                         fact.PATIENT_ID,
                         fact.PATIENT_LSOA_CODE,
                         rank() over (
-                                    partition by  ymd.FINANCIAL_YEAR,
+                                    partition by  ymd.CALENDAR_YEAR,
                                                   fact.PATIENT_ID
                                     order by      fact.YEAR_MONTH desc,
                                                   fact.PRESCRIBED_DATE desc,
@@ -128,7 +124,7 @@ from        (
             from        AML.PX_FORM_ITEM_ELEM_COMB_FACT_AV     fact
             inner join  DIM.YEAR_MONTH_DIM                  ymd on  fact.YEAR_MONTH = ymd.YEAR_MONTH
             where       1=1
-                and     fact.YEAR_MONTH between &&p_min_ym and &&p_max_ym
+                and     fact.YEAR_MONTH between &&p_min_ym_cy and &&p_max_ym_cy
                 and     fact.PATIENT_IDENTIFIED = 'Y'
                 and     fact.NHS_PAID_FLAG = 'Y'
                 and     nvl(fact.CONSULT_ONLY_IND,'N') != 'Y'
@@ -139,7 +135,7 @@ left join   lsoa_classification_icb icb  on  pl.PATIENT_LSOA_CODE = icb.LSOA_COD
 left join   lsoa_classification_imd imd  on  pl.PATIENT_LSOA_CODE = imd.LSOA_CODE
 where       1=1
     and     RNK = 1
-group by    pl.FINANCIAL_YEAR,
+group by    pl.CALENDAR_YEAR,
             pl.PATIENT_ID,
             pl.PATIENT_LSOA_CODE,
             icb.ICB,
@@ -157,7 +153,7 @@ group by    pl.FINANCIAL_YEAR,
 patient_age as
 (
 select      /*+ materialize */
-            px_age.FINANCIAL_YEAR,
+            px_age.CALENDAR_YEAR,
             px_age.PATIENT_ID,
             px_age.CALC_AGE,
             age_lkp.BAND_5YEARS,
@@ -168,22 +164,21 @@ select      /*+ materialize */
                 else age_lkp.BAND_5YEARS
             end as CUSTOM_AGE_BAND
 from        (
-            select      ymd.FINANCIAL_YEAR,
+            select      ymd.CALENDAR_YEAR,
                         fact.PATIENT_ID,
-                        trunc((&&p_age_date - to_number(to_char(PDS_DOB,'YYYYMMDD')))/10000)   as CALC_AGE,
+                        trunc((&&p_age_date_cy - to_number(to_char(PDS_DOB,'YYYYMMDD')))/10000)   as CALC_AGE,
                         rank() over (
-                                    partition by  ymd.FINANCIAL_YEAR,
+                                    partition by  ymd.CALENDAR_YEAR,
                                                   fact.PATIENT_ID
                                                   order by fact.YEAR_MONTH desc,
                                                   fact.PRESCRIBED_DATE desc,
-                                                  trunc((&&p_age_date - to_number(to_char(pds_dob,'YYYYMMDD')))/10000) desc
+                                                  trunc((&&p_age_date_cy - to_number(to_char(pds_dob,'YYYYMMDD')))/10000) desc
                                     )
                                                   as RNK
             from        AML.PX_FORM_ITEM_ELEM_COMB_FACT_AV     fact
             inner join  DIM.YEAR_MONTH_DIM                  ymd on  fact.YEAR_MONTH     =   ymd.YEAR_MONTH
-            inner join  fy_age_date                         fad on  ymd.FINANCIAL_YEAR  =   fad.FINANCIAL_YEAR
             where       1=1
-                and     fact.YEAR_MONTH between &&p_min_ym and &&p_max_ym
+                and     fact.YEAR_MONTH between &&p_min_ym_cy and &&p_max_ym_cy
                 and     fact.PATIENT_IDENTIFIED = 'Y'
                 and     fact.NHS_PAID_FLAG = 'Y'
                 and     nvl(fact.CONSULT_ONLY_IND,'N') != 'Y'
@@ -193,7 +188,7 @@ from        (
 left join   DIM.AGE_DIM age_lkp on  px_age.CALC_AGE = age_lkp.AGE
 where       1=1
     and     px_age.RNK = 1
-group by    px_age.FINANCIAL_YEAR,
+group by    px_age.CALENDAR_YEAR,
             px_age.PATIENT_ID,
             px_age.CALC_AGE,
             age_lkp.BAND_5YEARS,
@@ -215,7 +210,7 @@ group by    px_age.FINANCIAL_YEAR,
 pat_summary as
 (
 select  /*+ materialize */
-            ymd.FINANCIAL_YEAR,
+            ymd.CALENDAR_YEAR,
             case when fact.PATIENT_IDENTIFIED = 'Y' then 1 else 0 end   as PATIENT_IDENTIFIED_FLAG,
             fact.PATIENT_ID,
             nvl(pa.CALC_AGE,-1)                                         as AGE,
@@ -231,16 +226,16 @@ select  /*+ materialize */
 from        AML.PX_FORM_ITEM_ELEM_COMB_FACT_AV     fact
 inner join  DIM.YEAR_MONTH_DIM                  ymd     on  fact.YEAR_MONTH                 =   ymd.YEAR_MONTH
 inner join                                      cdrd    on  fact.CALC_PREC_DRUG_RECORD_ID   =   cdrd.RECORD_ID
-left join   patient_lsoa                        pl      on  ymd.FINANCIAL_YEAR              =   pl.FINANCIAL_YEAR
+left join   patient_lsoa                        pl      on  ymd.CALENDAR_YEAR              =   pl.CALENDAR_YEAR
                                                         and fact.PATIENT_ID                 =   pl.PATIENT_ID
-left join   patient_age                         pa      on  ymd.FINANCIAL_YEAR              =   pa.FINANCIAL_YEAR
+left join   patient_age                         pa      on  ymd.CALENDAR_YEAR              =   pa.CALENDAR_YEAR
                                                         and fact.PATIENT_ID                 =   pa.PATIENT_ID
 where       1=1
-    and     fact.YEAR_MONTH between &&p_min_ym and &&p_max_ym
+    and     fact.YEAR_MONTH between &&p_min_ym_cy and &&p_max_ym_cy
     and     fact.NHS_PAID_FLAG = 'Y'
     and     nvl(fact.CONSULT_ONLY_IND,'N') != 'Y'
     and     fact.DISPENSER_COUNTRY_OU = 1
-group by    ymd.FINANCIAL_YEAR,
+group by    ymd.CALENDAR_YEAR,
             fact.PATIENT_IDENTIFIED,
             fact.PATIENT_ID,
             nvl(pa.CALC_AGE,-1),
@@ -256,7 +251,7 @@ group by    ymd.FINANCIAL_YEAR,
 
 -----OUTPUT-------------------------------------------------------------------------------------------------------------------------------------------
 --aggregate patient counts by the different combinations of age and location field
-select      FINANCIAL_YEAR,
+select      CALENDAR_YEAR,
             AGE,
             BAND_5YEARS,
             BAND_10YEARS,
@@ -270,7 +265,7 @@ select      FINANCIAL_YEAR,
             sum(PATIENT_IDENTIFIED_FLAG * ITEMS)        as PATIENT_ITEMS,
             sum(PATIENT_IDENTIFIED_FLAG * HRT_ITEMS)    as PATIENT_HRT_ITEMS
 from        pat_summary
-group by    FINANCIAL_YEAR,
+group by    CALENDAR_YEAR,
             AGE,
             BAND_5YEARS,
             BAND_10YEARS,
@@ -280,22 +275,22 @@ group by    FINANCIAL_YEAR,
             IMD_QUINTILE
 ;
 
---create HRT PPC PX fact table for multiple financial years using existing tables
---TO DO amend fact table build code to extract data by financial year directly
+--create HRT PPC PX fact table for multiple calendar years using existing tables
+--TO DO amend fact table build code to extract data by calendar year directly
 
---financial year
-alter table HWHC_PX_PAT_FACT_2324
-add FINANCIAL_YEAR varchar2(81 char) default '2023/2024';
-alter table HWHC_PX_PAT_FACT_2425
-add FINANCIAL_YEAR varchar2(81 char) default '2024/2025';
+--calendar year
+alter table HWHC_PX_PAT_FACT_CY_23
+add CALENDAR_YEAR varchar2(81 char) default '2023';
+alter table HWHC_PX_PAT_FACT_CY_24
+add CALENDAR_YEAR varchar2(81 char) default '2024';
 
-create table HWHC_PX_PAT_FACT_FY compress for query high as
-select * from HWHC_PX_PAT_FACT_2324
-union all select * from HWHC_PX_PAT_FACT_2425;
+create table HWHC_PX_PAT_FACT_CY compress for query high as
+select * from HWHC_PX_PAT_FACT_CY_23
+union all select * from HWHC_PX_PAT_FACT_CY_24;
 
 --drop interim tables
-drop table HWHC_PX_FACT_FY_2324 purge;
-drop table HWHC_PX_FACT_FY_2425 purge;
+drop table HWHC_PX_FACT_CY_23 purge;
+drop table HWHC_PX_FACT_CY_24 purge;
 
 ---------------------SCRIPT END-----------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------

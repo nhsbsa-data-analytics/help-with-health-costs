@@ -167,6 +167,11 @@ if(config$rebuild_base_hrt_data == TRUE){
 
 # 2.4 Data Import: PX PATIENT COUNTS -------------------------------------------
 
+
+# NOTE: for 2024/25 release the financial year and calendar year tables were run
+#manually in SQL developer using the HWHC_PX_PAT_FACT_multiple_years.sql script
+#if this is done then code on lines 175-207 should be commented out.
+
 # Financial year
 # create the base dataset for prescription patient counts
 # data at aggregated level showing counts of patients from the NHS prescription data
@@ -176,7 +181,7 @@ if(config$rebuild_base_px_data == TRUE){
   create_dataset_from_sql(
     db_connection = con,
     path_to_sql_file = "./SQL/HWHC_PX_PAT_FACT.sql",
-    db_table_name = "HWHC_PX_PAT_FACT",
+    db_table_name = "HWHC_PX_PAT_FACT_FY",
     ls_variables = list(
       var = c("p_min_ym","p_max_ym","p_age_date"),
       val = c(config$extract_px_min_ym, config$extract_px_max_ym, config$extract_px_age_dt)
@@ -1521,11 +1526,12 @@ hrt_age_objs_cy <- create_hes_age_objects_cy(
 # identify the base population figures
 hrt_age_base_pop_objs <- create_px_patient_age_objects(
   db_connection = con,
-  db_table_name = 'HWHC_PX_PAT_FACT',
+  db_table_name = 'HWHC_PX_PAT_FACT_FY',
+  focus_fy = config$focus_fy_hrt,
   patient_group = 'HRT_PATIENT_COUNT'
 )
 
-hrt_age_base_pop_objs_cy <- create_px_patient_age_objects(
+hrt_age_base_pop_objs_cy <- create_px_patient_age_objects_cy(
   db_connection = con,
   db_table_name = 'HWHC_PX_PAT_FACT_CY',
   patient_group = 'HRT_PATIENT_COUNT'
@@ -1550,21 +1556,23 @@ hrt_age_objs$chart_data <- hrt_age_objs$chart_data |>
     y = hrt_age_base_pop_objs$chart_data,
     by = c('Age Band')
   ) |> 
-  dplyr::rename(`Estimated patients receiving HRT PPC qualifying medication` = BASE_POPULATION)
+  dplyr::rename(`Estimated patients receiving HRT PPC qualifying medication` = BASE_POPULATION) |>
+  dplyr::select(-"HwHC Service", -"Financial Year.x", -"Financial Year.y") 
 
 # update the financial year support_data
 hrt_age_objs$support_data <- hrt_age_objs$support_data |> 
   dplyr::left_join(
-    y = hrt_age_base_pop_objs$chart_data,
+    y = hrt_age_base_pop_objs$support_data,
     by = c('Financial Year', 'Age Band')
   ) |> 
   dplyr::rename(`Estimated patients receiving HRT PPC qualifying medication (aged 16-59)` = BASE_POPULATION)
 
 #update the calendar year support data
-hrt_age_objs_cy$support_data <- hrt_age_objs_cy$support_data |> 
+hrt_age_objs_cy$support_data <- hrt_age_objs_cy$support_data |>
+  dplyr::mutate(`Calendar Year` = as.character(`Calendar Year`)) |>
   dplyr::left_join(
-    y = hrt_age_base_pop_objs_cy$chart_data,
-    by = c('Financial Year', 'Age Band')
+    y = hrt_age_base_pop_objs_cy$support_data,
+    by = c('Calendar Year', 'Age Band')
   ) |> 
   dplyr::rename(`Estimated patients receiving HRT PPC qualifying medication (aged 16-59)` = BASE_POPULATION)
 
@@ -1597,18 +1605,17 @@ hrt_imd_objs_cy <- create_hes_imd_objects_cy(
 # identify the base population figures
 
 #financial year
-#may need to use HWHC_PX_PAT_FACT_FY depending on how pat fact table is set up
 hrt_imd_base_pop_objs <- create_px_patient_imd_objects(
   db_connection = con,
-  db_table_name = 'HWHC_PX_PAT_FACT',
+  db_table_name = 'HWHC_PX_PAT_FACT_FY',
   patient_group = 'HRT_PATIENT_COUNT',
-  focus_fy = "2024/2025",
+  focus_fy = config$focus_fy_hrt,
   min_age = config$hrt_min_pop_age,
   max_age = config$hrt_max_pop_age
 )
 
 #calendar year
-hrt_imd_base_pop_objs_cy <- create_px_patient_imd_objects(
+hrt_imd_base_pop_objs_cy <- create_px_patient_imd_objects_cy(
   db_connection = con,
   db_table_name = 'HWHC_PX_PAT_FACT_CY',
   patient_group = 'HRT_PATIENT_COUNT',
@@ -1635,21 +1642,23 @@ hrt_imd_objs$chart_data <- hrt_imd_objs$chart_data |>
     y = hrt_imd_base_pop_objs$chart_data |> dplyr::mutate(`IMD Quintile` = as.character(`IMD Quintile`)),
     by = c('IMD Quintile')
   ) |> 
-  dplyr::rename(`Estimated patients receiving HRT PPC qualifying medication (aged 16-59)` = BASE_POPULATION)
+  dplyr::rename(`Estimated patients receiving HRT PPC qualifying medication (aged 16-59)` = BASE_POPULATION) |>
+  dplyr::select(-"HwHC Service", -"Financial Year.x", -"Financial Year.y") 
 
 # update the financial year support_data
 hrt_imd_objs$support_data <- hrt_imd_objs$support_data |> 
   dplyr::left_join(
-    y = hrt_imd_base_pop_objs$chart_data |> dplyr::mutate(`IMD Quintile` = as.character(`IMD Quintile`)),
-    by = c('IMD Quintile')
+    y = hrt_imd_base_pop_objs$support_data |> dplyr::mutate(`IMD Quintile` = as.character(`IMD Quintile`)),
+    by = c('Financial Year', 'IMD Quintile')
   ) |> 
   dplyr::rename(`Estimated patients receiving HRT PPC qualifying medication (aged 16-59)` = BASE_POPULATION)
 
 # update the calendar year support_data
 hrt_imd_objs_cy$support_data <- hrt_imd_objs_cy$support_data |> 
+  dplyr::mutate(`Calendar Year` = as.character(`Calendar Year`)) |>
   dplyr::left_join(
-    y = hrt_imd_base_pop_objs_cy$chart_data |> dplyr::mutate(`IMD Quintile` = as.character(`IMD Quintile`)),
-    by = c('IMD Quintile')
+    y = hrt_imd_base_pop_objs_cy$support_data |> dplyr::mutate(`IMD Quintile` = as.character(`IMD Quintile`)),
+    by = c('Calendar Year', 'IMD Quintile')
   ) |> 
   dplyr::rename(`Estimated patients receiving HRT PPC qualifying medication (aged 16-59)` = BASE_POPULATION)
 
@@ -1661,7 +1670,7 @@ hrt_imd_objs_cy$support_data <- hrt_imd_objs_cy$support_data |>
 #financial year
 hrt_icb_objs <- create_hes_icb_objects(
   db_connection = con,
-  db_table_name = 'HWHC_HRTPPC_FACT',
+  db_table_name = 'HWHC_HRTPPC_FACT_FY',
   service_area = 'HRTPPC',
   min_ym = config$min_trend_ym_hrt,
   max_ym = config$max_trend_ym_hrt,

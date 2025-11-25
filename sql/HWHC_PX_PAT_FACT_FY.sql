@@ -9,7 +9,7 @@ AMENDMENTS:
     2024-06-04  : Steven Buckley    : Switched source for postcode and IMD reference
                                         Changed N/A to Not Available
     2025-04-25  : Grace Libby       : Changed NSPL version used to Aug 24 (2011 census LSOAs) 
-    
+    2025-11-10  : Grace Libby       : Removed unused table join to 'fy_age_date' from line 184
 
 DESCRIPTION:
     Identify a patient summary dataset to get estimated patient counts split by:
@@ -30,7 +30,7 @@ DEPENDENCIES:
                                     
     DIM.CDR_EP_DRUG_BNF_DIM         :   "Dimension" table containing drug classification information
     
-    DIM.AGE                         :   Reference table providing age band classification lookups
+    DIM.AGE_DIM                         :   Reference table providing age band classification lookups
     
     OST.ONS_NSPL_AUG_24_11CEN       :   Reference table for National Statistics Postcode Lookup (NSPL)
                                         Contains mapping data from postcode to key geographics and deprivation profile data
@@ -42,6 +42,15 @@ DEPENDENCIES:
 */
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------SCRIPT START----------------------------------------------------------------------------------------------------------------------
+
+--TO DO: amend code to account for multiple years of HRTPPC available
+--for current code, build code twice using specified years then join tables
+
+-- for HWHC_PX_PAT_FACT_FY_2324
+-- for HWHC_PX_PAT_FACT_FY_2425
+
+--create table HWHC_PX_PAT_FACT_FY_2324 as
+--create table HWHC_PX_PAT_FACT_FY_2425 as
 
 create table HWHC_PX_PAT_FACT_FY as
 
@@ -172,7 +181,6 @@ from        (
                                                   as RNK
             from        AML.PX_FORM_ITEM_ELEM_COMB_FACT_AV     fact
             inner join  DIM.YEAR_MONTH_DIM                  ymd on  fact.YEAR_MONTH     =   ymd.YEAR_MONTH
-            inner join  fy_age_date                         fad on  ymd.FINANCIAL_YEAR  =   fad.FINANCIAL_YEAR
             where       1=1
                 and     fact.YEAR_MONTH between &&p_min_ym and &&p_max_ym
                 and     fact.PATIENT_IDENTIFIED = 'Y'
@@ -270,5 +278,23 @@ group by    FINANCIAL_YEAR,
             IMD_DECILE,
             IMD_QUINTILE
 ;
+
+--create HRT PPC PX fact table for multiple financial years using existing tables
+--TO DO amend fact table build code to extract data by financial year directly
+
+--financial year
+alter table HWHC_PX_PAT_FACT_2324
+add FINANCIAL_YEAR varchar2(81 char) default '2023/2024';
+alter table HWHC_PX_PAT_FACT_2425
+add FINANCIAL_YEAR varchar2(81 char) default '2024/2025';
+
+create table HWHC_PX_PAT_FACT_FY compress for query high as
+select * from HWHC_PX_PAT_FACT_2324
+union all select * from HWHC_PX_PAT_FACT_2425;
+
+--drop interim tables
+drop table HWHC_PX_FACT_FY_2324 purge;
+drop table HWHC_PX_FACT_FY_2425 purge;
+
 ---------------------SCRIPT END-----------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------

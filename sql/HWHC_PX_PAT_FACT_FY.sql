@@ -30,7 +30,7 @@ DEPENDENCIES:
                                     
     DIM.CDR_EP_DRUG_BNF_DIM         :   "Dimension" table containing drug classification information
     
-    DIM.AGE                         :   Reference table providing age band classification lookups
+    DIM.AGE_DIM                         :   Reference table providing age band classification lookups
     
     OST.ONS_NSPL_AUG_24_11CEN       :   Reference table for National Statistics Postcode Lookup (NSPL)
                                         Contains mapping data from postcode to key geographics and deprivation profile data
